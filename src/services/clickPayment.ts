@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const CLICK_API_BASE = 'https://tourpayment.academytable.ru/api/v1';
-const CLICK_SERVICE_ID = '72638';
-const CLICK_MERCHANT_ID = '39627';
+const CLICK_SERVICE_ID = '';
+const CLICK_MERCHANT_ID = '';
 
 export interface ClickOrderData {
   variant: 'click';
