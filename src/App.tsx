@@ -14,6 +14,8 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import Footer from './components/Footer';
+import ScrollToTopButton from './components/ScrollToTopButton';
+import WhyUsPage from './pages/WhyUsPage';
 
 function App() {
   return (
@@ -29,12 +31,14 @@ function App() {
             <Route path="/category/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
             <Route path="/about" element={<NewAboutPage />} />
             <Route path="/contact" element={<NewContactPage />} />
+            <Route path="/why-us" element={<WhyUsPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<UserDashboard />} />
           </Routes>
           <Footer />
+          <ScrollToTopButton />
         </div>
       </AuthProvider>
     </LanguageProvider>

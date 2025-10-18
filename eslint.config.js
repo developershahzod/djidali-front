@@ -4,6 +4,10 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
+if (typeof globalThis.structuredClone !== 'function') {
+  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
+}
+
 export default tseslint.config(
   { ignores: ['dist'] },
   {

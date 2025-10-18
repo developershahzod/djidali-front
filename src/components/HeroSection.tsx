@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 
-interface HeroSectionProps {
-  onSearch?: (query: string) => void;
-}
+const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+  const { t, translate } = useLanguage();
+  const [selectedCountry, setSelectedCountry] = useState('tashkent');
+  const [selectedTourType, setSelectedTourType] = useState('eco');
+  const [selectedDate, setSelectedDate] = useState('sep-12-20');
+  const [selectedParticipants, setSelectedParticipants] = useState('family');
 
-const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
-  const { t } = useLanguage();
-  const [selectedCountry, setSelectedCountry] = useState('Ташкент');
-  const [selectedDate, setSelectedDate] = useState('12-20 сен');
-  const [selectedParticipants, setSelectedParticipants] = useState('2 взр. — 3 реб.');
-  const [selectedTourType, setSelectedTourType] = useState('Экотуризм');
-
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(selectedCountry);
-    }
-  };
+  const dateOptions = useMemo(
+    () => [
+      { value: 'sep-12-20', label: t('hero.rangeSep12To20') },
+      { value: 'sep-21-30', label: t('hero.rangeSep21To30') },
+      { value: 'oct-1-10', label: t('hero.rangeOct01To10') }
+    ],
+    [t]
+  );
 
   return (
     <div className="relative h-screen min-h-[800px] overflow-hidden" style={{
@@ -34,70 +35,72 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
       <div className="relative z-10 max-w-[1400px] mx-auto px-8 lg:px-16 h-full flex flex-col justify-center pb-0 pt-30">
         <div className="mb-24">
           <h1 className="text-[5.5rem] leading-[1.12] font-light text-white tracking-tight">
-            DJIDALI — охота и туризм<br />
-            без границ
+            DJIDALI — {t('hero.title')}<br />
+            {t('hero.subtitle')}
           </h1>
         </div>
 
         <div className="max-w-[1400px] w-full">
           <div className="rounded-[20px] shadow-2xl pt-30 grid grid-cols-1 md:grid-cols-5 gap-4">
 <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">Страна</label>
+              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.countryLabel')}</label>
               <select
                 value={selectedCountry}
                 onChange={(event) => setSelectedCountry(event.target.value)}
                 className="w-full   bg-white text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
-                <option value="Ташкент">Ташкент</option>
-                <option value="Самарканд">Самарканд</option>
-                <option value="Бухара">Бухара</option>
-                <option value="Хива">Хива</option>
+                <option value="tashkent">{translate({ ru: 'Ташкент', uz: 'Toshkent', en: 'Tashkent' })}</option>
+                <option value="samarkand">{translate({ ru: 'Самарканд', uz: 'Samarqand', en: 'Samarkand' })}</option>
+                <option value="bukhara">{translate({ ru: 'Бухара', uz: 'Buxoro', en: 'Bukhara' })}</option>
+                <option value="khiva">{translate({ ru: 'Хива', uz: 'Xiva', en: 'Khiva' })}</option>
               </select>
             </div>
 
 <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">Дата</label>
+              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.dateLabel')}</label>
               <select
                 value={selectedDate}
                 onChange={(event) => setSelectedDate(event.target.value)}
                 className="w-full   bg-white  rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
-                <option value="12-20 сен">12-20 сен</option>
-                <option value="21-30 сен">21-30 сен</option>
-                <option value="1-10 окт">1-10 окт</option>
+                {dateOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 
-<div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">Участники</label>
+            <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
+              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.participantsLabel')}</label>
               <select
                 value={selectedParticipants}
                 onChange={(event) => setSelectedParticipants(event.target.value)}
                 className="w-full   bg-white rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
-                <option value="2 взр. — 3 реб.">2 взр. — 3 реб.</option>
-                <option value="1 взр.">1 взр.</option>
-                <option value="2 взр.">2 взр.</option>
-                <option value="Группа">Группа</option>
+                <option value="family">{t('hero.participantsFamily')}</option>
+                <option value="solo">{t('hero.participantsSolo')}</option>
+                <option value="couple">{t('hero.participantsCouple')}</option>
+                <option value="group">{t('hero.participantsGroup')}</option>
               </select>
             </div>
 
-<div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">Тип тура</label>
+            <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
+              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.tourTypeLabel')}</label>
               <select
                 value={selectedTourType}
                 onChange={(event) => setSelectedTourType(event.target.value)}
                 className="w-full   bg-white rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
-                <option value="Экотуризм">Экотуризм</option>
-                <option value="Охота">Охота</option>
-                <option value="Агротуризм">Агротуризм</option>
-                <option value="Тимбилдинг">Тимбилдинг</option>
+                <option value="eco">{t('hero.multiDay')}</option>
+                <option value="hunting">{t('hero.hunting')}</option>
+                <option value="agro">{t('hero.agro')}</option>
+                <option value="team">{t('hero.teamBuilding')}</option>
               </select>
             </div>
 
             <button
-              onClick={handleSearch}
+              onClick={() => navigate('/tours')}
               className="bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-8  rounded-xl text-[15px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center mt-0"
             >
               {t('hero.findTours')}

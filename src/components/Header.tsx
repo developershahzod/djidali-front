@@ -58,11 +58,12 @@ const Header: React.FC = () => {
               {t('nav.categories')}
             </button>
             <button
-              onClick={() => navigate('/about')}
+              onClick={() => navigate('/why-us')}
               className="text-white/90 hover:text-white hover:bg-white/10 transition-all text-[14px] font-normal px-5 py-2.5 rounded-lg"
             >
-              {t('about.title')}
+              {t('nav.whyUs')}
             </button>
+          
             <button
               onClick={() => navigate('/contact')}
               className="text-white/90 hover:text-white hover:bg-white/10 transition-all text-[14px] font-normal px-5 py-2.5 rounded-lg"

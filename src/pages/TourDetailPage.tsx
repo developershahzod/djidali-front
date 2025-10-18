@@ -1,306 +1,446 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { djidaliApi } from '../services/djidaliApi';
-import { Tour } from '../services/api';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getTourPrimaryImage } from '../utils/imageUtils';
+import { useTour } from '../hooks/useTours';
+import { useLanguage } from '../contexts/LanguageContext';
+import TourRegistrationForm from '../components/TourRegistrationForm';
+import { useAuth } from '../contexts/AuthContext';
+import { useOrderDetails } from '../contexts/OrderDetailsContext';
+import OrderDetailModal from '../components/OrderDetailModal';
+
+interface ItineraryItem {
+  day: number;
+  title: string;
+  description: string;
+}
 
 const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [tour, setTour] = useState<Tour | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
+  const { isAuthenticated } = useAuth();
+  const { tour, loading, error } = useTour(id ?? null);
+
   const [activeDay, setActiveDay] = useState<number | null>(null);
+  const [showRegistration, setShowRegistration] = useState(false);
+
+  const handleOpenRegistration = useCallback(() => {
+    setShowRegistration(true);
+  }, []);
+
+  const handleCloseRegistration = useCallback(() => {
+    setShowRegistration(false);
+  }, []);
+
+  const primaryImage = useMemo(() => (tour ? getTourPrimaryImage(tour) : ''), [tour]);
+
+  const heroHighlights = useMemo(() => {
+    if (!tour) {
+      return [];
+    }
+
+    return [
+      {
+        icon: (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M12 1v22" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        ),
+        label: t('tour.priceFrom'),
+        value: `${Number((typeof tour.price === 'object' ? tour.price?.amount : tour.price) ?? 0).toLocaleString('ru-RU')} UZS`
+      },
+      {
+        icon: (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="12" cy="12" r="9" />
+            <polyline points="12 7 12 12 16 14" />
+          </svg>
+        ),
+        label: t('tour.durationLabel'),
+        value: `${tour.duration ?? 0} ${t('tour.days')}`
+      }
+    ];
+  }, [tour, t]);
+
+  const capabilityCards = useMemo(() => {
+    if (!tour) {
+      return [];
+    }
+
+    return [
+      {
+        title: t('tour.people'),
+        description: `${t('tour.upTo')} ${tour.max_participants ?? (tour as any).maxParticipants ?? 10}`
+      },
+      {
+        title: t('tour.minAge'),
+        description: tour.min_age ? `${t('tour.from')} ${tour.min_age} ${t('tour.years')}` : t('tour.defaultMinAge')
+      },
+      {
+        title: t('tour.type'),
+        description: tour.category?.name || t('tour.defaultType')
+      },
+      {
+        title: t('tour.difficulty'),
+        description: tour.difficulty || t('tour.defaultDifficulty')
+      }
+    ];
+  }, [tour, t]);
+
+  const galleryImages = useMemo(() => {
+    if (!tour) {
+      return [];
+    }
+
+    const images =
+      tour.images?.map((image) => {
+        if (typeof image === 'string') {
+          return image;
+        }
+
+        if (image && typeof image === 'object') {
+          if ('image_url' in image && (image as { image_url?: string }).image_url) {
+            return (image as { image_url: string }).image_url;
+          }
+
+          if ('url' in image && (image as { url?: string }).url) {
+            return (image as { url: string }).url;
+          }
+        }
+
+        return '';
+      }).filter(Boolean) ?? [];
+
+    if (!images.length && primaryImage) {
+      return [primaryImage];
+    }
+
+    return images;
+  }, [tour, primaryImage]);
+
+  const itineraryItems = useMemo<ItineraryItem[]>(() => {
+    if (!tour) {
+      return [];
+    }
+
+    if (tour.itinerary && tour.itinerary.length > 0) {
+      return [...tour.itinerary]
+        .map((item) => ({
+          day: item.day,
+          title: item.title,
+          description: item.description
+        }))
+        .sort((a, b) => a.day - b.day);
+    }
+
+    if (tour.itinerary && !Array.isArray(tour.itinerary) && typeof tour.itinerary === 'object') {
+      return Object.entries(tour.itinerary)
+        .map(([key, value], index) => {
+          const numericDay = parseInt(key.replace(/\D/g, ''), 10);
+
+          return {
+            day: Number.isNaN(numericDay) ? index + 1 : numericDay,
+            title: key,
+            description: typeof value === 'string' ? value : String(value)
+          };
+        })
+        .sort((a, b) => a.day - b.day);
+    }
+
+    return [];
+  }, [tour]);
 
   useEffect(() => {
-    const loadTour = async () => {
-      if (!id) return;
+    if (itineraryItems.length > 0 && activeDay === null) {
+      setActiveDay(itineraryItems[0].day);
+    }
+  }, [itineraryItems, activeDay]);
 
-      try {
-        setLoading(true);
-        const tourData = await djidaliApi.getTour(id);
-        setTour(tourData as any);
-      } catch (error) {
-        console.error('Failed to load tour:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTour();
-  }, [id]);
-
-  if (loading || !tour) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F1E6] flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#8B7355]"></div>
       </div>
     );
   }
 
-  const primaryImage = getTourPrimaryImage(tour);
-
-  const itinerary = [];
+  if (error || !tour) {
+    return (
+      <div className="min-h-screen bg-[#F5F1E6] flex items-center justify-center px-6">
+        <div className="max-w-xl text-center space-y-6">
+          <h2 className="text-[2rem] font-light text-[#2A241C]">Не удалось загрузить тур</h2>
+          <p className="text-base text-[#6B6459]">{error || 'Попробуйте обновить страницу или вернуться позже.'}</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center justify-center rounded-full border border-[#CBB48F] px-8 py-3 text-sm font-medium text-[#3A3124] hover:bg-[#F2EBE0] transition-colors"
+          >
+            Вернуться назад
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      <div className="relative h-[350px] overflow-hidden">
-        <img
-          src={primaryImage}
-          alt={tour.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
-
-        <div className="absolute inset-0 flex items-end">
-          <div className="max-w-[1400px] mx-auto px-8 lg:px-16 w-full pb-12">
-            <h1 className="text-white text-[3rem] font-light leading-tight">
-              {tour.title}
-            </h1>
-          </div>
+    <div className="min-h-screen bg-[#F5F1E6] text-[#2A241C]">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          {primaryImage && (
+            <img src={primaryImage} alt={tour.title} className="w-full h-full object-cover" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/30 to-black/55" />
         </div>
-      </div>
 
-      <div className="max-w-[1400px] mx-auto px-8 lg:px-16 py-16">
-        <div className="grid lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-8">
-            <div className="bg-white rounded-none p-12 mb-8">
-              <div className="flex items-center gap-12 mb-10">
-                <div className="flex items-center gap-4">
-                  
+        <div className="relative max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 pt-40 pb-24 space-y-12 text-white">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Назад
+          </button>
+
+          <div className="space-y-6">
+            <h1 className="text-[3.5rem] leading-[1.1] font-light max-w-3xl">{tour.title}</h1>
+
+            <div className="flex flex-wrap items-start gap-8">
+              {heroHighlights.map((item) => (
+                <div key={item.label} className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center">
+                    {item.icon}
+                  </div>
                   <div>
-                    <div className="text-[2.5rem] font-light text-gray-900">
-                      {Number(tour.price || 0).toLocaleString()} <span className="text-xl text-gray-500 font-light">UZS</span>
-                    </div>
-                    <div className="text-sm text-gray-500 font-light">Стоимость от тура</div>
+                    <div className="text-lg font-light text-white">{item.value}</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-white/60 mt-1">{item.label}</div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-4">
-                  
-                  <div>
-                    <div className="text-[2.5rem] font-light text-gray-900">
-                      {tour.duration} <span className="text-xl text-gray-500 font-light">дней</span>
-                    </div>
-                    <div className="text-sm text-gray-500 font-light">Длительность от тура</div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-gray-500 mb-4 font-light tracking-wider uppercase">Место</div>
-                <div className="grid grid-cols-3 gap-8">
-                  <div>
-                    <div className="text-sm text-gray-500 mb-2 font-light">Минимальный возраст</div>
-                    <div className="text-lg text-gray-900 font-normal">от 12 лет</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500 mb-2 font-light">Тип тура</div>
-                    <div className="text-lg text-gray-900 font-normal">{tour.category?.name || 'Экотуризм'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500 mb-2 font-light">Сложность</div>
-                    <div className="text-lg text-gray-900 font-normal">Легкое</div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="bg-white rounded-none p-12 mb-8">
-              <h2 className="text-[2rem] font-light text-gray-900 mb-8">О туре</h2>
-              <p className="text-gray-700 text-base leading-relaxed mb-6 font-light">
-                Этот тур создан для тех, кто хочет почувствовать атмосферу настоящей дикой природы.
-              </p>
-              <p className="text-gray-700 text-base leading-relaxed mb-6 font-light">
-                Вы посетите живописные горные долины, пройдете по тропам Чаткальского заповедника и познакомитесь с флорой и фауной региона. Проживание организовано в уютных эко-домиках, питание — национальная кухня.
-              </p>
+            <div className="text-sm text-white/75 uppercase tracking-[0.25em]">
+              {tour.location || t('tour.defaultDetailLocation')}
+            </div>
+          </div>
 
-              <div className="grid md:grid-cols-2 gap-8 mt-10">
-                <div>
-                  <h3 className="text-lg font-normal text-gray-900 mb-4">Что включено</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-green-600 mt-1">•</span>
-                      <span>Проживание (2ве дневной)</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-green-600 mt-1">•</span>
-                      <span>Трехразовое питание</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-green-600 mt-1">•</span>
-                      <span>Услуги гида</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-green-600 mt-1">•</span>
-                      <span>Трансфер от Ташкента</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-green-600 mt-1">•</span>
-                      <span>Экскурсия по заповеднику</span>
-                    </li>
-                  </ul>
+          <div className="bg-white text-[#2A241C] rounded-[32px] shadow-[0_40px_90px_-60px_rgba(32,24,12,0.65)] px-6 py-10 lg:px-12 lg:py-12 space-y-10">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {capabilityCards.map((card) => (
+                <div key={card.title} className="rounded-[24px] border border-[#E4D7C0] px-6 py-5 bg-[#F9F4EA]">
+                  <div className="text-xs uppercase tracking-[0.35em] text-[#A38D66] mb-2">{card.title}</div>
+                  <div className="text-lg font-medium text-[#2C2319]">{card.description}</div>
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-normal text-gray-900 mb-4">Что не входит в тур</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-red-600 mt-1">•</span>
-                      <span>Личные расходы</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-red-600 mt-1">•</span>
-                      <span>Алкогольные напитки</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-red-600 mt-1">•</span>
-                      <span>Сувениры (одежда и прочее)</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-red-600 mt-1">•</span>
-                      <span>Медицинская страховка</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-700 text-base font-light">
-                      <span className="text-red-600 mt-1">•</span>
-                      <span>Дополнительные экскурсии (за рамки)</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="bg-white rounded-none p-12 mb-8">
-              <h2 className="text-[2rem] font-light text-gray-900 mb-8">Моменты из тура</h2>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="h-80 rounded-none overflow-hidden">
-                  <img
-                    src="https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg"
-                    alt="Tour moment 1"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="grid grid-rows-2 gap-3">
-                  <div className="h-full rounded-none overflow-hidden">
-                    <img
-                      src="https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg"
-                      alt="Tour moment 2"
-                      className="w-full h-full object-cover"
-                    />
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+              <div className="rounded-[28px] border border-[#E4D7C0] bg-[#FBF7F0] p-8 shadow-[0_28px_65px_-45px_rgba(38,28,18,0.45)]">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[#B4965A]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#8F6E47]">
+                      {t('tour.bookingTitle')}
+                    </span>
+                    <p className="text-base leading-7 text-[#5A4A38]">
+                      {t('tour.bookingDescription')}
+                    </p>
                   </div>
-                  <div className="h-full rounded-none overflow-hidden">
-                    <img
-                      src="https://images.pexels.com/photos/1268855/pexels-photo-1268855.jpeg"
-                      alt="Tour moment 3"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-none p-12">
-              <h2 className="text-[2rem] font-light text-gray-900 mb-8">Программа тура</h2>
-              <div className="space-y-2">
-                {itinerary.map((item) => (
-                  <div
-                    key={item.day}
-                    className="border border-gray-200 rounded-none overflow-hidden hover:border-gray-300 transition-colors"
-                  >
-                    <button
-                      onClick={() => setActiveDay(activeDay === item.day ? null : item.day)}
-                      className="w-full px-8 py-6 flex items-center justify-between text-left"
-                    >
-                      <span className="text-lg font-normal text-gray-900">{item.title}</span>
-                      <svg
-                        className={`w-5 h-5 text-gray-400 transition-transform ${
-                          activeDay === item.day ? 'rotate-180' : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {activeDay === item.day && (
-                      <div className="px-8 pb-6 text-gray-600 text-base font-light border-t border-gray-100 pt-6">
-                        {item.description}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-[20px] border border-white/60 bg-white/80 p-4 shadow-inner">
+                      <div className="text-xs uppercase tracking-[0.32em] text-[#B4965A]">{t('tour.priceFrom')}</div>
+                      <div className="mt-2 text-2xl font-semibold text-[#2C2319]">
+                        {Number((typeof tour.price === 'object' ? tour.price?.amount : tour.price) ?? 0).toLocaleString('ru-RU')} UZS
                       </div>
-                    )}
+                    </div>
+                    <div className="rounded-[20px] border border-white/60 bg-white/80 p-4 shadow-inner">
+                      <div className="text-xs uppercase tracking-[0.32em] text-[#B4965A]">{t('tour.durationLabel')}</div>
+                      <div className="mt-2 text-2xl font-semibold text-[#2C2319]">{tour.duration ?? 0} {t('tour.days')}</div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          <div className="lg:col-span-4">
-            <div className="sticky top-8">
-              <div className="bg-white rounded-none p-10 mb-6 border border-gray-200">
-                <h3 className="text-xl font-light text-gray-900 mb-8">Забронировать тур</h3>
-
-                <div className="space-y-5 mb-8">
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-2 font-light">Введите ваше имя</label>
-                    <input
-                      type="text"
-                      placeholder="Имя"
-                      className="w-full px-4 py-3.5 border border-gray-200 rounded-none focus:outline-none focus:ring-1 focus:ring-[#8B7355] text-base"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-2 font-light">+998 00 000 00 00</label>
-                    <input
-                      type="tel"
-                      placeholder="+998 00 000 00 00"
-                      className="w-full px-4 py-3.5 border border-gray-200 rounded-none focus:outline-none focus:ring-1 focus:ring-[#8B7355] text-base"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-2 font-light">12-20 сен</label>
-                    <input
-                      type="text"
-                      placeholder="12-20 сен"
-                      className="w-full px-4 py-3.5 border border-gray-200 rounded-none focus:outline-none focus:ring-1 focus:ring-[#8B7355] text-base"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-2 font-light">2 взр. — 3 реб.</label>
-                    <input
-                      type="text"
-                      placeholder="2 взр. — 3 реб."
-                      className="w-full px-4 py-3.5 border border-gray-200 rounded-none focus:outline-none focus:ring-1 focus:ring-[#8B7355] text-base"
-                    />
+                  <div className="rounded-[20px] bg-white/90 p-5 space-y-3 text-sm text-[#5F4A31]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#857157]">{t('tour.people')}</span>
+                      <span className="font-medium text-[#2C2319]">
+                        {t('tour.upTo')} {tour.max_participants ?? (tour as any).maxParticipants ?? 10}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#857157]">{t('tour.type')}</span>
+                      <span className="font-medium text-[#2C2319]">{tour.category?.name || t('tour.defaultType')}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#857157]">{t('tour.minAge')}</span>
+                      <span className="font-medium text-[#2C2319]">
+                        {tour.min_age ? `${t('tour.from')} ${tour.min_age} ${t('tour.years')}` : t('tour.defaultMinAge')}
+                      </span>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <button className="w-full bg-[#8B7355] hover:bg-[#7A6349] text-white py-4 rounded-xl text-base font-light transition-colors">
-                  Забронировать сейчас
+              <div className="rounded-[28px] border border-[#E4D7C0] bg-white p-8 shadow-[0_20px_60px_-40px_rgba(38,28,18,0.35)] flex flex-col gap-6">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-[#2C2319]">{tour.location || t('tour.defaultDetailLocation')}</h3>
+                  <p className="text-sm text-[#7A6A52]">
+                    {t('tour.program')}
+                  </p>
+                </div>
+
+                <div className="rounded-[20px] border border-[#E4D7C0] bg-[#FBF4E6] p-5 text-sm text-[#5F4A31]">
+                  <p className="font-medium text-[#2F261C]">Click</p>
+                  <p className="mt-2 leading-6">
+                    {t('tour.bookingDescription')}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleOpenRegistration}
+                  className="flex items-center justify-center gap-2 rounded-[18px] bg-[#B4965A] px-8 py-3 text-sm font-semibold uppercase tracking-[0.32em] text-white shadow-[0_18px_45px_-18px_rgба(44,32,18,0.65)] transition-all hover:-translate-y-[2px] hover:bg-[#A7894F]"
+                >
+                  {isAuthenticated ? t('tour.bookNow') : t('tour.loginToBook')}
                 </button>
-
-                <p className="text-xs text-gray-500 text-center mt-5 font-light">
-                  План бронирует трансфер выбранная дата
-                </p>
-              </div>
-
-              <div className="bg-white rounded-none p-10 border border-gray-200">
-                <h3 className="text-xl font-light text-gray-900 mb-6">Локация</h3>
-                <div className="w-full h-64 bg-gray-200 rounded-none overflow-hidden">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412648750455!2d-73.98784368459395!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                  ></iframe>
-                </div>
+                <TourRegistrationForm tour={tour} isOpen={showRegistration} onClose={handleCloseRegistration} />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <main>
+        <section className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 py-24 space-y-10">
+          <div className="space-y-6">
+            <h2 className="text-[2.8rem] leading-tight font-light text-[#2A241C]">{t('tour.about')}</h2>
+            {tour.description ? (
+              <p className="text-lg leading-8 text-[#51483B] max-w-4xl whitespace-pre-line">{tour.description}</p>
+            ) : (
+              <p className="text-lg leading-8 text-[#51483B] max-w-4xl">{t('tour.descriptionFallback')}</p>
+            )}
+          </div>
+
+          <div className="grid gap-10 md:grid-cols-2">
+            <div>
+              <h3 className="text-lg font-normal text-[#2A241C] mb-4">{t('tour.included')}</h3>
+              <ul className="space-y-2 text-[#51483B] text-base">
+                {(tour.included && tour.included.length > 0
+                  ? tour.included
+                  : [
+                      t('tour.defaultIncluded1'),
+                      t('tour.defaultIncluded2'),
+                      t('tour.defaultIncluded3'),
+                      t('tour.defaultIncluded4'),
+                      t('tour.defaultIncluded5')
+                    ]
+                ).map((item) => (
+                  <li key={`included-${item}`} className="flex gap-3">
+                    <span className="text-[#8B7355]">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-normal text-[#2A241C] mb-4">{t('tour.excluded')}</h3>
+              <ul className="space-y-2 text-[#51483B] text-base">
+                {(tour.excluded && tour.excluded.length > 0
+                  ? tour.excluded
+                  : [
+                      t('tour.defaultExcluded1'),
+                      t('tour.defaultExcluded2'),
+                      t('tour.defaultExcluded3'),
+                      t('tour.defaultExcluded4'),
+                      t('tour.defaultExcluded5')
+                    ]
+                ).map((item) => (
+                  <li key={`excluded-${item}`} className="flex gap-3">
+                    <span className="text-[#8B7355]">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#F1E9D9] py-24">
+          <div className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 space-y-12">
+            <h2 className="text-[2.8rem] leading-tight font-light text-[#2A241C]">{t('tour.moments')}</h2>
+
+            <div className="space-y-6">
+              {galleryImages[0] && (
+                <div className="h-[360px] rounded-[28px] overflow-hidden shadow-[0_35px_80px_-60px_rgba(30,24,16,0.55)]">
+                  <img src={galleryImages[0]} alt={tour.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+
+              <div className="grid gap-6 md:grid-cols-2">
+                {(galleryImages.length > 1 ? galleryImages.slice(1, 3) : [primaryImage, primaryImage])
+                  .filter(Boolean)
+                  .map((image, index) => (
+                    <div key={`gallery-${index}`} className="h-[260px] rounded-[24px] overflow-hidden shadow-[0_25px_70px_-55px_rgba(30,24,16,0.45)]">
+                      <img src={image as string} alt={`${tour.title} момент ${index + 2}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 py-24 space-y-10">
+          <h2 className="text-[2.8rem] leading-tight font-light text-[#2A241C]">{t('tour.program')}</h2>
+
+          <div className="space-y-3">
+            {itineraryItems.map((item) => {
+              const isOpen = activeDay === item.day;
+
+              return (
+                <div key={item.day} className="rounded-[20px] border border-[#E4D7C0] bg-[#FBF6EA] shadow-[0_20px_60px_-50px_rgba(38,28,18,0.45)]">
+                  <button
+                    onClick={() => setActiveDay(isOpen ? null : item.day)}
+                    className="w-full flex items-center justify-between px-6 py-5 text-left"
+                  >
+                    <div>
+                      <div className="text-sm uppercase tracking-[0.3em] text-[#A38D66]">{t('tour.day')} {item.day}</div>
+                      <div className="text-base text-[#2C2319] mt-1">{item.title.replace(/^День\s*\d+\s*/i, '').trim() || item.title}</div>
+                    </div>
+                    <svg
+                      className={`w-5 h-5 text-[#8B7355] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    >
+                      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-6 text-base text-[#51483B] leading-relaxed">
+                      {item.description}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="bg-[#F1E9D9] py-24">
+          <div className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 space-y-10">
+            <h2 className="text-[2.8rem] leading-tight font-light text-[#2A241C]">Локация</h2>
+            <div className="rounded-[32px] overflow-hidden shadow-[0_35px_80px_-60px_rgba(30,24,16,0.45)]">
+              <img src="/2242500ecee2019d2c913d6be87dc645865f15d5.png" alt="Tour location" className="w-full h-full object-cover" />
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
+
+
 
 export default TourDetailPage;
