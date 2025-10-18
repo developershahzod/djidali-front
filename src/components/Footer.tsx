@@ -45,32 +45,50 @@ const Footer: React.FC = () => {
             <h4 className="text-base font-normal mb-8 text-gray-900">{t('footer.section.tourTypes')}</h4>
             <ul className="space-y-4">
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.eco')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours?type=agro')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.agro')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours?type=team')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.teamBuilding')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours?type=sport')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.sportShooting')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours?type=hunting')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.hunting')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/tours?type=uzbekistan')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('footer.tourType.uzbekistan')}
                 </button>
               </li>
@@ -81,17 +99,26 @@ const Footer: React.FC = () => {
             <h4 className="text-base font-normal mb-8 text-gray-900">{t('footer.section.whyUs')}</h4>
             <ul className="space-y-4">
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/why-us#team')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('home.experience.team')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/why-us#comfort')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('home.experience.comfort')}
                 </button>
               </li>
               <li>
-                <button className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light">
+                <button
+                  onClick={() => navigate('/why-us#routes')}
+                  className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
+                >
                   {t('home.experience.routes')}
                 </button>
               </li>
@@ -127,10 +154,50 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-gray-200 pt-12">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-gray-500 text-base font-light">
-              © 2025 DjidaliTravel
+            <div className="text-gray-500 text-base font-light whitespace-pre-line">
+              {t('footer.addressFull')}
             </div>
-           
+            <div className="flex flex-col md:items-end gap-3 text-sm text-gray-500">
+              <span className="whitespace-pre-line">{t('footer.workingHours')}</span>
+              <div className="flex flex-wrap items-center gap-4 text-gray-600">
+                <button
+                  onClick={() => navigate('/')}
+                  className="hover:text-gray-900 transition-colors font-light"
+                >
+                  {t('footer.home')}
+                </button>
+                <button
+                  onClick={() => navigate('/about')}
+                  className="hover:text-gray-900 transition-colors font-light"
+                >
+                  {t('footer.aboutUs')}
+                </button>
+                <button
+                  onClick={() => navigate('/contact')}
+                  className="hover:text-gray-900 transition-colors font-light"
+                >
+                  {t('footer.contact')}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500">
+            <span>{t('footer.companyDesc')}</span>
+            <div className="flex flex-wrap items-center gap-4">
+              <button className="hover:text-gray-900 transition-colors font-light">
+                {t('footer.privacyPolicy')}
+              </button>
+              <button className="hover:text-gray-900 transition-colors font-light">
+                {t('footer.termsOfService')}
+              </button>
+              <button className="hover:text-gray-900 transition-colors font-light">
+                {t('footer.help')}
+              </button>
+            </div>
+            <span className="text-gray-600 font-light">{t('footer.connectWithUs')}</span>
+          </div>
+          <div className="mt-6 text-center text-gray-400 text-xs">
+            {t('footer.copyright')}
           </div>
         </div>
       </div>

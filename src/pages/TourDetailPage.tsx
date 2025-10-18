@@ -5,8 +5,6 @@ import { useTour } from '../hooks/useTours';
 import { useLanguage } from '../contexts/LanguageContext';
 import TourRegistrationForm from '../components/TourRegistrationForm';
 import { useAuth } from '../contexts/AuthContext';
-import { useOrderDetails } from '../contexts/OrderDetailsContext';
-import OrderDetailModal from '../components/OrderDetailModal';
 
 interface ItineraryItem {
   day: number;
@@ -17,7 +15,7 @@ interface ItineraryItem {
 const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, translate } = useLanguage();
   const { isAuthenticated } = useAuth();
   const { tour, loading, error } = useTour(id ?? null);
 
@@ -183,7 +181,7 @@ const TourDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F1E6] text-[#2A241C]">
+    <div className="min-h-screen bg-[#F5F1E6] text-[#2A241C] font-sans">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           {primaryImage && (
@@ -195,7 +193,7 @@ const TourDetailPage: React.FC = () => {
         <div className="relative max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 pt-40 pb-24 space-y-12 text-white">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -206,21 +204,21 @@ const TourDetailPage: React.FC = () => {
           <div className="space-y-6">
             <h1 className="text-[3.5rem] leading-[1.1] font-light max-w-3xl">{tour.title}</h1>
 
-            <div className="flex flex-wrap items-start gap-8">
+            <div className="flex flex-wrap items-start gap-8 text-white/90">
               {heroHighlights.map((item) => (
                 <div key={item.label} className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center">
                     {item.icon}
                   </div>
                   <div>
-                    <div className="text-lg font-light text-white">{item.value}</div>
-                    <div className="text-xs uppercase tracking-[0.3em] text-white/60 mt-1">{item.label}</div>
+                    <div className="text-lg font-light">{item.value}</div>
+                    <div className="text-xs text-white/70 mt-1">{item.label}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="text-sm text-white/75 uppercase tracking-[0.25em]">
+            <div className="text-sm text-white/70">
               {tour.location || t('tour.defaultDetailLocation')}
             </div>
           </div>
@@ -229,7 +227,7 @@ const TourDetailPage: React.FC = () => {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {capabilityCards.map((card) => (
                 <div key={card.title} className="rounded-[24px] border border-[#E4D7C0] px-6 py-5 bg-[#F9F4EA]">
-                  <div className="text-xs uppercase tracking-[0.35em] text-[#A38D66] mb-2">{card.title}</div>
+                  <div className="text-xs text-[#A38D66] opacity-80 mb-1">{card.title}</div>
                   <div className="text-lg font-medium text-[#2C2319]">{card.description}</div>
                 </div>
               ))}
@@ -239,7 +237,7 @@ const TourDetailPage: React.FC = () => {
               <div className="rounded-[28px] border border-[#E4D7C0] bg-[#FBF7F0] p-8 shadow-[0_28px_65px_-45px_rgba(38,28,18,0.45)]">
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-[#B4965A]/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-[#8F6E47]">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[#B4965A]/15 px-4 py-1 text-xs font-semibold text-[#8F6E47]">
                       {t('tour.bookingTitle')}
                     </span>
                     <p className="text-base leading-7 text-[#5A4A38]">
@@ -249,13 +247,13 @@ const TourDetailPage: React.FC = () => {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-[20px] border border-white/60 bg-white/80 p-4 shadow-inner">
-                      <div className="text-xs uppercase tracking-[0.32em] text-[#B4965A]">{t('tour.priceFrom')}</div>
+                      <div className="text-xs text-[#B4965A] uppercase">{t('tour.priceFrom')}</div>
                       <div className="mt-2 text-2xl font-semibold text-[#2C2319]">
                         {Number((typeof tour.price === 'object' ? tour.price?.amount : tour.price) ?? 0).toLocaleString('ru-RU')} UZS
                       </div>
                     </div>
                     <div className="rounded-[20px] border border-white/60 bg-white/80 p-4 shadow-inner">
-                      <div className="text-xs uppercase tracking-[0.32em] text-[#B4965A]">{t('tour.durationLabel')}</div>
+                      <div className="text-xs text-[#B4965A] uppercase">{t('tour.durationLabel')}</div>
                       <div className="mt-2 text-2xl font-semibold text-[#2C2319]">{tour.duration ?? 0} {t('tour.days')}</div>
                     </div>
                   </div>
@@ -299,7 +297,7 @@ const TourDetailPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleOpenRegistration}
-                  className="flex items-center justify-center gap-2 rounded-[18px] bg-[#B4965A] px-8 py-3 text-sm font-semibold uppercase tracking-[0.32em] text-white shadow-[0_18px_45px_-18px_rgба(44,32,18,0.65)] transition-all hover:-translate-y-[2px] hover:bg-[#A7894F]"
+                  className="flex items-center justify-center gap-2 rounded-[18px] bg-[#B4965A] px-8 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_-18px_rgба(44,32,18,0.65)] transition-all hover:-translate-y-[2px] hover:bg-[#A7894F]"
                 >
                   {isAuthenticated ? t('tour.bookNow') : t('tour.loginToBook')}
                 </button>
@@ -372,7 +370,7 @@ const TourDetailPage: React.FC = () => {
 
             <div className="space-y-6">
               {galleryImages[0] && (
-                <div className="h-[360px] rounded-[28px] overflow-hidden shadow-[0_35px_80px_-60px_rgba(30,24,16,0.55)]">
+                <div className="h-[360px] overflow-hidden shadow-[0_35px_80px_-60px_rgba(30,24,16,0.55)]">
                   <img src={galleryImages[0]} alt={tour.title} className="w-full h-full object-cover" />
                 </div>
               )}
@@ -381,7 +379,7 @@ const TourDetailPage: React.FC = () => {
                 {(galleryImages.length > 1 ? galleryImages.slice(1, 3) : [primaryImage, primaryImage])
                   .filter(Boolean)
                   .map((image, index) => (
-                    <div key={`gallery-${index}`} className="h-[260px] rounded-[24px] overflow-hidden shadow-[0_25px_70px_-55px_rgba(30,24,16,0.45)]">
+                    <div key={`gallery-${index}`} className="h-[260px] overflow-hidden shadow-[0_25px_70px_-55px_rgba(30,24,16,0.45)]">
                       <img src={image as string} alt={`${tour.title} момент ${index + 2}`} className="w-full h-full object-cover" />
                     </div>
                   ))}
@@ -428,14 +426,7 @@ const TourDetailPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-[#F1E9D9] py-24">
-          <div className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 space-y-10">
-            <h2 className="text-[2.8rem] leading-tight font-light text-[#2A241C]">Локация</h2>
-            <div className="rounded-[32px] overflow-hidden shadow-[0_35px_80px_-60px_rgba(30,24,16,0.45)]">
-              <img src="/2242500ecee2019d2c913d6be87dc645865f15d5.png" alt="Tour location" className="w-full h-full object-cover" />
-            </div>
-          </div>
-        </section>
+      
       </main>
     </div>
   );

@@ -15,6 +15,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import Footer from './components/Footer';
 import ScrollToTopButton from './components/ScrollToTopButton';
+import ScrollToTopOnRouteChange from './components/ScrollToTopOnRouteChange';
 import WhyUsPage from './pages/WhyUsPage';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
     <LanguageProvider>
       <AuthProvider>
         <div className="min-h-screen bg-[#F5F5F0]">
+          <ScrollToTopOnRouteChange />
           <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />

@@ -69,41 +69,38 @@ const WhyUsPage: React.FC = () => {
       </header>
 
       <main className="max-w-[1260px] mx-auto px-6 lg:px-12 xl:px-0 py-24 space-y-16">
-        <section className="space-y-8">
+        <section id="team" className="space-y-8">
           <div className="space-y-4">
             <h2 className="text-[3rem] font-light text-[#1C160D]">{t('whyUs.section1.title')}</h2>
             <p className="text-lg leading-8 text-[#51483B] max-w-3xl">{t('whyUs.section1.paragraph1')}</p>
             <p className="text-lg leading-8 text-[#51483B] max-w-3xl">{t('whyUs.section1.paragraph2')}</p>
           </div>
 
-          <div className="rounded-[32px] overflow-hidden bg-white shadow-[0_40px_80px_-60px_rgba(31,23,15,0.45)]">
+          <div className="bg-white shadow-[0_40px_80px_-60px_rgba(31,23,15,0.45)]">
             <img src="/photo_5445168424612397991_w.jpg" alt={t('whyUs.gallery.altForestPath')} className="w-full h-[420px] object-cover" />
           </div>
         </section>
 
-        <section className="space-y-8">
-          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">
-            Мы обеспечиваем безопасность, сопровождение и максимальный комфорт на каждом этапе. Маршруты DJIDALI подходят как для индивидуальных прогулок, так и для групповых туров. Вы можете выбрать лёгкие маршруты для спокойного отдыха или более насыщенные программы с элементами приключений.
-          </p>
+        <section id="routes" className="space-y-8">
+          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">{t('whyUs.section2.paragraph')}</p>
 
-            <div className="grid gap-6 md:grid-cols-2">
-            <img src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" alt="Горный пейзаж" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/ed4884c607a0c0a9448a1821b729baf1a9d7aac2 (1).png" alt="Тропа в ущелье" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/93522f075cfbf738bf0e6a03aae5960be5915125 (1).png" alt="Речная долина" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/7088cf1a8af0594b39ad37c91187893b3901bd02.png" alt="Скалистый маршрут" className="rounded-[24px] h-[300px] object-cover w-full" />
+          <div className="grid gap-6 md:grid-cols-2">
+            <img src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" alt={t('whyUs.gallery.altMountain')} className="h-[300px] object-cover w-full" />
+            <img src="/ed4884c607a0c0a9448a1821b729baf1a9d7aac2 (1).png" alt={t('whyUs.gallery.altCanyon')} className="h-[300px] object-cover w-full" />
+            <img src="/93522f075cfbf738bf0e6a03aae5960be5915125 (1).png" alt={t('whyUs.gallery.altRiverValley')} className="h-[300px] object-cover w-full" />
+            <img src="/7088cf1a8af0594b39ad37c91187893b3901bd02.png" alt={t('whyUs.gallery.altRockyRoute')} className="h-[300px] object-cover w-full" />
+            <img src="/photo_5445168424612397993_y.jpg" alt={t('whyUs.gallery.altLandscape')} className="h-[300px] object-cover w-full md:col-span-2" />
           </div>
         </section>
 
         <section className="space-y-8">
-          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">
-            DJIDALI — это не просто маршруты, а встречи с живой природой. Каждое путешествие — возможность почувствовать ритм Узбекистана, вдохнуть свежий воздух и оставить в сердце ощущение свободы.
-          </p>
+          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">{t('whyUs.section3.paragraph')}</p>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <img src="/photo_5445168424612397996_y.jpg" alt="Поле" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612397992_y.jpg" alt="Заросли" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612398617_w.jpg" alt="Пейзаж" className="rounded-[24px] h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612398006_m.jpg" alt="Лесной массив" className="rounded-[24px] h-[300px] object-cover w-full" />
+            <img src="/photo_5445168424612397996_y.jpg" alt={t('whyUs.gallery.altField')} className="h-[300px] object-cover w-full" />
+            <img src="/photo_5445168424612397992_y.jpg" alt={t('whyUs.gallery.altThicket')} className="h-[300px] object-cover w-full" />
+            <img src="/photo_5445168424612398617_w.jpg" alt={t('whyUs.gallery.altLandscape')} className="h-[300px] object-cover w-full" />
+            <img src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" alt={t('whyUs.gallery.altForestMassif')} className="h-[300px] object-cover w-full" />
           </div>
         </section>
       </main>
