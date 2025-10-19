@@ -18,6 +18,7 @@ export interface ApiTour {
   exclusions: string[];
   status: 'ACTIVE' | 'INACTIVE';
   isHidden: boolean;
+  type?: string;
   createdAt: string;
   updatedAt: string;
   orders?: Array<{

@@ -43,6 +43,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Montserrat', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       fontSize: {
         'display-1': ['4.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],

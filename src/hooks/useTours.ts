@@ -75,6 +75,7 @@ const convertApiTourToTour = (apiTour: ApiTour): Tour => {
     reviewCount: apiTour._count?.orders || 0,
     reviews_count: apiTour._count?.orders || 0,
     image: apiTour.images[0] || '',
+    type: apiTour.type,
     images: apiTour.images.map((url, idx) => ({
       id: idx,
       tour_id: apiTour.id,

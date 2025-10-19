@@ -43,6 +43,7 @@ export interface Tour {
   reviews_count?: number;
   image?: string;
   badge?: string;
+  type?: string;
   guide?: {
     name: string;
     avatar: string;
