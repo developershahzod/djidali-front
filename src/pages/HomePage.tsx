@@ -1,36 +1,10 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import { useTours } from '../hooks/useTours';
 import { getTourPrimaryImage } from '../utils/imageUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const experienceCardsConfig = [
-  {
-    id: 'why-us',
-    type: 'text'
-  },
-  {
-    id: 'team',
-    titleKey: 'home.experience.team',
-    image: '/7088cf1a8af0594b39ad37c91187893b3901bd02.png'
-  },
-  {
-    id: 'nature',
-    titleKey: 'home.experience.nature',
-    image: '/5c23a46fdfc50a24d0c3643979b5cb5f43cf5928.png'
-  },
-  {
-    id: 'comfort',
-    titleKey: 'home.experience.comfort',
-    image: '/2242500ecee2019d2c913d6be87dc645865f15d5.png'
-  },
-  {
-    id: 'routes',
-    titleKey: 'home.experience.routes',
-    image: '/ac5bf1e47e292f5b7f1042422f23e28abae08055.png'
-  }
-];
 
 const aboutImages = [
   '/about-background.png',
@@ -49,13 +23,6 @@ const HomePage: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const experienceCards = useMemo(
-    () => experienceCardsConfig.map((card) => ({
-      ...card,
-      title: card.titleKey ? t(card.titleKey) : undefined
-    })),
-    [t]
-  );
 
   const startImageRotation = useCallback(() => {
     // Очистка существующих интервалов
@@ -310,50 +277,111 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section id="why-us" className="max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 py-28">
-        <div className="flex flex-col gap-12">
-          <div className="flex items-end justify-between">
-            <div>
-              <span className="text-sm tracking-[0.3em] uppercase text-[#A38D66] block mb-5">{t('home.whyUs.label')}</span>
-              <h2 className="text-[3rem] leading-tight font-light text-[#1A160F]">{t('home.whyUs.heading')}</h2>
-            </div>
-            <div className="hidden md:flex items-center gap-3 text-[#7D715F]">
-              <div className="w-10 h-10 rounded-full bg-[#C5B08E] flex items-center justify-center text-white">
-                <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 4l7 6-7 6V4z" />
-                </svg>
+      <section id="why-us" className="w-full pt-0 pb-0">
+        {/* Container with fixed height for bento grid */}
+        <div className="relative w-full max-w-[1440px] mx-auto h-[1600px] hidden lg:block">
+          {/* Main card "Почему мы" - Top Left */}
+          <div className="absolute left-0 top-0 w-[705px] h-[450px] bg-[#8F7B49]">
+            {/* Icon */}
+            <div className="absolute left-[50px] top-[60px] w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center">
+              <div className="relative w-[40px] h-[40px]">
+                <img src="/why-us-icon1.svg" alt="" className="absolute inset-0 w-full h-full" />
+                <img src="/why-us-icon2.svg" alt="" className="absolute" style={{ top: '10%', left: '12.5%', width: '75%', height: '82.5%' }} />
               </div>
-              <span className="text-base">{t('home.whyUs.subtitle')}</span>
+            </div>
+            {/* Text content */}
+            <div className="absolute left-[50px] top-[220px] w-[615px] flex flex-col gap-[20px] text-white font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-[60px] leading-[60px] tracking-[-1.8px]">
+                {t('home.whyUs.mainTitle')}
+              </h2>
+              <p className="text-[16px] leading-[28px] tracking-[-0.48px]">
+                {t('home.whyUs.mainDescription')}
+              </p>
             </div>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div className="grid gap-8">
-              <div className="rounded-[32px] bg-[#C4AD84] text-white p-12 flex flex-col justify-between min-h-[320px]">
-                <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center mb-10">
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 19V5" />
-                    <path d="M5 12l7-7 7 7" />
-                  </svg>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-[2.5rem] leading-tight font-light">{t('home.whyUs.cardTitle')}</h3>
-                  <p className="text-lg text-white/80 leading-relaxed">
-                    {t('home.whyUs.cardDescription')}
-                  </p>
-                </div>
-              </div>
+          {/* Card "Знакомство с первозданной природой" - Middle Left */}
+          <div className="absolute left-0 top-[450px] w-[705px] h-[450px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-nature.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-[50px] top-[60px] w-[540px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.nature')}
+            </p>
+          </div>
 
-              <ExperienceCard {...experienceCards[2]} />
-            </div>
+          {/* Card "Комфортное проживание" - Bottom Left */}
+          <div className="absolute left-0 top-[900px] w-[705px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-comfort.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-[50px] top-[60px] w-[527px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.comfort')}
+            </p>
+          </div>
 
-            <div className="grid gap-8">
-              <ExperienceCard {...experienceCards[1]} />
-              <div className="grid gap-8 lg:grid-cols-2">
-                <ExperienceCard {...experienceCards[3]} />
-                <ExperienceCard {...experienceCards[4]} />
+          {/* Card "Команда специалистов" - Top Right */}
+          <div className="absolute left-[705px] top-0 w-[735px] h-[900px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-team.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-[50px] top-[60px] w-[397px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.team')}
+            </p>
+          </div>
+
+          {/* Card "Уникальные маршруты" - Bottom Right */}
+          <div className="absolute left-[705px] top-[900px] w-[735px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-routes.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-[50px] top-[60px] w-[399px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.routes')}
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile version - Stack vertically */}
+        <div className="flex flex-col gap-6 lg:hidden">
+          {/* Main card */}
+          <div className="w-full min-h-[400px] bg-[#8F7B49] rounded-[20px] p-8">
+            <div className="w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center mb-8">
+              <div className="relative w-[40px] h-[40px]">
+                <img src="/why-us-icon1.svg" alt="" className="absolute inset-0 w-full h-full" />
+                <img src="/why-us-icon2.svg" alt="" className="absolute" style={{ top: '10%', left: '12.5%', width: '75%', height: '82.5%' }} />
               </div>
             </div>
+            <h2 className="text-white text-[40px] leading-[48px] tracking-[-1.2px] font-medium mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.whyUs.mainTitle')}
+            </h2>
+            <p className="text-white text-[16px] leading-[28px] tracking-[-0.48px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.whyUs.mainDescription')}
+            </p>
+          </div>
+
+          {/* Image cards */}
+          <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
+            <img src="/why-us-nature.png" alt={t('home.experience.nature')} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.nature')}
+            </p>
+          </div>
+
+          <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
+            <img src="/why-us-team.png" alt={t('home.experience.team')} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.team')}
+            </p>
+          </div>
+
+          <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
+            <img src="/why-us-comfort.png" alt={t('home.experience.comfort')} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.comfort')}
+            </p>
+          </div>
+
+          <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
+            <img src="/why-us-routes.png" alt={t('home.experience.routes')} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
+            <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('home.experience.routes')}
+            </p>
           </div>
         </div>
       </section>
