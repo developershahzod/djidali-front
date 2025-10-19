@@ -1,16 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TourFilters } from '../pages/TourListPage';
 
-const labelClasses = 'block text-[0.6rem] font-semibold tracking-[0.35em] uppercase text-[#A28A66] mb-2';
-const selectClasses = 'w-full appearance-none bg-transparent text-[1.05rem] font-medium text-[#2F281F] outline-none';
-const cardWrapper = 'rounded-[20px] bg-white px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] border border-white/40';
+const labelClasses = 'block text-[14px] font-medium leading-[20px] text-[#333333] opacity-50 mb-0 tracking-[-0.28px]';
+const selectClasses = 'w-full appearance-none bg-transparent text-[22px] font-semibold leading-[24px] text-[#333333] outline-none tracking-[-0.44px]';
+const cardWrapper = 'rounded-[10px] bg-white px-[20px] py-[18px] border-2 border-solid border-white h-[80px] flex flex-col gap-[3px] items-start justify-start';
 
-const TourListHero: React.FC = () => {
+interface TourListHeroProps {
+  filters: TourFilters;
+  onFilterChange: (filters: Partial<TourFilters>) => void;
+  onSearch: () => void;
+}
+
+const TourListHero: React.FC<TourListHeroProps> = ({ filters, onFilterChange, onSearch }) => {
   const { t, translate } = useLanguage();
-  const [country, setCountry] = useState('tashkent');
-  const [tourType, setTourType] = useState('eco');
-  const [date, setDate] = useState('sep-12-20');
-  const [participants, setParticipants] = useState('family');
 
   const countryOptions = useMemo(
     () => [
@@ -53,86 +56,83 @@ const TourListHero: React.FC = () => {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#B4A785] text-white"
-      style={{
-        paddingTop: 260,
-        backgroundImage: "url('/image (9).png')",
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
-      }}
+      className="relative overflow-hidden bg-[#B4A785] text-white min-h-[700px] lg:h-[700px] pb-10 lg:pb-0"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-[#CBB48D]/60 via-[#BCA57F]/70 to-[#AF946B]/85" />
+      {/* Decorative Wave Element */}
+      <div className="hidden lg:block absolute left-[calc(50%+21px)] top-[99px] w-[1502px] h-[247px] -translate-x-1/2">
+        <img
+          src="/tour-hero-wave.svg"
+          alt=""
+          className="w-full h-full object-contain"
+        />
+      </div>
 
-      <div className="relative max-w-[1250px] mx-auto px-6 lg:px-12 xl:px-0 pt-16 pb-20">
-        <div className="rounded-[28px] bg-white/90 text-[#2A241C] px-6 py-8 lg:px-10 lg:py-10 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.45)]">
-          <div className="grid gap-4 md:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
-            <div className={cardWrapper}>
-              <label className={labelClasses}>{t('hero.countryLabel')}</label>
-              <select value={country} onChange={(event) => setCountry(event.target.value)} className={selectClasses}>
-                {countryOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={cardWrapper}>
-              <label className={labelClasses}>{t('hero.tourTypeLabel')}</label>
-              <select value={tourType} onChange={(event) => setTourType(event.target.value)} className={selectClasses}>
-                {tourTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={cardWrapper}>
-              <label className={labelClasses}>{t('hero.dateLabel')}</label>
-              <select value={date} onChange={(event) => setDate(event.target.value)} className={selectClasses}>
-                {dateOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={cardWrapper}>
-              <label className={labelClasses}>{t('hero.participantsLabel')}</label>
-              <select value={participants} onChange={(event) => setParticipants(event.target.value)} className={selectClasses}>
-                {participantOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button className="self-stretch rounded-[20px] bg-[#8B734E] px-10 text-lg font-medium text-white shadow-[0_18px_30px_-18px_rgba(139,115,78,0.8)] transition-transform hover:-translate-y-0.5 hover:bg-[#7B6341]">
-              {t('hero.findTours')}
-            </button>
+      {/* Search Container */}
+      <div className="relative lg:absolute lg:left-[50px] lg:top-[466px] lg:w-[1350px] px-6 lg:px-0 pt-[200px] lg:pt-0">
+        <div className="flex flex-col lg:flex-row gap-[10px] items-stretch lg:items-center">
+          {/* Country Field */}
+          <div className={`${cardWrapper} flex-1 min-w-0`}>
+            <label className={labelClasses}>{t('hero.countryLabel')}</label>
+            <select value={filters.country} onChange={(event) => onFilterChange({ country: event.target.value })} className={selectClasses}>
+              {countryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-12 mt-12 text-white/85 text-base">
-          <button className="flex items-center gap-3">
-            <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M3 5h14M5 10h10M7 15h6" />
-            </svg>
-            {t('filters.filter')}
+          {/* Tour Type Field */}
+          <div className={`${cardWrapper} flex-1 min-w-0`}>
+            <label className={labelClasses}>{t('hero.tourTypeLabel')}</label>
+            <select value={filters.tourType} onChange={(event) => onFilterChange({ tourType: event.target.value })} className={selectClasses}>
+              {tourTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date Field */}
+          <div className={`${cardWrapper} flex-1 min-w-0`}>
+            <label className={labelClasses}>{t('hero.dateLabel')}</label>
+            <select value={filters.date} onChange={(event) => onFilterChange({ date: event.target.value })} className={selectClasses}>
+              {dateOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Participants Field */}
+          <div className={`${cardWrapper} flex-1 min-w-0`}>
+            <label className={labelClasses}>{t('hero.participantsLabel')}</label>
+            <select value={filters.participants} onChange={(event) => onFilterChange({ participants: event.target.value })} className={selectClasses}>
+              {participantOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Search Button */}
+          <button
+            onClick={onSearch}
+            className="rounded-[10px] bg-[#8F7B49] w-[180px] h-[80px] flex items-center justify-center text-white text-[20px] font-bold leading-[20px] tracking-[-0.4px] transition-all hover:bg-[#7B6A3D]"
+          >
+            {t('hero.findTours')}
           </button>
-          <button className="flex items-center gap-3">
-            <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M3 10h14M3 6h14M3 14h14" />
-            </svg>
-            {t('filters.sort')}
-          </button>
-          <span className="ml-auto text-sm tracking-[0.3em] uppercase">{t('tourList.availableDirections')}</span>
         </div>
       </div>
+
+      {/* Available Directions Text */}
+      <p className="hidden lg:block absolute bottom-[50px] right-[50px] text-white text-[20px] leading-[28px] tracking-[-0.4px] text-right">
+        <span className="font-bold">{t('tourList.availableDirectionsBold')}</span>
+        <span className="font-light"> {t('tourList.availableDirectionsLight')}</span>
+      </p>
     </section>
   );
 };

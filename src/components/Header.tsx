@@ -68,7 +68,7 @@ const Header: React.FC = () => {
 
           <nav className="hidden lg:flex items-center space-x-2">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/about')}
               className="text-white/90 hover:text-white hover:bg-white/10 transition-all text-[14px] font-normal px-5 py-2.5 rounded-lg"
             >
               {t('nav.about')}
