@@ -20,9 +20,7 @@ const HeroSection: React.FC = () => {
   );
 
   return (
-    <div className="relative h-screen min-h-[800px] overflow-hidden" style={{
- 
-}}>
+    <div className="relative h-screen min-h-[clamp(600px,100vh,900px)] overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -32,22 +30,22 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-8 lg:px-16 h-full flex flex-col justify-center pb-0 pt-30">
-        <div className="mb-24">
-          <h1 className="text-[5.5rem] leading-[1.12] font-light text-white tracking-tight">
+      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-center pb-0 pt-30">
+        <div className="mb-[clamp(40px,6.67vw,96px)]">
+          <h1 className="text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
             DJIDALI — {t('hero.title')}<br />
             {t('hero.subtitle')}
           </h1>
         </div>
 
-        <div className="max-w-[1400px] w-full">
-          <div className="rounded-[20px] shadow-2xl pt-30 grid grid-cols-1 md:grid-cols-5 gap-4">
-<div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.countryLabel')}</label>
+        <div className="max-w-[min(1400px,100%)] w-full">
+          <div className="rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[clamp(12px,1.11vw,16px)]">
+<div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">{t('hero.countryLabel')}</label>
               <select
                 value={selectedCountry}
                 onChange={(event) => setSelectedCountry(event.target.value)}
-                className="w-full   bg-white text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
                 <option value="tashkent">{translate({ ru: 'Ташкент', uz: 'Toshkent', en: 'Tashkent' })}</option>
                 <option value="samarkand">{translate({ ru: 'Самарканд', uz: 'Samarqand', en: 'Samarkand' })}</option>
@@ -56,12 +54,12 @@ const HeroSection: React.FC = () => {
               </select>
             </div>
 
-<div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.dateLabel')}</label>
+            <div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">{t('hero.dateLabel')}</label>
               <select
                 value={selectedDate}
                 onChange={(event) => setSelectedDate(event.target.value)}
-                className="w-full   bg-white  rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
                 {dateOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -71,12 +69,12 @@ const HeroSection: React.FC = () => {
               </select>
             </div>
 
-            <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.participantsLabel')}</label>
+            <div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">{t('hero.participantsLabel')}</label>
               <select
                 value={selectedParticipants}
                 onChange={(event) => setSelectedParticipants(event.target.value)}
-                className="w-full   bg-white rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
                 <option value="family">{t('hero.participantsFamily')}</option>
                 <option value="solo">{t('hero.participantsSolo')}</option>
@@ -85,12 +83,12 @@ const HeroSection: React.FC = () => {
               </select>
             </div>
 
-            <div className="flex-1 bg-white bg-white rounded-xl pt-3 pl-3 pb-3 pr-3">
-              <label className="block text-[11px] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide color-white">{t('hero.tourTypeLabel')}</label>
+            <div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">{t('hero.tourTypeLabel')}</label>
               <select
                 value={selectedTourType}
                 onChange={(event) => setSelectedTourType(event.target.value)}
-                className="w-full   bg-white rounded-xl text-gray-900 text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
               >
                 <option value="eco">{t('hero.multiDay')}</option>
                 <option value="hunting">{t('hero.hunting')}</option>
@@ -101,7 +99,7 @@ const HeroSection: React.FC = () => {
 
             <button
               onClick={() => navigate('/tours')}
-              className="bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-8  rounded-xl text-[15px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center mt-0"
+              className="bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-[clamp(20px,2.22vw,32px)] py-[clamp(12px,1.11vw,16px)] rounded-xl text-[clamp(13px,1.04vw,15px)] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center sm:col-span-2 lg:col-span-1"
             >
               {t('hero.findTours')}
             </button>

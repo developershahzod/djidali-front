@@ -84,9 +84,10 @@ const HomePage: React.FC = () => {
       <HeroSection />
 
       <section id="about" ref={sectionRef} className="relative bg-white py-0 overflow-hidden">
-        <div className="relative h-[900px] max-w-[1440px] mx-auto">
-          {/* Background Image on the right */}
-          <div className="absolute h-[900px] right-0 top-0 w-[720px]">
+        {/* Desktop & Tablet Layout */}
+        <div className="hidden md:block relative h-[clamp(600px,62.5vw,900px)] w-full">
+          {/* Background Image on the right - full width container */}
+          <div className="absolute h-full right-0 top-0 w-[50vw] max-w-[720px]">
             <img
               src={aboutImages[activeImageIndex]}
               alt={t('home.about.imageAlt')}
@@ -95,12 +96,13 @@ const HomePage: React.FC = () => {
             />
           </div>
 
-          {/* Content */}
-          <div className="relative flex flex-col gap-[20px] items-start left-[50px] top-[80px] w-[540px] text-[#333333]">
-            <h2 className="font-medium leading-[60px] text-[60px] tracking-[-1.8px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          {/* Content - centered with max-width */}
+          <div className="relative h-full max-w-[min(1440px,100vw)] mx-auto">
+            <div className="absolute flex flex-col gap-[clamp(12px,1.39vw,20px)] items-start left-[clamp(20px,3.47vw,50px)] top-[clamp(40px,5.56vw,80px)] w-[clamp(300px,37.5vw,540px)] text-[#333333]">
+            <h2 className="font-medium leading-[1] text-[clamp(32px,4.17vw,60px)] tracking-[-0.03em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.about.title')}
             </h2>
-            <p className="font-normal leading-[40px] text-[32px] tracking-[-0.96px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="font-normal leading-[1.25] text-[clamp(18px,2.22vw,32px)] tracking-[-0.03em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               <span>{t('home.about.text1')}</span>
               <span className="text-[#8f7b49]">{t('home.about.highlight')}</span>
               <span>{t('home.about.text2')}</span>
@@ -108,7 +110,7 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Icon */}
-          <div className="absolute left-[26px] top-[564px] w-[130px] h-[130px]">
+          <div className="absolute left-[clamp(12px,1.81vw,26px)] top-[clamp(350px,39.17vw,564px)] w-[clamp(80px,9.03vw,130px)] h-[clamp(80px,9.03vw,130px)]">
             <div className="relative w-full h-full">
               <div className="absolute" style={{ inset: '23.46% 22.77% 22.05% 18.19%' }}>
                 <img src="/about-icon-group1.svg" alt="" className="w-full h-full object-contain" />
@@ -123,18 +125,17 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Bottom Text */}
-          <p className="absolute font-medium leading-[28px] left-[50px] text-[#333333] text-[16px] top-[702px] tracking-[-0.48px] w-[503px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="absolute font-medium leading-[1.75] left-[clamp(20px,3.47vw,50px)] text-[#333333] text-[clamp(14px,1.11vw,16px)] top-[clamp(450px,48.75vw,702px)] tracking-[-0.03em] w-[clamp(280px,34.93vw,503px)]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             {t('home.about.bottomText')}
           </p>
 
           {/* Pagination */}
-          <div className="absolute left-[50px] top-[850px] w-[380px] h-[3px] flex gap-[13px]">
+          <div className="absolute left-[clamp(20px,3.47vw,50px)] bottom-[clamp(30px,3.47vw,50px)] w-[clamp(200px,26.39vw,380px)] h-[3px] flex gap-[clamp(6px,0.9vw,13px)]">
             {aboutImages.map((_, index) => (
               <div
                 key={index}
-                className="relative h-[3px] rounded-full"
+                className="relative h-[3px] rounded-full flex-1"
                 style={{
-                  width: '117px',
                   background: 'rgba(51, 51, 51, 0.1)'
                 }}
               >
@@ -151,16 +152,87 @@ const HomePage: React.FC = () => {
               </div>
             ))}
           </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="md:hidden relative">
+          <div className="flex flex-col">
+            {/* Content First */}
+            <div className="px-6 py-12 text-[#333333]">
+              <h2 className="font-medium leading-[1.2] text-[32px] tracking-[-0.96px] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {t('home.about.title')}
+              </h2>
+              <p className="font-normal leading-[1.4] text-[18px] tracking-[-0.54px] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <span>{t('home.about.text1')}</span>
+                <span className="text-[#8f7b49]">{t('home.about.highlight')}</span>
+                <span>{t('home.about.text2')}</span>
+              </p>
+
+              {/* Icon on mobile */}
+              <div className="w-[80px] h-[80px] mb-6">
+                <div className="relative w-full h-full">
+                  <div className="absolute" style={{ inset: '23.46% 22.77% 22.05% 18.19%' }}>
+                    <img src="/about-icon-group1.svg" alt="" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="absolute" style={{ inset: '23.46% 36.57% 22.83% 22.64%' }}>
+                    <img src="/about-icon-group2.svg" alt="" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="absolute" style={{ inset: '21.7% 9.09% 41.62% 54.84%' }}>
+                    <img src="/about-icon-vector.svg" alt="" className="w-full h-full object-contain" />
+                  </div>
+                </div>
+              </div>
+
+              <p className="font-medium leading-[1.75] text-[#333333] text-[14px] tracking-[-0.42px] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {t('home.about.bottomText')}
+              </p>
+
+              {/* Pagination on mobile */}
+              <div className="w-full max-w-[300px] h-[3px] flex gap-[8px]">
+                {aboutImages.map((_, index) => (
+                  <div
+                    key={index}
+                    className="relative h-[3px] rounded-full flex-1"
+                    style={{
+                      background: 'rgba(51, 51, 51, 0.1)'
+                    }}
+                  >
+                    {index === activeImageIndex && (
+                      <div
+                        className="absolute top-0 left-0 h-full rounded-full"
+                        style={{
+                          width: `${progress}%`,
+                          background: '#333333',
+                          transition: 'width 0.05s linear'
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Below */}
+            <div className="relative h-[400px] w-full">
+              <img
+                src={aboutImages[activeImageIndex]}
+                alt={t('home.about.imageAlt')}
+                className="w-full h-full object-cover object-center"
+                style={{ transition: 'opacity 0.5s ease-in-out' }}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="tours" className="bg-[#F4F2ED] py-24">
-        <div className="max-w-[1440px] mx-auto px-[50px]">
-          <div className="flex items-end justify-between mb-[100px]">
-            <h2 className="font-medium leading-[60px] text-[60px] tracking-[-1.8px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <section id="tours" className="bg-[#F4F2ED] py-[clamp(40px,6.67vw,96px)]">
+        <div className="max-w-[min(1440px,100vw)] mx-auto px-[clamp(20px,3.47vw,50px)]">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-[clamp(40px,6.94vw,100px)] gap-4">
+            <h2 className="font-medium leading-[1] text-[clamp(32px,4.17vw,60px)] tracking-[-0.03em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.popular.heading')}
             </h2>
-            <p className="font-light leading-[28px] text-[20px] tracking-[-0.4px] text-[#333333] whitespace-nowrap" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="font-light leading-[1.4] text-[clamp(16px,1.39vw,20px)] tracking-[-0.02em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.popular.subtitle')}
             </p>
           </div>
@@ -190,70 +262,139 @@ const HomePage: React.FC = () => {
                     navigate(`/tour/${tour.id}`);
                   }
                 }}
-                className="group relative h-[295px] rounded-[20px] border-2 border-[silver] cursor-pointer transition-colors hover:bg-white hover:border-[#A5956D] focus:outline-none"
+                className="group relative rounded-[20px] border-2 border-[silver] cursor-pointer transition-colors hover:bg-white hover:border-[#A5956D] focus:outline-none overflow-hidden"
               >
-                {/* Левая часть - контент */}
-                <div className="absolute left-[40px] top-[40px] flex flex-col gap-[20px] w-[557px] text-[#333333]">
-                  <h3 className="font-medium leading-[40px] text-[32px] tracking-[-0.64px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {tour.title}
-                  </h3>
-                  <p className="font-normal leading-[24px] text-[20px] tracking-[-0.4px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {tour.location || t('tour.defaultLocation')}
-                  </p>
-                </div>
-
-                {/* Цена */}
-                <div className="absolute left-[40px] top-[191px] flex flex-col gap-[10px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  <p className="font-medium leading-[38px] text-[28px] tracking-[-0.56px]">
-                    {Number(tour.price || 0).toLocaleString('ru-RU')} UZS
-                  </p>
-                  <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px]">
-                    {t('home.popular.from')}
-                  </p>
-                </div>
-
-                {/* Вертикальный разделитель */}
-                <div className="absolute left-[278px] top-[193px] w-0 h-[63px] border-l border-[#333333] opacity-20"></div>
-
-                {/* Информация о туре */}
-                <div className="absolute left-[328px] top-[191px]">
-                  <div className="flex flex-col gap-[10px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    <p className="font-medium leading-[38px] text-[28px] tracking-[-0.56px] whitespace-nowrap">
-                      {t('home.popular.daysAndPeople')
-                        .replace('{duration}', String(tour.duration || 0))
-                        .replace('{people}', String(tour.max_participants || 15))}
+                {/* Desktop & Tablet Layout */}
+                <div className="hidden lg:block relative h-[clamp(240px,20.49vw,295px)]">
+                  {/* Левая часть - контент */}
+                  <div className="absolute left-[clamp(20px,2.78vw,40px)] top-[clamp(20px,2.78vw,40px)] flex flex-col gap-[clamp(12px,1.39vw,20px)] w-[clamp(320px,38.68vw,557px)] text-[#333333]">
+                    <h3 className="font-medium leading-[1.25] text-[clamp(20px,2.22vw,32px)] tracking-[-0.02em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      {tour.title}
+                    </h3>
+                    <p className="font-normal leading-[1.2] text-[clamp(14px,1.39vw,20px)] tracking-[-0.02em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      {tour.location || t('tour.defaultLocation')}
                     </p>
-                    <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px]">
-                      {t('home.popular.planIncludes')}
+                  </div>
+
+                  {/* Цена */}
+                  <div className="absolute left-[clamp(20px,2.78vw,40px)] bottom-[clamp(20px,2.78vw,40px)] flex flex-col gap-[clamp(6px,0.69vw,10px)] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em]">
+                      {Number(tour.price || 0).toLocaleString('ru-RU')} UZS
                     </p>
+                    <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
+                      {t('home.popular.from')}
+                    </p>
+                  </div>
+
+                  {/* Вертикальный разделитель */}
+                  <div className="absolute left-[clamp(140px,19.31vw,278px)] bottom-[clamp(22px,2.92vw,42px)] w-0 h-[clamp(40px,4.38vw,63px)] border-l border-[#333333] opacity-20"></div>
+
+                  {/* Информация о туре */}
+                  <div className="absolute left-[clamp(180px,22.78vw,328px)] bottom-[clamp(20px,2.78vw,40px)]">
+                    <div className="flex flex-col gap-[clamp(6px,0.69vw,10px)] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em] whitespace-nowrap">
+                        {t('home.popular.daysAndPeople')
+                          .replace('{duration}', String(tour.duration || 0))
+                          .replace('{people}', String(tour.max_participants || 15))}
+                      </p>
+                      <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
+                        {t('home.popular.planIncludes')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Правая часть - изображение */}
+                  <div className="absolute right-[clamp(12px,1.39vw,20px)] top-[clamp(12px,1.39vw,20px)] w-[clamp(280px,31.25vw,450px)] h-[clamp(216px,17.71vw,255px)] rounded-[20px] overflow-hidden">
+                    <img
+                      src={getTourPrimaryImage(tour)}
+                      alt={tour.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+
+                    {/* Бейдж категории */}
+                    {(tour.type || tour.badge) && (
+                      <div className="absolute bottom-[clamp(16px,2.22vw,32px)] right-[clamp(16px,2.22vw,32px)] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                        <p className="font-medium leading-[16px] text-[clamp(14px,1.11vw,16px)] tracking-[-0.02em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          {tour.type || tour.badge}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Кнопка-стрелка */}
+                  <div className="absolute left-[clamp(480px,57.85vw,833px)] top-1/2 -translate-y-1/2 w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] rounded-full bg-white flex items-center justify-center group-hover:bg-[#8F7B49] transition-colors">
+                    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors w-[clamp(28px,2.64vw,38px)] h-[clamp(28px,2.64vw,38px)]">
+                      <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                 </div>
 
-                {/* Правая часть - изображение */}
-                <div className="absolute right-[20px] top-[20px] w-[450px] h-[255px] rounded-[20px] overflow-hidden">
-                  <img
-                    src={getTourPrimaryImage(tour)}
-                    alt={tour.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+                {/* Mobile & Small Tablet Layout */}
+                <div className="lg:hidden relative">
+                  {/* Image on top */}
+                  <div className="relative w-full h-[250px] rounded-t-[20px] overflow-hidden">
+                    <img
+                      src={getTourPrimaryImage(tour)}
+                      alt={tour.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
 
-                  {/* Бейдж категории */}
-                  {(tour.type || tour.badge) && (
-                    <div className="absolute bottom-[32px] right-[32px] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
-                      <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        {tour.type || tour.badge}
+                    {/* Бейдж категории */}
+                    {(tour.type || tour.badge) && (
+                      <div className="absolute bottom-4 right-4 bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                        <p className="font-medium leading-[16px] text-[14px] tracking-[-0.28px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          {tour.type || tour.badge}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content below */}
+                  <div className="p-6 flex flex-col gap-4 text-[#333333]">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-medium leading-[1.3] text-[24px] tracking-[-0.48px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.title}
+                      </h3>
+                      <p className="font-normal leading-[1.4] text-[16px] tracking-[-0.32px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.location || t('tour.defaultLocation')}
                       </p>
                     </div>
-                  )}
-                </div>
 
-                {/* Кнопка-стрелка */}
-                <div className="absolute left-[833px] top-[107px] w-[80px] h-[80px] rounded-full bg-white flex items-center justify-center group-hover:bg-[#8F7B49] transition-colors">
-                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors">
-                    <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#333333]/10">
+                      <div className="flex flex-col gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
+                          {Number(tour.price || 0).toLocaleString('ru-RU')} UZS
+                        </p>
+                        <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
+                          {t('home.popular.from')}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
+                          {t('home.popular.daysAndPeople')
+                            .replace('{duration}', String(tour.duration || 0))
+                            .replace('{people}', String(tour.max_participants || 15))}
+                        </p>
+                        <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
+                          {t('home.popular.planIncludes')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Arrow button */}
+                    <div className="flex justify-end">
+                      <div className="w-[60px] h-[60px] rounded-full bg-white border-2 border-[silver] flex items-center justify-center group-hover:bg-[#8F7B49] group-hover:border-[#8F7B49] transition-colors">
+                        <svg width="28" height="28" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors">
+                          <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -265,9 +406,9 @@ const HomePage: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-[80px] flex justify-center">
+          <div className="mt-[clamp(40px,5.56vw,80px)] flex justify-center">
             <button
-              className="w-full border-2 border-[silver] rounded-[20px] px-[40px] py-[26px] flex items-center justify-center font-normal leading-[24px] text-[20px] tracking-[-0.4px] text-[#333333] hover:bg-white/70 transition-colors"
+              className="w-full border-2 border-[silver] rounded-[20px] px-[clamp(24px,2.78vw,40px)] py-[clamp(16px,1.81vw,26px)] flex items-center justify-center font-normal leading-[1.2] text-[clamp(16px,1.39vw,20px)] tracking-[-0.02em] text-[#333333] hover:bg-white/70 transition-colors"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
               onClick={() => navigate('/tours')}
             >
@@ -278,56 +419,56 @@ const HomePage: React.FC = () => {
       </section>
 
       <section id="why-us" className="w-full pt-0 pb-0">
-        {/* Container with fixed height for bento grid */}
-        <div className="relative w-full max-w-[1440px] mx-auto h-[1600px] hidden lg:block">
+        {/* Desktop Layout - Container with fixed height for bento grid */}
+        <div className="relative w-full h-[clamp(1000px,111.11vw,1600px)] max-w-[1440px] mx-auto hidden lg:block">
           {/* Main card "Почему мы" - Top Left */}
-          <div className="absolute left-0 top-0 w-[705px] h-[450px] bg-[#8F7B49]" aria-label="Why Us Section">
+          <div className="absolute left-0 top-0 w-[48.96%] max-w-[705px] h-[clamp(280px,31.25vw,450px)] bg-[#8F7B49]" aria-label="Why Us Section">
             {/* Icon */}
-            <div className="absolute left-[50px] top-[60px] w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center">
-              <div className="relative w-[40px] h-[40px]">
+            <div className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(35px,4.17vw,60px)] w-[clamp(50px,5.56vw,80px)] h-[clamp(50px,5.56vw,80px)] bg-[#333333] rounded-[45px] flex items-center justify-center">
+              <div className="relative w-[50%] h-[50%]">
                 <img src="/why-us-icon1.svg" alt="" className="absolute inset-0 w-full h-full" />
                 <img src="/why-us-icon2.svg" alt="" className="absolute" style={{ top: '10%', left: '12.5%', width: '75%', height: '82.5%' }} />
               </div>
             </div>
             {/* Text content */}
-            <div className="absolute left-[50px] top-[220px] w-[615px] flex flex-col gap-[20px] text-white font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              <h2 className="text-[60px] leading-[60px] tracking-[-1.8px]">
+            <div className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(130px,15.28vw,220px)] w-[clamp(380px,42.71vw,615px)] flex flex-col gap-[clamp(12px,1.39vw,20px)] text-white font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-[clamp(32px,4.17vw,60px)] leading-[1] tracking-[-0.03em]">
                 {t('home.whyUs.mainTitle')}
               </h2>
-              <p className="text-[16px] leading-[28px] tracking-[-0.48px]">
+              <p className="text-[clamp(14px,1.11vw,16px)] leading-[1.75] tracking-[-0.03em]">
                 {t('home.whyUs.mainDescription')}
               </p>
             </div>
           </div>
 
           {/* Card "Знакомство с первозданной природой" - Middle Left */}
-          <div className="absolute left-0 top-[450px] w-[705px] h-[450px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-nature.webp)', backgroundSize: 'cover', backgroundPosition: 'center top' }}>
+          <div className="absolute left-0 top-[clamp(280px,31.25vw,450px)] w-[48.96%] max-w-[705px] h-[clamp(280px,31.25vw,450px)] overflow-hidden" style={{ backgroundImage: 'url(/why-us-nature.webp)', backgroundSize: 'cover', backgroundPosition: 'center top' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
-            <p className="absolute left-[50px] top-[60px] w-[540px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(35px,4.17vw,60px)] w-[clamp(320px,37.5vw,540px)] text-white text-[clamp(24px,2.78vw,40px)] leading-[1.2] tracking-[-0.02em] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.nature')}
             </p>
           </div>
 
           {/* Card "Комфортное проживание" - Bottom Left */}
-          <div className="absolute left-0 top-[900px] w-[705px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-comfort.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute left-0 top-[clamp(560px,62.5vw,900px)] w-[48.96%] max-w-[705px] h-[clamp(440px,48.61vw,700px)] overflow-hidden" style={{ backgroundImage: 'url(/why-us-comfort.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
-            <p className="absolute left-[50px] top-[60px] w-[527px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(35px,4.17vw,60px)] w-[clamp(310px,36.6vw,527px)] text-white text-[clamp(24px,2.78vw,40px)] leading-[1.2] tracking-[-0.02em] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.comfort')}
             </p>
           </div>
 
           {/* Card "Команда специалистов" - Top Right */}
-          <div className="absolute left-[705px] top-0 w-[735px] h-[900px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-team.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute right-0 top-0 w-[51.04%] max-w-[735px] h-[clamp(560px,62.5vw,900px)] overflow-hidden" style={{ backgroundImage: 'url(/why-us-team.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
-            <p className="absolute left-[50px] top-[60px] w-[397px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(35px,4.17vw,60px)] w-[clamp(240px,27.57vw,397px)] text-white text-[clamp(24px,2.78vw,40px)] leading-[1.2] tracking-[-0.02em] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.team')}
             </p>
           </div>
 
           {/* Card "Уникальные маршруты" - Bottom Right */}
-          <div className="absolute left-[705px] top-[900px] w-[735px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-routes.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute right-0 top-[clamp(560px,62.5vw,900px)] w-[51.04%] max-w-[735px] h-[clamp(440px,48.61vw,700px)] overflow-hidden" style={{ backgroundImage: 'url(/why-us-routes.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
-            <p className="absolute left-[50px] top-[60px] w-[399px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="absolute left-[clamp(30px,3.47vw,50px)] top-[clamp(35px,4.17vw,60px)] w-[clamp(240px,27.71vw,399px)] text-white text-[clamp(24px,2.78vw,40px)] leading-[1.2] tracking-[-0.02em] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.routes')}
             </p>
           </div>

@@ -83,8 +83,8 @@ const TourListPage: React.FC = () => {
         onSearch={handleSearch}
       />
 
-      <main className="bg-[#F4F2ED] py-24">
-        <div className="max-w-[1440px] mx-auto px-[50px]">
+      <main className="bg-[#F4F2ED] py-[clamp(40px,6.67vw,96px)]">
+        <div className="max-w-[min(1440px,100vw)] mx-auto px-[clamp(20px,3.47vw,50px)]">
           {loading && (
             <div className="flex justify-center py-16">
               <LoadingSpinner size="lg" color="emerald" />
@@ -110,59 +110,117 @@ const TourListPage: React.FC = () => {
                     navigate(`/tour/${tour.id}`);
                   }
                 }}
-                className="group relative h-[295px] rounded-[20px] border-2 border-[silver] cursor-pointer transition-colors hover:bg-white hover:border-[#A5956D] focus:outline-none"
+                className="group relative rounded-[20px] border-2 border-[silver] cursor-pointer transition-colors hover:bg-white hover:border-[#A5956D] focus:outline-none overflow-hidden"
               >
-                {/* Левая часть - контент */}
-                <div className="absolute left-[40px] top-[40px] flex flex-col gap-[20px] w-[557px] text-[#333333]">
-                  <h3 className="font-medium leading-[40px] text-[32px] tracking-[-0.64px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {tour.title}
-                  </h3>
-                  <p className="font-normal leading-[24px] text-[20px] tracking-[-0.4px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {tour.location || t('tour.defaultLocation')}
-                  </p>
-                </div>
-
-                {/* Цена */}
-                <div className="absolute left-[40px] top-[191px] flex flex-col gap-[10px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  <p className="font-medium leading-[38px] text-[28px] tracking-[-0.56px]">
-                    {Number((typeof tour.price === 'object' ? tour.price?.amount : tour.price) || 0).toLocaleString('ru-RU')} UZS
-                  </p>
-                  <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px]">
-                    {t('tour.from')}
-                  </p>
-                </div>
-
-                {/* Вертикальный разделитель */}
-                <div className="absolute left-[278px] top-[193px] w-0 h-[63px] border-l border-[#333333] opacity-20"></div>
-
-                {/* Информация о туре */}
-                <div className="absolute left-[328px] top-[191px]">
-                  <div className="flex flex-col gap-[10px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    <p className="font-medium leading-[38px] text-[28px] tracking-[-0.56px] whitespace-nowrap">
-                      {tour.duration || 0} {t('tour.days')}, {t('tour.upTo')} {(tour.max_participants ?? (tour as any).maxParticipants ?? 15)} {t('tour.people')}
+                {/* Desktop & Tablet Layout */}
+                <div className="hidden lg:block relative h-[clamp(240px,20.49vw,295px)]">
+                  {/* Левая часть - контент */}
+                  <div className="absolute left-[clamp(20px,2.78vw,40px)] top-[clamp(20px,2.78vw,40px)] flex flex-col gap-[clamp(12px,1.39vw,20px)] w-[clamp(320px,38.68vw,557px)] text-[#333333]">
+                    <h3 className="font-medium leading-[1.25] text-[clamp(20px,2.22vw,32px)] tracking-[-0.02em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      {tour.title}
+                    </h3>
+                    <p className="font-normal leading-[1.2] text-[clamp(14px,1.39vw,20px)] tracking-[-0.02em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      {tour.location || t('tour.defaultLocation')}
                     </p>
-                    <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px]">
-                      {t('home.popular.planIncludes')}
+                  </div>
+
+                  {/* Цена */}
+                  <div className="absolute left-[clamp(20px,2.78vw,40px)] bottom-[clamp(20px,2.78vw,40px)] flex flex-col gap-[clamp(6px,0.69vw,10px)] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em]">
+                      {Number((typeof tour.price === 'object' ? (tour.price as any)?.amount : tour.price) || 0).toLocaleString('ru-RU')} UZS
                     </p>
+                    <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
+                      {t('tour.from')}
+                    </p>
+                  </div>
+
+                  {/* Вертикальный разделитель */}
+                  <div className="absolute left-[clamp(140px,19.31vw,278px)] bottom-[clamp(22px,2.92vw,42px)] w-0 h-[clamp(40px,4.38vw,63px)] border-l border-[#333333] opacity-20"></div>
+
+                  {/* Информация о туре */}
+                  <div className="absolute left-[clamp(180px,22.78vw,328px)] bottom-[clamp(20px,2.78vw,40px)]">
+                    <div className="flex flex-col gap-[clamp(6px,0.69vw,10px)] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em] whitespace-nowrap">
+                        {tour.duration || 0} {t('tour.days')}, {t('tour.upTo')} {(tour.max_participants ?? (tour as any).maxParticipants ?? 15)} {t('tour.people')}
+                      </p>
+                      <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
+                        {t('home.popular.planIncludes')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Правая часть - изображение */}
+                  <div className="absolute right-[clamp(12px,1.39vw,20px)] top-[clamp(12px,1.39vw,20px)] w-[clamp(280px,31.25vw,450px)] h-[clamp(216px,17.71vw,255px)] rounded-[20px] overflow-hidden">
+                    <img
+                      src={getTourPrimaryImage(tour)}
+                      alt={tour.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+                  </div>
+
+                  {/* Кнопка-стрелка */}
+                  <div className="absolute left-[clamp(480px,57.85vw,833px)] top-1/2 -translate-y-1/2 w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] rounded-full bg-white flex items-center justify-center group-hover:bg-[#8F7B49] transition-colors">
+                    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors w-[clamp(28px,2.64vw,38px)] h-[clamp(28px,2.64vw,38px)]">
+                      <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                 </div>
 
-                {/* Правая часть - изображение */}
-                <div className="absolute right-[20px] top-[20px] w-[450px] h-[255px] rounded-[20px] overflow-hidden">
-                  <img
-                    src={getTourPrimaryImage(tour)}
-                    alt={tour.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
-                </div>
+                {/* Mobile & Small Tablet Layout */}
+                <div className="lg:hidden relative">
+                  {/* Image on top */}
+                  <div className="relative w-full h-[250px] rounded-t-[20px] overflow-hidden">
+                    <img
+                      src={getTourPrimaryImage(tour)}
+                      alt={tour.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+                  </div>
 
-                {/* Кнопка-стрелка */}
-                <div className="absolute left-[833px] top-[107px] w-[80px] h-[80px] rounded-full bg-white flex items-center justify-center group-hover:bg-[#8F7B49] transition-colors">
-                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors">
-                    <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  {/* Content below */}
+                  <div className="p-6 flex flex-col gap-4 text-[#333333]">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-medium leading-[1.3] text-[24px] tracking-[-0.48px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.title}
+                      </h3>
+                      <p className="font-normal leading-[1.4] text-[16px] tracking-[-0.32px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.location || t('tour.defaultLocation')}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#333333]/10">
+                      <div className="flex flex-col gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
+                          {Number((typeof tour.price === 'object' ? (tour.price as any)?.amount : tour.price) || 0).toLocaleString('ru-RU')} UZS
+                        </p>
+                        <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
+                          {t('tour.from')}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
+                          {tour.duration || 0} {t('tour.days')}, {(tour.max_participants ?? (tour as any).maxParticipants ?? 15)} {t('tour.people')}
+                        </p>
+                        <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
+                          {t('home.popular.planIncludes')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Arrow button */}
+                    <div className="flex justify-end">
+                      <div className="w-[60px] h-[60px] rounded-full bg-white border-2 border-[silver] flex items-center justify-center group-hover:bg-[#8F7B49] group-hover:border-[#8F7B49] transition-colors">
+                        <svg width="28" height="28" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#333333] group-hover:text-white transition-colors">
+                          <path d="M6.33334 19H31.6667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M22.1667 9.5L31.6667 19L22.1667 28.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
@@ -175,9 +233,9 @@ const TourListPage: React.FC = () => {
           )}
 
           {!loading && !error && tours.length > 0 && hasMoreTours && (
-            <div className="mt-[80px] flex justify-center">
+            <div className="mt-[clamp(40px,5.56vw,80px)] flex justify-center">
               <button
-                className="w-full border-2 border-[silver] rounded-[20px] px-[40px] py-[26px] flex items-center justify-center font-normal leading-[24px] text-[20px] tracking-[-0.4px] text-[#333333] hover:bg-white/70 transition-colors"
+                className="w-full border-2 border-[silver] rounded-[20px] px-[clamp(24px,2.78vw,40px)] py-[clamp(16px,1.81vw,26px)] flex items-center justify-center font-normal leading-[1.2] text-[clamp(16px,1.39vw,20px)] tracking-[-0.02em] text-[#333333] hover:bg-white/70 transition-colors"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
                 onClick={handleLoadMore}
               >

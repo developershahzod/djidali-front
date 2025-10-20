@@ -27,7 +27,7 @@ const WhyUsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1C160D]">
-      <header className="relative h-[900px] overflow-hidden">
+      <header className="relative h-[clamp(600px,62.5vw,900px)] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
@@ -41,21 +41,21 @@ const WhyUsPage: React.FC = () => {
         {/* Hero Content */}
         <div className="relative z-10 h-full">
           {/* Title and Description */}
-          <div className="absolute left-[50px] top-[210px] w-[1340px] text-white">
+          <div className="absolute left-[clamp(20px,3.47vw,50px)] top-[clamp(100px,14.58vw,210px)] w-[clamp(90%,93.06vw,1340px)] text-white">
             <h1
-              className="text-[90px] font-medium leading-[100px] mb-[20px]"
+              className="text-[clamp(40px,6.25vw,90px)] font-medium leading-[1.11] mb-[clamp(12px,1.39vw,20px)]"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                letterSpacing: '-2.7px'
+                letterSpacing: '-0.03em'
               }}
             >
               {t('whyUs.hero.title')}
             </h1>
             <p
-              className="text-[32px] font-normal leading-[40px] opacity-80 whitespace-pre-wrap"
+              className="text-[clamp(18px,2.22vw,32px)] font-normal leading-[1.25] opacity-80 whitespace-pre-wrap"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                letterSpacing: '-0.96px'
+                letterSpacing: '-0.03em'
               }}
             >
               {t('whyUs.hero.description')}
@@ -63,24 +63,24 @@ const WhyUsPage: React.FC = () => {
           </div>
 
           {/* Statistics */}
-          <div className="absolute left-[50px] top-[722px] flex gap-[80px] text-white">
+          <div className="absolute left-[clamp(20px,3.47vw,50px)] top-[clamp(400px,50.14vw,722px)] flex flex-col md:flex-row gap-[clamp(30px,5.56vw,80px)] text-white">
             {heroStats.map((stat, index) => (
-              <div key={index} className="w-[304px]">
+              <div key={index} className="w-[clamp(180px,21.11vw,304px)]">
                 <div
-                  className="mb-[10px] whitespace-nowrap"
+                  className="mb-[clamp(6px,0.69vw,10px)] whitespace-nowrap"
                   style={{
                     fontFamily: 'Montserrat, sans-serif',
-                    letterSpacing: '-1px'
+                    letterSpacing: '-0.0125em'
                   }}
                 >
-                  <span className="text-[80px] font-normal leading-[80px]">{stat.value}</span>
-                  <span className="text-[50px] font-extralight leading-[80px]"> {stat.suffix}</span>
+                  <span className="text-[clamp(50px,5.56vw,80px)] font-normal leading-[1]">{stat.value}</span>
+                  <span className="text-[clamp(30px,3.47vw,50px)] font-extralight leading-[1]"> {stat.suffix}</span>
                 </div>
                 <p
-                  className="text-[20px] font-light leading-[28px]"
+                  className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4]"
                   style={{
                     fontFamily: 'Montserrat, sans-serif',
-                    letterSpacing: '-0.4px'
+                    letterSpacing: '-0.02em'
                   }}
                 >
                   {stat.label}
@@ -92,23 +92,23 @@ const WhyUsPage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="bg-[#F5F5F0] px-[50px] py-[80px]">
+      <main className="bg-[#F5F5F0] px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)]">
         {/* Section 1: Discover unique itineraries */}
-        <section className="flex flex-col gap-[40px] mb-[80px]">
+        <section className="flex flex-col gap-[clamp(20px,2.78vw,40px)] mb-[clamp(40px,5.56vw,80px)]">
           <h2
-            className="text-[60px] font-medium leading-[60px] text-[#333333]"
+            className="text-[clamp(32px,4.17vw,60px)] font-medium leading-[1] text-[#333333]"
             style={{
               fontFamily: 'Montserrat, sans-serif',
-              letterSpacing: '-1.8px'
+              letterSpacing: '-0.03em'
             }}
           >
             {t('whyUs.section1.title')}
           </h2>
           <div
-            className="text-[24px] font-normal leading-[40px] text-[#333333]"
+            className="text-[clamp(16px,1.67vw,24px)] font-normal leading-[1.67] text-[#333333]"
             style={{
               fontFamily: 'Montserrat, sans-serif',
-              letterSpacing: '-0.48px'
+              letterSpacing: '-0.02em'
             }}
           >
             <p className="mb-0">{t('whyUs.section1.text1')}</p>
@@ -118,12 +118,12 @@ const WhyUsPage: React.FC = () => {
         </section>
 
         {/* Section 2: Routes for everyone */}
-        <section className="mb-[80px]">
+        <section className="mb-[clamp(40px,5.56vw,80px)]">
           <div
-            className="text-[24px] font-normal leading-[40px] text-[#333333]"
+            className="text-[clamp(16px,1.67vw,24px)] font-normal leading-[1.67] text-[#333333]"
             style={{
               fontFamily: 'Montserrat, sans-serif',
-              letterSpacing: '-0.48px'
+              letterSpacing: '-0.02em'
             }}
           >
             <p className="mb-0">{t('whyUs.section2.text1')}</p>
@@ -132,22 +132,22 @@ const WhyUsPage: React.FC = () => {
         </section>
 
         {/* Section 3: DJIDALI philosophy */}
-        <section className="mb-[80px]">
-          <div className="flex flex-col gap-[12px]">
+        <section className="mb-[clamp(40px,5.56vw,80px)]">
+          <div className="flex flex-col gap-[clamp(8px,0.83vw,12px)]">
             <h3
-              className="text-[32px] font-medium leading-[40px] text-[#333333]"
+              className="text-[clamp(24px,2.22vw,32px)] font-medium leading-[1.25] text-[#333333]"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                letterSpacing: '-0.64px'
+                letterSpacing: '-0.02em'
               }}
             >
               {t('whyUs.section3.title')}
             </h3>
             <p
-              className="text-[24px] font-normal leading-[40px] text-[#333333]"
+              className="text-[clamp(16px,1.67vw,24px)] font-normal leading-[1.67] text-[#333333]"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                letterSpacing: '-0.48px'
+                letterSpacing: '-0.02em'
               }}
             >
               {t('whyUs.section3.text')}
@@ -158,7 +158,7 @@ const WhyUsPage: React.FC = () => {
         {/* Gallery */}
         <section>
           {/* Top Image */}
-          <div className="relative h-[500px] w-full rounded-t-[20px] overflow-hidden">
+          <div className="relative h-[clamp(300px,34.72vw,500px)] w-full rounded-t-[20px] overflow-hidden">
             <img
               src="/why-us-gallery-top.webp"
               alt={t('whyUs.gallery.altForestPath')}
@@ -167,15 +167,15 @@ const WhyUsPage: React.FC = () => {
           </div>
 
           {/* Bottom Images */}
-          <div className="flex">
-            <div className="relative w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
+          <div className="flex flex-col md:flex-row">
+            <div className="relative w-full md:w-1/2 h-[clamp(350px,40.69vw,586px)] overflow-hidden md:rounded-bl-[20px] rounded-b-[20px] md:rounded-br-none">
               <img
                 src="/why-us-gallery-bottom-left.webp"
                 alt={t('whyUs.gallery.altRiverValley')}
                 className="absolute w-full h-full object-cover"
               />
             </div>
-            <div className="relative w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
+            <div className="relative w-full md:w-1/2 h-[clamp(350px,40.69vw,586px)] overflow-hidden rounded-b-[20px] md:rounded-bl-none md:rounded-br-[20px]">
               <img
                 src="/why-us-gallery-bottom-right.webp"
                 alt={t('whyUs.gallery.altMountain')}
