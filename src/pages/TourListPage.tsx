@@ -155,15 +155,6 @@ const TourListPage: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
-
-                  {/* Бейдж категории */}
-                  {(tour.category?.name || (tour as any).badge || (tour as any).type) && (
-                    <div className="absolute bottom-[32px] right-[32px] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
-                      <p className="font-medium leading-[16px] text-[16px] tracking-[-0.32px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        {tour.category?.name || (tour as any).badge || (tour as any).type || 'Экотуризм'}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 {/* Кнопка-стрелка */}

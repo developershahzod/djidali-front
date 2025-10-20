@@ -6,101 +6,182 @@ const WhyUsPage: React.FC = () => {
 
   const heroStats = useMemo(
     () => [
-      { value: '180', subtitle: t('whyUs.hero.statTravelers') },
-      { value: '64+', subtitle: t('whyUs.hero.statPackages') },
-      { value: '10+', subtitle: t('whyUs.hero.statYears') }
+      {
+        value: t('whyUs.hero.stat1Value'),
+        suffix: t('whyUs.hero.stat1Suffix'),
+        label: t('whyUs.hero.stat1Label')
+      },
+      {
+        value: t('whyUs.hero.stat2Value'),
+        suffix: t('whyUs.hero.stat2Suffix'),
+        label: t('whyUs.hero.stat2Label')
+      },
+      {
+        value: t('whyUs.hero.stat3Value'),
+        suffix: t('whyUs.hero.stat3Suffix'),
+        label: t('whyUs.hero.stat3Label')
+      }
     ],
     [t]
   );
 
-  const heroChips = useMemo(
-    () => [
-      { label: t('whyUs.hero.primaryCta'), primary: true },
-      { label: t('home.experience.nature') },
-      { label: t('home.experience.comfort') },
-      { label: t('home.experience.team') }
-    ],
-    [t]
-  );
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1C160D]">
-      <header className="relative h-[620px] overflow-hidden pt-36">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/23e816450b81f83b8e9040941056ad7b494b194b.png')" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+      <header className="relative h-[900px] overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img
+            src="/why-us-hero.png"
+            alt=""
+            className="absolute w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-[1260px] mx-auto px-6 lg:px-12 xl:px-0 h-full flex flex-col justify-between py-24">
-          <div className="flex items-center justify-between text-white text-sm tracking-[0.3em] uppercase">
-            <span>{t('whyUs.hero.tagline')}</span>
-            <div className="flex items-center gap-6">
-              {heroStats.map((item, index) => (
-                <React.Fragment key={item.value}>
-                  {index > 0 && <span className="h-10 w-px bg-white/20 hidden lg:block" />}
-                  <span className="hidden lg:flex items-center gap-2 text-white/80">
-                    <span className="text-[2.8rem] leading-none font-medium text-white">{item.value}</span>
-                    <span className="text-xs uppercase tracking-[0.35em]">{item.subtitle}</span>
-                  </span>
-                </React.Fragment>
-              ))}
-            </div>
+        {/* Hero Content */}
+        <div className="relative z-10 h-full">
+          {/* Title and Description */}
+          <div className="absolute left-[50px] top-[210px] w-[1340px] text-white">
+            <h1
+              className="text-[90px] font-medium leading-[100px] mb-[20px]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '-2.7px'
+              }}
+            >
+              {t('whyUs.hero.title')}
+            </h1>
+            <p
+              className="text-[32px] font-normal leading-[40px] opacity-80 whitespace-pre-wrap"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '-0.96px'
+              }}
+            >
+              {t('whyUs.hero.description')}
+            </p>
           </div>
 
-          <div className="max-w-[720px] space-y-6 text-white">
-            <h1 className="text-[3.5rem] leading-[1.15] font-light">{t('whyUs.hero.title')}</h1>
-            <p className="text-lg text-white/80">{t('whyUs.hero.description')}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            {heroChips.map(({ label, primary }) => (
-              <button
-                key={label}
-                className={`px-6 py-3 rounded-full text-sm uppercase tracking-[0.2em] ${
-                  primary ? 'bg-[#9F865C] shadow-lg text-white' : 'bg-white/15 text-white'
-                }`}
-              >
-                {label}
-              </button>
+          {/* Statistics */}
+          <div className="absolute left-[50px] top-[722px] flex gap-[80px] text-white">
+            {heroStats.map((stat, index) => (
+              <div key={index} className="w-[304px]">
+                <div
+                  className="mb-[10px] whitespace-nowrap"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    letterSpacing: '-1px'
+                  }}
+                >
+                  <span className="text-[80px] font-normal leading-[80px]">{stat.value}</span>
+                  <span className="text-[50px] font-extralight leading-[80px]"> {stat.suffix}</span>
+                </div>
+                <p
+                  className="text-[20px] font-light leading-[28px]"
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    letterSpacing: '-0.4px'
+                  }}
+                >
+                  {stat.label}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </header>
 
-      <main className="max-w-[1260px] mx-auto px-6 lg:px-12 xl:px-0 py-24 space-y-16">
-        <section id="team" className="space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-[3rem] font-light text-[#1C160D]">{t('whyUs.section1.title')}</h2>
-            <p className="text-lg leading-8 text-[#51483B] max-w-3xl">{t('whyUs.section1.paragraph1')}</p>
-            <p className="text-lg leading-8 text-[#51483B] max-w-3xl">{t('whyUs.section1.paragraph2')}</p>
-          </div>
-
-          <div className="bg-white shadow-[0_40px_80px_-60px_rgba(31,23,15,0.45)]">
-            <img src="/photo_5445168424612397991_w.jpg" alt={t('whyUs.gallery.altForestPath')} className="w-full h-[420px] object-cover" />
+      {/* Main Content */}
+      <main className="bg-[#F5F5F0] px-[50px] py-[80px]">
+        {/* Section 1: Discover unique itineraries */}
+        <section className="flex flex-col gap-[40px] mb-[80px]">
+          <h2
+            className="text-[60px] font-medium leading-[60px] text-[#333333]"
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              letterSpacing: '-1.8px'
+            }}
+          >
+            {t('whyUs.section1.title')}
+          </h2>
+          <div
+            className="text-[24px] font-normal leading-[40px] text-[#333333]"
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              letterSpacing: '-0.48px'
+            }}
+          >
+            <p className="mb-0">{t('whyUs.section1.text1')}</p>
+            <p className="mb-0">{t('whyUs.section1.text2')}</p>
+            <p>{t('whyUs.section1.text3')}</p>
           </div>
         </section>
 
-        <section id="routes" className="space-y-8">
-          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">{t('whyUs.section2.paragraph')}</p>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <img src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" alt={t('whyUs.gallery.altMountain')} className="h-[300px] object-cover w-full" />
-            <img src="/ed4884c607a0c0a9448a1821b729baf1a9d7aac2 (1).png" alt={t('whyUs.gallery.altCanyon')} className="h-[300px] object-cover w-full" />
-            <img src="/93522f075cfbf738bf0e6a03aae5960be5915125 (1).png" alt={t('whyUs.gallery.altRiverValley')} className="h-[300px] object-cover w-full" />
-            <img src="/7088cf1a8af0594b39ad37c91187893b3901bd02.png" alt={t('whyUs.gallery.altRockyRoute')} className="h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612397993_y.jpg" alt={t('whyUs.gallery.altLandscape')} className="h-[300px] object-cover w-full md:col-span-2" />
+        {/* Section 2: Routes for everyone */}
+        <section className="mb-[80px]">
+          <div
+            className="text-[24px] font-normal leading-[40px] text-[#333333]"
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              letterSpacing: '-0.48px'
+            }}
+          >
+            <p className="mb-0">{t('whyUs.section2.text1')}</p>
+            <p>{t('whyUs.section2.text2')}</p>
           </div>
         </section>
 
-        <section className="space-y-8">
-          <p className="text-lg leading-8 text-[#51483B] max-w-4xl">{t('whyUs.section3.paragraph')}</p>
+        {/* Section 3: DJIDALI philosophy */}
+        <section className="mb-[80px]">
+          <div className="flex flex-col gap-[12px]">
+            <h3
+              className="text-[32px] font-medium leading-[40px] text-[#333333]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '-0.64px'
+              }}
+            >
+              {t('whyUs.section3.title')}
+            </h3>
+            <p
+              className="text-[24px] font-normal leading-[40px] text-[#333333]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '-0.48px'
+              }}
+            >
+              {t('whyUs.section3.text')}
+            </p>
+          </div>
+        </section>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <img src="/photo_5445168424612397996_y.jpg" alt={t('whyUs.gallery.altField')} className="h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612397992_y.jpg" alt={t('whyUs.gallery.altThicket')} className="h-[300px] object-cover w-full" />
-            <img src="/photo_5445168424612398617_w.jpg" alt={t('whyUs.gallery.altLandscape')} className="h-[300px] object-cover w-full" />
-            <img src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" alt={t('whyUs.gallery.altForestMassif')} className="h-[300px] object-cover w-full" />
+        {/* Gallery */}
+        <section>
+          {/* Top Image */}
+          <div className="relative h-[500px] w-full rounded-t-[20px] overflow-hidden">
+            <img
+              src="/why-us-gallery-top.png"
+              alt={t('whyUs.gallery.altForestPath')}
+              className="absolute w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Bottom Images */}
+          <div className="flex">
+            <div className="relative w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
+              <img
+                src="/why-us-gallery-bottom-left.png"
+                alt={t('whyUs.gallery.altRiverValley')}
+                className="absolute w-full h-full object-cover"
+              />
+            </div>
+            <div className="relative w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
+              <img
+                src="/why-us-gallery-bottom-right.png"
+                alt={t('whyUs.gallery.altMountain')}
+                className="absolute w-full h-full object-cover"
+              />
+            </div>
           </div>
         </section>
       </main>
