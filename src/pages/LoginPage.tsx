@@ -163,7 +163,7 @@ const LoginPage: React.FC = () => {
           <div className="" aria-hidden />
 
             <div className="mb-10 space-y-4 text-center">
-              <img src="/svgviewer-png-output.png" alt="DJIDALI ECOLOGICAL TOURISM" className="mx-auto h-14 w-auto" />
+              <img src="/svgviewer-png-output.webp" alt="DJIDALI ECOLOGICAL TOURISM" className="mx-auto h-14 w-auto" />
               <div>
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-2 rounded-full bg-[#F1E3D0]/70 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#8F6E47]">

@@ -28,7 +28,7 @@ const WelcomeLoader: React.FC<WelcomeLoaderProps> = ({ onComplete }) => {
         <div className="mb-8 animate-fade-in">
           <div className="relative inline-block">
             <img
-              src="/svgviewer-png-output.png"
+              src="/svgviewer-png-output.webp"
               alt="DJIDALI ECOLOGICAL TOURISM"
               className="h-24 w-auto mx-auto mb-6 animate-bounce-slow"
             />

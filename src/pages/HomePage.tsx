@@ -7,9 +7,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 
 const aboutImages = [
-  '/about-background.png',
-  '/2242500ecee2019d2c913d6be87dc645865f15d5.png',
-  '/ac5bf1e47e292f5b7f1042422f23e28abae08055.png'
+  '/about-background.webp',
+  '/2242500ecee2019d2c913d6be87dc645865f15d5.webp',
+  '/ac5bf1e47e292f5b7f1042422f23e28abae08055.webp'
 ];
 
 const HomePage: React.FC = () => {
@@ -281,7 +281,7 @@ const HomePage: React.FC = () => {
         {/* Container with fixed height for bento grid */}
         <div className="relative w-full max-w-[1440px] mx-auto h-[1600px] hidden lg:block">
           {/* Main card "Почему мы" - Top Left */}
-          <div className="absolute left-0 top-0 w-[705px] h-[450px] bg-[#8F7B49]">
+          <div className="absolute left-0 top-0 w-[705px] h-[450px] bg-[#8F7B49]" aria-label="Why Us Section">
             {/* Icon */}
             <div className="absolute left-[50px] top-[60px] w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center">
               <div className="relative w-[40px] h-[40px]">
@@ -301,7 +301,7 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Card "Знакомство с первозданной природой" - Middle Left */}
-          <div className="absolute left-0 top-[450px] w-[705px] h-[450px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-nature.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }}>
+          <div className="absolute left-0 top-[450px] w-[705px] h-[450px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-nature.webp)', backgroundSize: 'cover', backgroundPosition: 'center top' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-[50px] top-[60px] w-[540px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.nature')}
@@ -309,7 +309,7 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Card "Комфортное проживание" - Bottom Left */}
-          <div className="absolute left-0 top-[900px] w-[705px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-comfort.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute left-0 top-[900px] w-[705px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-comfort.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-[50px] top-[60px] w-[527px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.comfort')}
@@ -317,7 +317,7 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Card "Команда специалистов" - Top Right */}
-          <div className="absolute left-[705px] top-0 w-[735px] h-[900px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-team.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute left-[705px] top-0 w-[735px] h-[900px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-team.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-[50px] top-[60px] w-[397px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.team')}
@@ -325,7 +325,7 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Card "Уникальные маршруты" - Bottom Right */}
-          <div className="absolute left-[705px] top-[900px] w-[735px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-routes.png)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
+          <div className="absolute left-[705px] top-[900px] w-[735px] h-[700px] overflow-hidden" style={{ backgroundImage: 'url(/why-us-routes.webp)', backgroundSize: 'cover', backgroundPosition: 'center center' }}>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-[50px] top-[60px] w-[399px] text-white text-[40px] leading-[48px] tracking-[-0.8px] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.routes')}
@@ -353,7 +353,7 @@ const HomePage: React.FC = () => {
 
           {/* Image cards */}
           <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
-            <img src="/why-us-nature.png" alt={t('home.experience.nature')} className="absolute inset-0 w-full h-full object-cover" />
+            <img src="/why-us-nature.webp" alt={t('home.experience.nature')} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.nature')}
@@ -361,7 +361,7 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
-            <img src="/why-us-team.png" alt={t('home.experience.team')} className="absolute inset-0 w-full h-full object-cover" />
+            <img src="/why-us-team.webp" alt={t('home.experience.team')} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.team')}
@@ -369,7 +369,7 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
-            <img src="/why-us-comfort.png" alt={t('home.experience.comfort')} className="absolute inset-0 w-full h-full object-cover" />
+            <img src="/why-us-comfort.webp" alt={t('home.experience.comfort')} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.comfort')}
@@ -377,7 +377,7 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="relative w-full h-[400px] rounded-[20px] overflow-hidden">
-            <img src="/why-us-routes.png" alt={t('home.experience.routes')} className="absolute inset-0 w-full h-full object-cover" />
+            <img src="/why-us-routes.webp" alt={t('home.experience.routes')} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {t('home.experience.routes')}

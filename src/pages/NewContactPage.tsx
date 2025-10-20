@@ -50,7 +50,7 @@ const NewContactPage: React.FC = () => {
 
           <div className="relative min-h-[520px]">
             <img
-              src="/photo_5445168424612397991_w.jpg"
+              src="/photo_5445168424612397991_w.webp"
               alt={t('contact.mapImageAlt')}
               className="absolute inset-0 h-full w-full object-cover"
             />

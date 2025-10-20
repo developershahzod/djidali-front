@@ -59,7 +59,7 @@ const Header: React.FC = () => {
           <div className="flex items-center flex-shrink-0" style={{ width: '220px' }}>
             <button onClick={handleLogoClick} className="flex items-center space-x-3 focus:outline-none">
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="DJIDALI"
                 className="h-[50px] w-auto cursor-pointer hover:opacity-90 transition-opacity"
               />

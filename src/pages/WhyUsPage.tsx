@@ -31,7 +31,7 @@ const WhyUsPage: React.FC = () => {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
-            src="/why-us-hero.png"
+            src="/why-us-hero.webp"
             alt=""
             className="absolute w-full h-full object-cover"
           />
@@ -160,7 +160,7 @@ const WhyUsPage: React.FC = () => {
           {/* Top Image */}
           <div className="relative h-[500px] w-full rounded-t-[20px] overflow-hidden">
             <img
-              src="/why-us-gallery-top.png"
+              src="/why-us-gallery-top.webp"
               alt={t('whyUs.gallery.altForestPath')}
               className="absolute w-full h-full object-cover"
             />
@@ -170,14 +170,14 @@ const WhyUsPage: React.FC = () => {
           <div className="flex">
             <div className="relative w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
               <img
-                src="/why-us-gallery-bottom-left.png"
+                src="/why-us-gallery-bottom-left.webp"
                 alt={t('whyUs.gallery.altRiverValley')}
                 className="absolute w-full h-full object-cover"
               />
             </div>
             <div className="relative w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
               <img
-                src="/why-us-gallery-bottom-right.png"
+                src="/why-us-gallery-bottom-right.webp"
                 alt={t('whyUs.gallery.altMountain')}
                 className="absolute w-full h-full object-cover"
               />
