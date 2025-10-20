@@ -1,19 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import Footer from '../components/Footer';
 
 const NewAboutPage: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
   const teamMembers = [
-    { name: t('aboutPage.team.member1.name'), role: t('aboutPage.team.member1.role'), image: '/about-team-1.png' },
-    { name: t('aboutPage.team.member2.name'), role: t('aboutPage.team.member2.role'), image: '/about-team-2.png' },
-    { name: t('aboutPage.team.member3.name'), role: t('aboutPage.team.member3.role'), image: '/about-team-3.png' },
-    { name: t('aboutPage.team.member4.name'), role: t('aboutPage.team.member4.role'), image: '/about-team-4.png' },
-    { name: t('aboutPage.team.member5.name'), role: t('aboutPage.team.member5.role'), image: '/about-team-5.png' },
-    { name: t('aboutPage.team.member6.name'), role: t('aboutPage.team.member6.role'), image: '/about-team-6.png' },
+    { name: t('aboutPage.team.member1.name'), role: t('aboutPage.team.member1.role'), image: '/about-team-1.webp' },
+    { name: t('aboutPage.team.member2.name'), role: t('aboutPage.team.member2.role'), image: '/about-team-2.webp' },
+    { name: t('aboutPage.team.member3.name'), role: t('aboutPage.team.member3.role'), image: '/about-team-3.webp' },
+    { name: t('aboutPage.team.member4.name'), role: t('aboutPage.team.member4.role'), image: '/about-team-4.webp' },
+    { name: t('aboutPage.team.member5.name'), role: t('aboutPage.team.member5.role'), image: '/about-team-5.webp' },
+    { name: t('aboutPage.team.member6.name'), role: t('aboutPage.team.member6.role'), image: '/about-team-6.webp' },
   ];
 
   return (
@@ -21,7 +20,7 @@ const NewAboutPage: React.FC = () => {
       {/* Hero Section */}
       <div className="absolute h-[900px] left-0 overflow-clip right-0 top-0">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-          <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/about-hero.png" />
+          <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/about-hero.webp" />
           <div className="absolute bg-[rgba(0,0,0,0.5)] inset-0" />
         </div>
 
@@ -57,7 +56,7 @@ const NewAboutPage: React.FC = () => {
       {/* Help Section */}
       <div className="absolute bg-white h-[900px] left-0 right-0 top-[900px]">
         <div className="absolute h-[900px] right-0 top-0 w-[720px]">
-          <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src="/about-help-image.png" />
+          <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src="/about-help-image.webp" />
         </div>
 
         <div className="absolute content-stretch flex flex-col gap-[40px] items-start left-[50px] top-[80px] w-[636px]">
@@ -110,7 +109,7 @@ const NewAboutPage: React.FC = () => {
       {/* Video Section */}
       <div className="absolute h-[700px] left-[50px] top-[1850px] w-[1340px]">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[20px]">
-          <img alt="" className="absolute max-w-none object-50%-50% object-cover rounded-[20px] size-full" src="/professionals-video-bg.png" />
+          <img alt="" className="absolute max-w-none object-50%-50% object-cover rounded-[20px] size-full" src="/professionals-video-bg.webp" />
           <div className="absolute bg-[rgba(0,0,0,0.2)] inset-0 rounded-[20px]" />
         </div>
       </div>
@@ -170,7 +169,7 @@ const NewAboutPage: React.FC = () => {
         </div>
 
         <div className="absolute h-[650px] right-[720px] top-0 w-[720px]">
-          <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src="/about-professionals-image.png" />
+          <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src="/about-professionals-image.webp" />
         </div>
 
         {/* Earth Icon */}
@@ -232,7 +231,7 @@ const NewAboutPage: React.FC = () => {
             <div className="absolute h-[900px] left-0 top-0 w-[705px]">
               <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 overflow-hidden">
-                  <img alt="" className="absolute h-full left-[-2.01%] max-w-none top-0 w-[170.21%]" src="/gallery-dalverzin.png" />
+                  <img alt="" className="absolute h-full left-[-2.01%] max-w-none top-0 w-[170.21%]" src="/gallery-dalverzin.webp" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
               </div>
@@ -251,7 +250,7 @@ const NewAboutPage: React.FC = () => {
           <div className="absolute h-[450px] left-[705px] top-0 w-[735px]">
             <div className="absolute h-[450px] left-0 top-0 w-[735px]">
               <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/gallery-kyzylkum.png" />
+                <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/gallery-kyzylkum.webp" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
               </div>
             </div>
@@ -295,7 +294,7 @@ const NewAboutPage: React.FC = () => {
           <div className="absolute h-[700px] left-[705px] top-[900px] w-[735px]">
             <div className="absolute h-[700px] left-0 top-0 w-[735px]">
               <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/gallery-charvak.png" />
+                <img alt="" className="absolute max-w-none object-50%-50% object-cover size-full" src="/gallery-charvak.webp" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
               </div>
             </div>
@@ -319,11 +318,6 @@ const NewAboutPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="absolute left-0 top-[6650px] w-full">
-        <Footer />
       </div>
     </div>
   );
