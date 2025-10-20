@@ -18,7 +18,7 @@ const NewAboutPage: React.FC = () => {
   return (
     <div className="bg-[#f4f2ed]">
       {/* Hero Section */}
-      <header className="relative h-[clamp(700px,62.5vw,900px)] overflow-hidden">
+      <header className="relative min-h-screen h-[clamp(700px,62.5vw,900px)] overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img alt="" className="w-full h-full object-cover" src="/about-hero.webp" />
