@@ -624,7 +624,25 @@ const translations = {
     'userDashboard.status.cancelled': 'Cancelled',
     'userDashboard.payment.paid': 'Paid',
     'userDashboard.payment.waiting': 'Waiting',
-    'userDashboard.payment.rejected': 'Rejected'
+    'userDashboard.payment.rejected': 'Rejected',
+    
+    // Payment Modal
+    'paymentModal.title': 'Complete Payment',
+    'paymentModal.securePayment': 'Secure payment system',
+    'paymentModal.paymentAmount': 'Payment amount',
+    'paymentModal.order': 'Order',
+    'paymentModal.orderNumber': 'Order number',
+    'paymentModal.clickPayment': 'Payment via Click',
+    'paymentModal.allBanks': 'All Uzbekistan banks',
+    'paymentModal.instruction': 'Click the button to pay and enter card details on Click page',
+    'paymentModal.opening': 'Payment page opening...',
+    'paymentModal.pay': 'Pay',
+    'paymentModal.security': 'Click secure payment system. All data is encrypted',
+    'paymentModal.error': 'Payment creation error',
+    'paymentModal.unknownError': 'Unknown error',
+    'paymentModal.success.title': 'Payment page opened!',
+    'paymentModal.success.description': 'Payment page opened in a new window via Click. Complete the payment.',
+    'paymentModal.paymentCompleted': 'Payment Completed'
   },
   ru: {
     // Header
@@ -1234,7 +1252,25 @@ const translations = {
     'userDashboard.status.cancelled': 'Отменено',
     'userDashboard.payment.paid': 'Оплачено',
     'userDashboard.payment.waiting': 'Ожидание',
-    'userDashboard.payment.rejected': 'Отклонено'
+    'userDashboard.payment.rejected': 'Отклонено',
+    
+    // Payment Modal
+    'paymentModal.title': 'Завершить оплату',
+    'paymentModal.securePayment': 'Безопасная система оплаты',
+    'paymentModal.paymentAmount': 'Сумма оплаты',
+    'paymentModal.order': 'Заказ',
+    'paymentModal.orderNumber': 'Номер заказа',
+    'paymentModal.clickPayment': 'Оплата через Click',
+    'paymentModal.allBanks': 'Все банки Узбекистана',
+    'paymentModal.instruction': 'Нажмите кнопку для оплаты и введите данные карты на странице Click',
+    'paymentModal.opening': 'Открывается страница оплаты...',
+    'paymentModal.pay': 'Оплатить',
+    'paymentModal.security': 'Click безопасная система оплаты. Все данные зашифрованы',
+    'paymentModal.error': 'Ошибка создания оплаты',
+    'paymentModal.unknownError': 'Неизвестная ошибка',
+    'paymentModal.success.title': 'Страница оплаты открыта!',
+    'paymentModal.success.description': 'Страница оплаты открылась в новом окне через Click. Завершите оплату.',
+    'paymentModal.paymentCompleted': 'Оплата завершена'
   },
   uz: {
     // Header
@@ -1844,7 +1880,25 @@ const translations = {
     'userDashboard.status.cancelled': 'Bekor qilingan',
     'userDashboard.payment.paid': 'To\'langan',
     'userDashboard.payment.waiting': 'Kutilmoqda',
-    'userDashboard.payment.rejected': 'Rad etilgan'
+    'userDashboard.payment.rejected': 'Rad etilgan',
+    
+    // Payment Modal
+    'paymentModal.title': 'To\'lovni amalga oshirish',
+    'paymentModal.securePayment': 'Xavfsiz to\'lov tizimi',
+    'paymentModal.paymentAmount': 'To\'lov summasi',
+    'paymentModal.order': 'Buyurtma',
+    'paymentModal.orderNumber': 'Buyurtma raqami',
+    'paymentModal.clickPayment': 'Click orqali to\'lov',
+    'paymentModal.allBanks': 'Barcha O\'zbekiston banklari',
+    'paymentModal.instruction': 'To\'lov uchun tugmani bosing va Click sahifasida karta ma\'lumotlarini kiriting',
+    'paymentModal.opening': 'To\'lov sahifasi ochilmoqda...',
+    'paymentModal.pay': 'to\'lash',
+    'paymentModal.security': 'Click xavfsiz to\'lov tizimi. Barcha ma\'lumotlar shifrlangan',
+    'paymentModal.error': 'To\'lov yaratishda xatolik',
+    'paymentModal.unknownError': 'Noma\'lum xatolik',
+    'paymentModal.success.title': 'To\'lov sahifasi ochildi!',
+    'paymentModal.success.description': 'Click orqali to\'lov sahifasi yangi oynada ochildi. To\'lovni yakunlang.',
+    'paymentModal.paymentCompleted': 'To\'lov yakunlandi'
   }
 };
 
