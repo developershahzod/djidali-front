@@ -9,6 +9,7 @@ import TourDetailPage from './pages/TourDetailPage';
 import CategoryPage from './components/CategoryPage';
 import NewAboutPage from './pages/NewAboutPage';
 import NewContactPage from './pages/NewContactPage';
+import EcotourismPage from './pages/EcotourismPage';
 import WishlistPage from './pages/WishlistPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/category/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
             <Route path="/about" element={<NewAboutPage />} />
             <Route path="/contact" element={<NewContactPage />} />
+            <Route path="/ecotourism" element={<EcotourismPage />} />
             <Route path="/why-us" element={<WhyUsPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/login" element={<LoginPage />} />

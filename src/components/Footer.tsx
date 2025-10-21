@@ -46,10 +46,10 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li>
                 <button
-                  onClick={() => navigate('/tours')}
+                  onClick={() => navigate('/ecotourism')}
                   className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
                 >
-                  {t('footer.tourType.eco')}
+                  Экотуризм
                 </button>
               </li>
               <li>

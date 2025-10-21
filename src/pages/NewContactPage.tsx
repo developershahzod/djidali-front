@@ -279,7 +279,6 @@ const NewContactPage: React.FC = () => {
           />
         </div>
       </div>
-
       {/* Location Section - 1340x600px */}
       <div className="px-[50px] py-[80px]">
         <div className="max-w-[1340px] mx-auto flex flex-col gap-[40px]">
