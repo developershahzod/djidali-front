@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getTourPrimaryImage } from '../utils/imageUtils';
 import { useTour } from '../hooks/useTours';
 import { useLanguage } from '../contexts/LanguageContext';
-import TourRegistrationForm from '../components/TourRegistrationForm';
+import { useAuth } from '../contexts/AuthContext';
+import { djidaliApi, ApiOrder } from '../services/djidaliApi';
+import PaymentModal from '../components/PaymentModal';
 
 interface ItineraryItem {
   day: number;
@@ -14,19 +16,17 @@ interface ItineraryItem {
 const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { tour, loading, error } = useTour(id ?? null);
   const [activeDay, setActiveDay] = useState<number | null>(null);
-  const [showRegistration, setShowRegistration] = useState(false);
-  const [tourType, setTourType] = useState('Экотуризм');
-
-  const tourTypes = [
-    'Экотуризм',
-    'Агротуризм',
-    'Тимбилдинг',
-    'Спортивная стрельба',
-    'Охотничий туризм',
-    'Туры по Узбекистану'
-  ];
+  const [participants, setParticipants] = useState(1);
+  const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<ApiOrder | null>(null);
   
   const primaryImage = useMemo(() => (tour ? getTourPrimaryImage(tour) : ''), [tour]);
 
@@ -63,6 +63,49 @@ const TourDetailPage: React.FC = () => {
     return [];
   }, [tour]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBookingError('');
+
+    if (!isAuthenticated) {
+      setBookingError('Buyurtma berish uchun tizimga kirish talab qilinadi');
+      navigate('/login');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const tourId = tour?.id;
+      if (!tourId) {
+        throw new Error('Tur ma\'lumotlari noto\'g\'ri');
+      }
+
+      const order = await djidaliApi.createOrder({
+        tourId: tourId.toString(),
+        participants: participants,
+        notes: notes || undefined,
+      });
+
+      setCreatedOrder(order);
+      setShowPayment(true);
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Nomalum xatolik';
+      setBookingError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePaymentComplete = () => {
+    setBookingSuccess(true);
+    setShowPayment(false);
+    setParticipants(1);
+    setNotes('');
+    setTimeout(() => setBookingSuccess(false), 5000);
+  };
+
   useEffect(() => {
     if (itineraryItems.length > 0 && activeDay === null) {
       setActiveDay(itineraryItems[0].day);
@@ -81,16 +124,31 @@ const TourDetailPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#f4f2ed] flex items-center justify-center px-6">
         <div className="max-w-xl text-center space-y-6">
-          <h2 className="text-[2rem] font-light text-[#333333]">Не удалось загрузить тур</h2>
-          <p className="text-base text-[#666]">{error || 'Попробуйте обновить страницу'}</p>
+          <h2 className="text-[2rem] font-light text-[#333333]">{t('tourDetail.error.title')}</h2>
+          <p className="text-base text-[#666]">{error || t('tourDetail.error.refresh')}</p>
         </div>
       </div>
     );
   }
 
+  const tourPrice = (typeof tour.price === 'object' && (tour.price as any)?.amount) || (typeof tour.price === 'number' ? tour.price : 0);
+  const totalAmount = tourPrice * participants;
+
   return (
-    <div className="min-h-screen bg-[#f4f2ed] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      {/* Hero Section */}
+    <>
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPayment}
+        onClose={() => setShowPayment(false)}
+        amount={totalAmount}
+        currency="UZS"
+        orderNumber={createdOrder?.orderNumber || createdOrder?.id}
+        orderId={createdOrder?.id || ''}
+        onPaymentComplete={handlePaymentComplete}
+      />
+
+      <div className="min-h-screen bg-[#f4f2ed] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        {/* Hero Section */}
       <section className="relative overflow-hidden h-[900px]">
         <div className="absolute inset-0">
           {primaryImage && <img src={primaryImage} alt={tour.title} className="w-full h-full object-cover" />}
@@ -104,7 +162,7 @@ const TourDetailPage: React.FC = () => {
 
         {/* Location */}
         <a href="#location" className="absolute top-[816px] left-[1053px] text-white underline text-[20px]" style={{ letterSpacing: '-0.4px' }}>
-          {tour.location || 'Локация'}
+          {tour.location || t('tourDetail.location')}
         </a>
 
         {/* Stats */}
@@ -122,7 +180,7 @@ const TourDetailPage: React.FC = () => {
                 <span className="text-[40px] font-extralight">UZS</span>
               </div>
               <div className="text-[20px] font-light leading-[28px]" style={{ letterSpacing: '-0.4px' }}>
-                Стоимость программы
+                {t('tourDetail.programCost')}
               </div>
             </div>
           </div>
@@ -138,10 +196,10 @@ const TourDetailPage: React.FC = () => {
             <div className="flex flex-col gap-[10px] text-white">
               <div className="text-[50px] font-medium leading-[50px]" style={{ letterSpacing: '-1px' }}>
                 {tour.duration ?? 0}{' '}
-                <span className="text-[40px] font-extralight">дней</span>
+                <span className="text-[40px] font-extralight">{t('tourDetail.days')}</span>
               </div>
               <div className="text-[20px] font-light leading-[28px]" style={{ letterSpacing: '-0.4px' }}>
-                Продолжительность тура
+                {t('tourDetail.tourDuration')}
               </div>
             </div>
           </div>
@@ -153,71 +211,105 @@ const TourDetailPage: React.FC = () => {
         {/* Tour Details */}
         <div className="absolute top-[80px] left-[50px] right-[50px] flex justify-between items-center max-w-full">
           <div className="flex flex-col gap-[10px] w-[234px]">
-            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>Людей</div>
+            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>{t('tourDetail.people')}</div>
             <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>
-              макс. {tour.max_participants ?? 10}
+              maks. {tour.max_participants ?? 10}
             </div>
           </div>
           <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
           <div className="flex flex-col gap-[10px] w-[234px]">
-            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>Минимальный возраст</div>
-            <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>от 12 лет</div>
-          </div>
-          <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
-          <div className="flex flex-col gap-[10px] flex-1">
-            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>Тип тура</div>
-            <select
-              value={tourType}
-              onChange={(e) => setTourType(e.target.value)}
-              className="text-[20px] font-medium leading-[28px] bg-transparent border-none outline-none cursor-pointer"
-              style={{ letterSpacing: '-0.4px', fontFamily: 'Montserrat, sans-serif' }}
-            >
-              {tourTypes.map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
+            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>{t('tourDetail.minAge')}</div>
+            <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>{t('tourDetail.minAgeValue')}</div>
           </div>
           <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
           <div className="flex flex-col gap-[10px] w-[234px]">
-            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>Сложность</div>
-            <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>Легкое</div>
+            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>{t('tourDetail.tourType')}</div>
+            <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>
+              {tour.category?.name || t('tourDetail.ecotourism')}
+            </div>
+          </div>
+          <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
+          <div className="flex flex-col gap-[10px] w-[234px]">
+            <div className="text-[20px] leading-[24px]" style={{ letterSpacing: '-0.4px' }}>{t('tourDetail.difficulty')}</div>
+            <div className="text-[32px] font-medium leading-[40px]" style={{ letterSpacing: '-0.64px' }}>{t('tourDetail.easy')}</div>
           </div>
         </div>
 
-        {/* Booking Button */}
-        <div className="absolute top-[234px] left-[50px] right-[50px] flex justify-center">
-          <button 
-            onClick={() => setShowRegistration(true)}
-            className="w-[300px] h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all hover:scale-105 shadow-lg" 
-            style={{ letterSpacing: '-0.4px', lineHeight: '20px', fontFamily: 'Montserrat, sans-serif' }}
-          >
-            Забронировать<br />сейчас
-          </button>
-        </div>
-      </section>
+        {/* Booking Form */}
+        <form onSubmit={handleSubmit} className="absolute top-[234px] left-[50px] right-[50px]">
+          {bookingSuccess && (
+            <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-[10px] text-[18px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              ✓ {t('tourDetail.bookingSuccess')}
+            </div>
+          )}
+          {bookingError && (
+            <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-[10px] text-[18px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              ✗ {bookingError}
+            </div>
+          )}
+          
+          <div className="flex gap-[20px] items-end">
+            {/* Участники */}
+            <div className="flex-1">
+              <label className="block text-[16px] font-medium text-[#333333] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {t('tourDetail.participantsCount')}
+              </label>
+              <select
+                value={participants}
+                onChange={(e) => setParticipants(Number(e.target.value))}
+                required
+                className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold cursor-pointer"
+                style={{ letterSpacing: '-0.44px', fontFamily: 'Montserrat, sans-serif' }}
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(num => (
+                  <option key={num} value={num}>{num} {t('tourDetail.person')}</option>
+                ))}
+              </select>
+            </div>
 
-      {/* Registration Modal */}
-      <TourRegistrationForm 
-        tour={tour as any} 
-        isOpen={showRegistration} 
-        onClose={() => setShowRegistration(false)} 
-      />
+            {/* Примечания */}
+            <div className="flex-1">
+              <label className="block text-[16px] font-medium text-[#333333] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {t('tourDetail.additionalInfo')}
+              </label>
+              <input
+                type="text"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold"
+                style={{ letterSpacing: '-0.44px', fontFamily: 'Montserrat, sans-serif' }}
+                placeholder={t('tourDetail.specialRequests')}
+              />
+            </div>
+
+            {/* Кнопка */}
+            <button 
+              type="submit"
+              disabled={isSubmitting || !isAuthenticated}
+              className="w-[250px] h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg" 
+              style={{ letterSpacing: '-0.4px', lineHeight: '20px', fontFamily: 'Montserrat, sans-serif' }}
+            >
+              {isSubmitting ? t('tourDetail.submitting') : !isAuthenticated ? t('tourDetail.signIn') : t('tourDetail.makeOrder')}
+            </button>
+          </div>
+        </form>
+      </section>
 
       {/* About Section */}
       <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
         <h2 className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]" style={{ letterSpacing: '-1.8px' }}>
-          О туре
+          {t('tourDetail.aboutTour')}
         </h2>
         <div className="text-[35px] text-black leading-[60px] mb-[40px]" style={{ letterSpacing: '-0.7px' }}>
-          <p>{tour.description || 'Этот тур создан для тех, кто хочет почувствовать атмосферу настоящей дикой природы'}</p>
+          <p>{tour.description || t('tourDetail.defaultDescription')}</p>
         </div>
 
         <div className="flex gap-[31px]">
           <div className="w-[426px]">
             <h3 className="text-[32px] font-medium text-[#333333] leading-[40px] mb-[20px]" style={{ letterSpacing: '-0.64px' }}>
-              Что включено
+              {t('tourDetail.included')}
             </h3>
-            {(tour.included || ['Проживание (эко-домики)', 'Трёхразовое питание', 'Услуги гида', 'Трансфер из Ташкента', 'Экскурсии по заповеднику']).map((item, i) => (
+            {(tour.included || [t('tourDetail.accommodation'), t('tourDetail.meals'), t('tourDetail.guideServices'), t('tourDetail.transfer'), t('tourDetail.excursions')]).map((item, i) => (
               <div key={i} className="text-[20px] text-[#333333] leading-[24px] mb-[16px] pl-[30px] relative" style={{ letterSpacing: '-0.4px' }}>
                 <span className="absolute left-[10px]">•</span>
                 {item}
@@ -226,9 +318,9 @@ const TourDetailPage: React.FC = () => {
           </div>
           <div className="w-[426px]">
             <h3 className="text-[32px] font-medium text-[#333333] leading-[40px] mb-[20px]" style={{ letterSpacing: '-0.64px' }}>
-              Что не входит в тур
+              {t('tourDetail.excluded')}
             </h3>
-            {(tour.excluded || ['Личные расходы', 'Алкогольные напитки', 'Медицинская страховка', 'Охотничье снаряжение (по запросу)']).map((item, i) => (
+            {(tour.excluded || [t('tourDetail.personalExpenses'), t('tourDetail.alcohol'), t('tourDetail.insurance'), t('tourDetail.huntingEquipment')]).map((item, i) => (
               <div key={i} className="text-[20px] text-[#333333] leading-[24px] mb-[16px] pl-[30px] relative" style={{ letterSpacing: '-0.4px' }}>
                 <span className="absolute left-[10px]">•</span>
                 {item}
@@ -241,7 +333,7 @@ const TourDetailPage: React.FC = () => {
       {/* Gallery Section */}
       <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
         <h2 className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]" style={{ letterSpacing: '-1.8px' }}>
-          Моменты из тура
+          {t('tourDetail.momentsFromTour')}
         </h2>
         {galleryImages.length > 0 ? (
           <div className="flex flex-col gap-0">
@@ -249,7 +341,7 @@ const TourDetailPage: React.FC = () => {
             <div className="w-full h-[500px] rounded-t-[20px] overflow-hidden">
               <img 
                 src={galleryImages[0]} 
-                alt={`${tour.title} - Момент 1`} 
+                alt={`${tour.title} - Lahza 1`} 
                 className="w-full h-full object-cover" 
               />
             </div>
@@ -263,7 +355,7 @@ const TourDetailPage: React.FC = () => {
                   >
                     <img 
                       src={image} 
-                      alt={`${tour.title} - Момент ${index + 2}`} 
+                      alt={`${tour.title} - Lahza ${index + 2}`} 
                       className="w-full h-full object-cover" 
                     />
                   </div>
@@ -274,14 +366,14 @@ const TourDetailPage: React.FC = () => {
                   <div className="w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
                     <img 
                       src={galleryImages[0]} 
-                      alt={`${tour.title} - Момент 2`} 
+                      alt={`${tour.title} - Lahza 2`} 
                       className="w-full h-full object-cover" 
                     />
                   </div>
                   <div className="w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
                     <img 
                       src={galleryImages[0]} 
-                      alt={`${tour.title} - Момент 3`} 
+                      alt={`${tour.title} - Lahza 3`} 
                       className="w-full h-full object-cover" 
                     />
                   </div>
@@ -291,7 +383,7 @@ const TourDetailPage: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-20 text-gray-500">
-            <p className="text-[20px]">Изображения загружаются...</p>
+            <p className="text-[20px]">{t('tourDetail.imagesLoading')}</p>
           </div>
         )}
       </section>
@@ -299,7 +391,7 @@ const TourDetailPage: React.FC = () => {
       {/* Program Section */}
       <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
         <h2 className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]" style={{ letterSpacing: '-1.8px' }}>
-          Программа тура
+          {t('tourDetail.tourProgram')}
         </h2>
         <div className="flex flex-col gap-[20px]">
           {itineraryItems.map((item) => {
@@ -313,7 +405,7 @@ const TourDetailPage: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex gap-[30px] items-center flex-1">
                     <div className="text-[35px] font-medium text-black w-[273px]" style={{ letterSpacing: '-0.7px' }}>
-                      День {item.day}
+                      {t('tourDetail.day')} {item.day}
                     </div>
                     <div className="text-[20px] text-black flex-1" style={{ letterSpacing: '-0.4px' }}>
                       {item.title.replace(/^День\s*\d+\s*/i, '').trim() || item.title}
@@ -337,11 +429,11 @@ const TourDetailPage: React.FC = () => {
       {/* Location Section */}
       <section id="location" className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
         <h2 className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]" style={{ letterSpacing: '-1.8px' }}>
-          Локация
+          {t('tourDetail.locationTitle')}
         </h2>
         <div className="relative w-full h-[500px] rounded-[20px] overflow-hidden border border-white">
           <iframe
-            src={`https://maps.google.com/maps?q=${encodeURIComponent(tour.location || 'Ташкент, Узбекистан')}&output=embed`}
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(tour.location || t('tourDetail.defaultLocation'))}&output=embed`}
             width="100%"
             height="100%"
             style={{ border: 0 }}
@@ -353,6 +445,7 @@ const TourDetailPage: React.FC = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 
