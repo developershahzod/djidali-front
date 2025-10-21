@@ -271,7 +271,7 @@ const NewContactPage: React.FC = () => {
         </div>
 
         {/* Suitcase Icon Section - 735x408px */}
-        <div className="w-full  h-[408px] bg-[#CBC2AB] flex items-center justify-center">
+        <div className="w-[50%]  h-[408px] bg-[#CBC2AB] flex items-center justify-center">
           <img 
             src="/suitcase-icon.svg" 
             alt="Suitcase" 
