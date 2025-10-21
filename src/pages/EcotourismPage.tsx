@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface EcoData {
@@ -72,26 +72,6 @@ const EcotourismPage: React.FC = () => {
     fetchData();
   }, []);
 
-  const stats = useMemo(
-    () => [
-      {
-        value: '10',
-        suffix: '+',
-        label: 'лет успешной работы'
-      },
-      {
-        value: '5000',
-        suffix: '+',
-        label: 'довольных туристов'
-      },
-      {
-        value: '100',
-        suffix: '%',
-        label: 'экологичный подход'
-      }
-    ],
-    []
-  );
 
   if (loading) {
     return (
@@ -153,32 +133,6 @@ const EcotourismPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Statistics */}
-          <div className="absolute left-[clamp(20px,3.47vw,50px)] top-[clamp(400px,50.14vw,722px)] flex flex-col md:flex-row gap-[clamp(30px,5.56vw,80px)] text-white">
-            {stats.map((stat, index) => (
-              <div key={index} className="w-[clamp(180px,21.11vw,304px)]">
-                <div
-                  className="mb-[clamp(6px,0.69vw,10px)] whitespace-nowrap"
-                  style={{
-                    fontFamily: 'Montserrat, sans-serif',
-                    letterSpacing: '-0.0125em'
-                  }}
-                >
-                  <span className="text-[clamp(50px,5.56vw,80px)] font-normal leading-[1]">{stat.value}</span>
-                  <span className="text-[clamp(30px,3.47vw,50px)] font-extralight leading-[1]"> {stat.suffix}</span>
-                </div>
-                <p
-                  className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4]"
-                  style={{
-                    fontFamily: 'Montserrat, sans-serif',
-                    letterSpacing: '-0.02em'
-                  }}
-                >
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </header>
 

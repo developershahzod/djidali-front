@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li>
                 <button
-                  onClick={() => navigate('/ecotourism')}
+                   onClick={() => navigate('/tours?type=agro')}
                   className="text-base text-gray-600 hover:text-gray-900 transition-colors font-light"
                 >
                   Экотуризм
