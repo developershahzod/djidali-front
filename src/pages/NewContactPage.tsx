@@ -269,7 +269,6 @@ const NewContactPage: React.FC = () => {
           </div>
         </div>
         </div>
-
         {/* Suitcase Icon Section - 735x408px */}
         <div className="w-[50%]  h-[408px] bg-[#CBC2AB] flex items-center justify-center">
           <img 
