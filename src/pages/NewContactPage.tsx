@@ -64,9 +64,9 @@ const NewContactPage: React.FC = () => {
       {/* Main Content - Form + Image */}
       <div className="flex flex-col lg:flex-row">
         {/* Left Column - 705x1256px total */}
-        <div className=" h-[1256px]">
+        <div className="w-[50%] h-[1256px]">
           {/* Contact Info Block - 705x450px */}
-          <div className="relative w-[705px] h-[450px] bg-[#8f7b49]">
+          <div className="relative h-[450px] bg-[#8f7b49]">
             {/* Icon Container */}
             <div className="absolute top-[60px] left-[50px] w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center p-[25px]">
               <img 
@@ -94,7 +94,7 @@ const NewContactPage: React.FC = () => {
           </div>
           
           {/* Form Container - 705x806px */}
-          <div className="w-[705px] h-[806px] bg-[#cbc2ab] px-[50px] py-[80px]">
+          <div className=" h-[806px] bg-[#cbc2ab] px-[50px] py-[80px]">
             <form onSubmit={handleSubmit} className="flex flex-col gap-[20px]">
             {/* Country Dropdown - 605x80px */}
             <div className="w-[605px] h-[80px] border-2 border-[rgba(51,51,51,0.2)] rounded-[10px] px-[20px] py-[18px] bg-transparent flex flex-col justify-center">
@@ -210,7 +210,7 @@ const NewContactPage: React.FC = () => {
         </div>
 
         {/* Image Container - Right - 735x1256px */}
-        <div className="relative w-full  h-[1256px]">
+        <div className="relative w-[50%]  h-[1256px]">
           <img
             src="/contact-nature-image.webp"
             alt={t('contactPage.image.title')}
@@ -237,7 +237,7 @@ const NewContactPage: React.FC = () => {
       {/* Second Row - Working Hours + Suitcase Icon */}
       <div className="flex flex-col lg:flex-row">
         {/* Info Section - Working Hours & Email - 705x408px */}
-        <div className=" h-[408px] bg-white px-[50px] py-[80px]">
+        <div className="w-[50%] h-[408px] bg-white px-[50px] py-[80px]">
         <div className="w-[605px] flex flex-col gap-[70px]">
           <div className="flex flex-col gap-[6px]">
             <p
