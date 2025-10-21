@@ -27,7 +27,7 @@ const WhyUsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1C160D]">
-      <header className="relative h-[clamp(600px,62.5vw,900px)] overflow-hidden">
+      <header className="relative min-h-screen overflow-hidden flex flex-col">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
@@ -39,11 +39,11 @@ const WhyUsPage: React.FC = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 h-full">
+        <div className="relative z-10 flex-1 flex flex-col justify-between px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)]">
           {/* Title and Description */}
-          <div className="absolute left-[clamp(20px,3.47vw,50px)] top-[clamp(100px,14.58vw,210px)] w-[clamp(90%,93.06vw,1340px)] text-white">
+          <div className="pt-[clamp(60px,8.33vw,120px)]">
             <h1
-              className="text-[clamp(40px,6.25vw,90px)] font-medium leading-[1.11] mb-[clamp(12px,1.39vw,20px)]"
+              className="text-[clamp(40px,6.25vw,90px)] font-medium leading-[1.11] mb-[clamp(12px,1.39vw,20px)] max-w-[1340px] text-white"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: '-0.03em'
@@ -52,7 +52,7 @@ const WhyUsPage: React.FC = () => {
               {t('whyUs.hero.title')}
             </h1>
             <p
-              className="text-[clamp(18px,2.22vw,32px)] font-normal leading-[1.25] opacity-80 whitespace-pre-wrap"
+              className="text-[clamp(18px,2.22vw,32px)] font-normal leading-[1.25] opacity-80 whitespace-pre-wrap max-w-[1340px] text-white"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
                 letterSpacing: '-0.03em'
@@ -63,7 +63,7 @@ const WhyUsPage: React.FC = () => {
           </div>
 
           {/* Statistics */}
-          <div className="absolute left-[clamp(20px,3.47vw,50px)] top-[clamp(400px,50.14vw,722px)] flex flex-col md:flex-row gap-[clamp(30px,5.56vw,80px)] text-white">
+          <div className="flex flex-col md:flex-row gap-[clamp(30px,5.56vw,80px)] text-white mt-auto">
             {heroStats.map((stat, index) => (
               <div key={index} className="w-[clamp(180px,21.11vw,304px)]">
                 <div

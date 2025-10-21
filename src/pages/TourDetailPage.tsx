@@ -149,59 +149,68 @@ const TourDetailPage: React.FC = () => {
 
       <div className="min-h-screen bg-[#f4f2ed] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         {/* Hero Section */}
-      <section className="relative overflow-hidden h-[900px]">
+      <section className="relative overflow-hidden min-h-screen flex flex-col">
         <div className="absolute inset-0">
           {primaryImage && <img src={primaryImage} alt={tour.title} className="w-full h-full object-cover" />}
           <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        {/* Title */}
-        <h1 className="absolute top-[240px] left-[50px] text-white font-medium max-w-[1340px] text-[90px] leading-[100px]" style={{ letterSpacing: '-2.7px' }}>
-          {tour.title}
-        </h1>
+        {/* Content Container */}
+        <div className="relative z-10 flex-1 flex flex-col justify-between px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)]">
+          {/* Title */}
+          <div className="pt-[clamp(60px,8.33vw,120px)]">
+            <h1 className="text-white font-medium max-w-[1340px] text-[clamp(40px,6.25vw,90px)] leading-[1.11]" style={{ letterSpacing: '-2.7px' }}>
+              {tour.title}
+            </h1>
+          </div>
 
-        {/* Location */}
-        <a href="#location" className="absolute top-[816px] left-[1053px] text-white underline text-[20px]" style={{ letterSpacing: '-0.4px' }}>
-          {tour.location || t('tourDetail.location')}
-        </a>
-
-        {/* Stats */}
-        <div className="absolute top-[632px] left-[50px] flex gap-[30px]">
+          {/* Stats */}
+          <div className="flex flex-col gap-[40px] mt-auto">
+            {/* Location Link */}
+            <div className="flex justify-end">
+              <a href="#location" className="text-white underline text-[20px]" style={{ letterSpacing: '-0.4px' }}>
+                {tour.location || t('tourDetail.location')}
+              </a>
+            </div>
+            
+            <div className="flex flex-wrap gap-[30px]">
           {/* Price */}
-          <div className="flex flex-col gap-[40px] w-[426px]">
-            <div className="w-[80px] h-[80px] bg-white rounded-full flex items-center justify-center">
+          <div className="flex flex-col gap-[clamp(20px,2.78vw,40px)] w-full md:w-[426px]">
+            <div className="w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] bg-white rounded-full flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <path d="M20 2V38M26 10H17C15.6739 10 14.4021 10.5268 13.4645 11.4645C12.5268 12.4021 12 13.6739 12 15C12 16.3261 12.5268 17.5979 13.4645 18.5355C14.4021 19.4732 15.6739 20 17 20H23C24.3261 20 25.5979 20.5268 26.5355 21.4645C27.4732 22.4021 28 23.6739 28 25C28 26.3261 27.4732 27.5979 26.5355 28.5355C25.5979 29.4732 24.3261 30 23 30H12" stroke="#333333" strokeWidth="2"/>
               </svg>
             </div>
             <div className="flex flex-col gap-[10px] text-white">
-              <div className="text-[50px] font-medium leading-[50px]" style={{ letterSpacing: '-1px' }}>
+              <div className="text-[clamp(32px,3.47vw,50px)] font-medium leading-[1]" style={{ letterSpacing: '-1px' }}>
                 {Number((tour.price ?? 0)).toLocaleString('ru-RU')}{' '}
-                <span className="text-[40px] font-extralight">UZS</span>
+                <span className="text-[clamp(24px,2.78vw,40px)] font-extralight">UZS</span>
               </div>
-              <div className="text-[20px] font-light leading-[28px]" style={{ letterSpacing: '-0.4px' }}>
+              <div className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4]" style={{ letterSpacing: '-0.4px' }}>
                 {t('tourDetail.programCost')}
               </div>
             </div>
           </div>
 
           {/* Duration */}
-          <div className="flex flex-col gap-[40px] w-[426px]">
-            <div className="w-[80px] h-[80px] bg-white rounded-full flex items-center justify-center">
+          <div className="flex flex-col gap-[clamp(20px,2.78vw,40px)] w-full md:w-[426px]">
+            <div className="w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] bg-white rounded-full flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <circle cx="20" cy="20" r="18" stroke="#333333" strokeWidth="2"/>
                 <path d="M20 10V20L26 26" stroke="#333333" strokeWidth="2"/>
               </svg>
             </div>
             <div className="flex flex-col gap-[10px] text-white">
-              <div className="text-[50px] font-medium leading-[50px]" style={{ letterSpacing: '-1px' }}>
+              <div className="text-[clamp(32px,3.47vw,50px)] font-medium leading-[1]" style={{ letterSpacing: '-1px' }}>
                 {tour.duration ?? 0}{' '}
-                <span className="text-[40px] font-extralight">{t('tourDetail.days')}</span>
+                <span className="text-[clamp(24px,2.78vw,40px)] font-extralight">{t('tourDetail.days')}</span>
               </div>
-              <div className="text-[20px] font-light leading-[28px]" style={{ letterSpacing: '-0.4px' }}>
+              <div className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4]" style={{ letterSpacing: '-0.4px' }}>
                 {t('tourDetail.tourDuration')}
               </div>
             </div>
+          </div>
+          </div>
           </div>
         </div>
       </section>
