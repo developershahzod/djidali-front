@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, DollarSign, ArrowLeft, CreditCard as Edit, Trash2, Plus, Eye, CheckCircle, XCircle, Clock, Users, Package, AlertCircle, FolderTree, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { djidaliApi, ApiTour, ApiOrder, ApiCategory } from '../services/djidaliApi';
 import AdminStats from '../components/AdminStats';
 import CategoryModal from '../components/CategoryModal';
@@ -10,6 +11,7 @@ import OrderDetailModal from '../components/OrderDetailModal';
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   const extractPrice = (price: any): number => {
     if (typeof price === 'object' && price?.amount) {
@@ -135,12 +137,12 @@ const AdminDashboard: React.FC = () => {
       const priceValue = parseFloat(tourFormData.price);
 
       if (isNaN(priceValue) || priceValue < 0) {
-        alert('Iltimos, to\'g\'ri narx kiriting (0 dan katta son)');
+        alert(t('admin.alerts.invalidPrice'));
         return;
       }
 
       if (!tourFormData.startDate || !tourFormData.endDate) {
-        alert('Iltimos, boshlanish va tugash sanalarini kiriting');
+        alert(t('admin.alerts.enterDates'));
         return;
       }
 
@@ -148,12 +150,12 @@ const AdminDashboard: React.FC = () => {
       const endDate = new Date(tourFormData.endDate);
 
       if (endDate <= startDate) {
-        alert('Tugash sanasi boshlanish sanasidan keyin bo\'lishi kerak');
+        alert(t('admin.alerts.endAfterStart'));
         return;
       }
 
       if (!tourFormData.categoryId) {
-        alert('Iltimos, kategoriya tanlang');
+        alert(t('admin.alerts.selectCategory'));
         return;
       }
 
@@ -178,9 +180,9 @@ const AdminDashboard: React.FC = () => {
       setShowTourModal(false);
       resetTourForm();
       fetchTours();
-      alert('Tur muvaffaqiyatli qo\'shildi!');
+      alert(t('admin.alerts.tourAdded'));
     } catch (error) {
-      alert('Turni qo\'shishda xatolik: ' + (error instanceof Error ? error.message : 'Noma\'lum xatolik'));
+      alert(t('admin.alerts.tourAddError') + ': ' + (error instanceof Error ? error.message : t('admin.alerts.unknownError')));
     }
   };
 
@@ -208,7 +210,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteTour = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this tour?')) return;
+    if (!window.confirm(t('admin.alerts.confirmDelete'))) return;
     try {
       await djidaliApi.deleteTour(id);
       fetchTours();
@@ -292,13 +294,13 @@ const AdminDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Kirish ta'qiqlangan</h1>
-          <p className="text-gray-600 mb-4">Ushbu sahifaga kirish uchun ruxsatingiz yo'q</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('admin.accessDenied.title')}</h1>
+          <p className="text-gray-600 mb-4">{t('admin.accessDenied.message')}</p>
           <button
             onClick={() => navigate('/login')}
             className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700"
           >
-            Tizimga kirish
+            {t('admin.accessDenied.login')}
           </button>
         </div>
       </div>
@@ -319,7 +321,7 @@ const AdminDashboard: React.FC = () => {
               className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white transition-all hover:bg-white/15"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Asosiy sahifaga</span>
+              <span>{t('admin.header.backToHome')}</span>
             </button>
             <div className="hidden h-10 w-px bg-white/20 sm:block" />
             <div>
@@ -329,7 +331,7 @@ const AdminDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/50">Xush kelibsiz</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-white/50">{t('admin.header.welcome')}</p>
               <p className="text-sm font-medium">
                 {user?.firstName} {user?.lastName}
               </p>
@@ -347,17 +349,17 @@ const AdminDashboard: React.FC = () => {
             {[
               {
                 key: 'tours' as const,
-                label: `Turlar (${tours.length})`,
+                label: `${t('admin.tabs.tours')} (${tours.length})`,
                 icon: <MapPin className="h-4 w-4" />
               },
               {
                 key: 'orders' as const,
-                label: `Buyurtmalar (${orders.length})`,
+                label: `${t('admin.tabs.orders')} (${orders.length})`,
                 icon: <Package className="h-4 w-4" />
               },
               {
                 key: 'categories' as const,
-                label: `Kategoriyalar (${categories.length})`,
+                label: `${t('admin.tabs.categories')} (${categories.length})`,
                 icon: <FolderTree className="h-4 w-4" />
               }
             ].map((tab) => (
@@ -396,7 +398,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               <input
                 type="text"
-                placeholder={activeTab === 'orders' ? 'Buyurtmalarni qidirish...' : 'Kategoriyalarni qidirish...'}
+                placeholder={activeTab === 'orders' ? t('admin.search.orders') : t('admin.search.categories')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-[18px] border border-transparent bg-white/70 pl-16 pr-5 py-3 text-[#2F2A24] placeholder:text-[#B0A398] focus:border-[#BFA480] focus:ring-2 focus:ring-[#BFA480]/40"
@@ -411,9 +413,9 @@ const AdminDashboard: React.FC = () => {
               <div>
                 <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-[#8E7A5E]">
                   <span className="inline-block h-2 w-2 rounded-full bg-[#8F6E47] animate-pulse" />
-                  Ma'lumotlar API orqali yuklanmoqda
+                  {t('admin.tours.dataLoading')}
                 </p>
-                <h2 className="mt-3 text-2xl font-semibold text-[#2F2A24]">Turlar boshqaruvi</h2>
+                <h2 className="mt-3 text-2xl font-semibold text-[#2F2A24]">{t('admin.tours.title')}</h2>
               </div>
               <button
                 onClick={() => {
@@ -424,7 +426,7 @@ const AdminDashboard: React.FC = () => {
                 className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8F6E47] to-[#BFA480] px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-[0_20px_55px_-35px_rgba(45,32,18,0.75)] transition-transform hover:-translate-y-[2px]"
               >
                 <Plus className="h-4 w-4" />
-                <span>Yangi tur qo'shish</span>
+                <span>{t('admin.tours.addNew')}</span>
               </button>
             </div>
 
@@ -435,15 +437,15 @@ const AdminDashboard: React.FC = () => {
             ) : tours.length === 0 ? (
               <div className="rounded-[32px] border border-dashed border-[#BFA480]/50 bg-white/70 px-6 py-16 text-center shadow-[0_25px_75px_-55px_rgba(32,24,18,0.55)]">
                 <MapPin className="mx-auto h-14 w-14 text-[#BFA480]" />
-                <h3 className="mt-6 text-xl font-semibold text-[#2F2A24]">Hozircha turlar yo'q</h3>
-                <p className="mt-2 text-sm text-[#6B5B4C]">Yangi tur qo'shish uchun yuqoridagi tugmani bosing</p>
+                <h3 className="mt-6 text-xl font-semibold text-[#2F2A24]">{t('admin.tours.empty')}</h3>
+                <p className="mt-2 text-sm text-[#6B5B4C]">{t('admin.tours.emptyDesc')}</p>
               </div>
             ) : (
               <div className="overflow-hidden rounded-[32px] border border-white/70 bg-white/80 shadow-[0_28px_88px_-55px_rgba(30,22,14,0.55)]">
                 <table className="min-w-full divide-y divide-white/60">
                   <thead className="bg-[#F7F1E6]">
                     <tr>
-                      {['Tur', 'Manzil', 'Narxi', 'Davomiyligi', 'Status', 'Buyurtmalar', 'Amallar'].map((header) => (
+                      {[t('admin.table.tour'), t('admin.table.location'), t('admin.table.price'), t('admin.table.duration'), t('admin.table.status'), t('admin.table.orders'), t('admin.table.actions')].map((header) => (
                         <th
                           key={header}
                           className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.3em] text-[#8E7A5E]"
@@ -473,7 +475,7 @@ const AdminDashboard: React.FC = () => {
                               <div>
                                 <div className="text-sm font-semibold text-[#2F2A24]">{tour.title}</div>
                                 <p className="text-xs uppercase tracking-[0.3em] text-[#A38D72]">
-                                  {tour.category?.name || 'Kategoriya yo\'q'}
+                                  {tour.category?.name || t('admin.table.noCategory')}
                                 </p>
                               </div>
                             </div>
@@ -482,7 +484,7 @@ const AdminDashboard: React.FC = () => {
                           <td className="px-6 py-4 text-sm font-semibold text-[#8F6E47]">
                             {priceValue.toLocaleString()} UZS
                           </td>
-                          <td className="px-6 py-4 text-sm text-[#4F4336]">{tour.duration} kun</td>
+                          <td className="px-6 py-4 text-sm text-[#4F4336]">{tour.duration} {t('admin.table.days')}</td>
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
@@ -492,7 +494,7 @@ const AdminDashboard: React.FC = () => {
                               }`}
                             >
                               <span className={`h-1.5 w-1.5 rounded-full ${tour.status === 'ACTIVE' ? 'bg-[#2F4A3A]' : 'bg-[#6B2F2F]'}`} />
-                              {tour.status === 'ACTIVE' ? 'Faol' : 'Nofaol'}
+                              {tour.status === 'ACTIVE' ? t('admin.table.active') : t('admin.table.inactive')}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-[#4F4336]">
@@ -503,18 +505,18 @@ const AdminDashboard: React.FC = () => {
                               <button
                                 onClick={() => openEditModal(tour)}
                                 className="inline-flex items-center gap-2 rounded-full border border-[#2F4A3A]/15 bg-[#2F4A3A]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#2F4A3A] transition-colors hover:bg-[#2F4A3A]/15"
-                                title="Tahrirlash"
+                                title={t('admin.table.edit')}
                               >
                                 <Edit className="h-4 w-4" />
-                                <span>Tahrirlash</span>
+                                <span>{t('admin.table.edit')}</span>
                               </button>
                               <button
                                 onClick={() => handleDeleteTour(tour.id)}
                                 className="inline-flex items-center gap-2 rounded-full border border-[#6B2F2F]/15 bg-[#6B2F2F]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#6B2F2F] transition-colors hover:bg-[#6B2F2F]/15"
-                                title="O'chirish"
+                                title={t('admin.table.delete')}
                               >
                                 <Trash2 className="h-4 w-4" />
-                                <span>O'chirish</span>
+                                <span>{t('admin.table.delete')}</span>
                               </button>
                             </div>
                           </td>
@@ -531,13 +533,13 @@ const AdminDashboard: React.FC = () => {
         {activeTab === 'categories' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">Kategoriyalar ro'yxati</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('admin.categories.title')}</h2>
               <button
                 onClick={() => setShowCategoryModal(true)}
                 className="flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
               >
                 <Plus className="w-4 h-4" />
-                <span>Yangi kategoriya qo'shish</span>
+                <span>{t('admin.categories.addNew')}</span>
               </button>
             </div>
 
@@ -548,19 +550,19 @@ const AdminDashboard: React.FC = () => {
             ) : categories.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
                 <FolderTree className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Hozircha kategoriyalar yo'q</h3>
-                <p className="text-gray-600">Kategoriyalar avtomatik API orqali yuklanadi</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('admin.categories.empty')}</h3>
+                <p className="text-gray-600">{t('admin.categories.emptyDesc')}</p>
               </div>
             ) : (
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nomi</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Daraja</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sana</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.name')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.slug')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.level')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.status')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.date')}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -575,14 +577,14 @@ const AdminDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">{category.slug}</td>
-                        <td className="px-6 py-4 text-sm text-gray-900">Daraja {category.depth}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{t('admin.table.level')} {category.depth}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                             category.isActive
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}>
-                            {category.isActive ? 'Faol' : 'Nofaol'}
+                            {category.isActive ? t('admin.table.active') : t('admin.table.inactive')}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
@@ -604,10 +606,10 @@ const AdminDashboard: React.FC = () => {
         {activeTab === 'orders' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Buyurtmalar ro'yxati</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('admin.orders.title')}</h2>
               <p className="text-sm text-gray-500 mt-1 flex items-center space-x-1">
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span>Mijoz narxlari API dan yuklanmoqda</span>
+                <span>{t('admin.orders.dataLoading')}</span>
               </p>
             </div>
 
@@ -618,21 +620,21 @@ const AdminDashboard: React.FC = () => {
             ) : orders.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
                 <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Hozircha buyurtmalar yo'q</h3>
-                <p className="text-gray-600">Yangi buyurtmalar bu yerda ko'rinadi</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('admin.orders.empty')}</h3>
+                <p className="text-gray-600">{t('admin.orders.emptyDesc')}</p>
               </div>
             ) : (
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tur</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ishtirokchilar</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Summa</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sana</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amallar</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.id')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.tour')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.participants')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.amount')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.status')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.table.date')}</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('admin.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -678,7 +680,7 @@ const AdminDashboard: React.FC = () => {
                               setShowOrderDetail(true);
                             }}
                             className="text-emerald-600 hover:text-emerald-900"
-                            title="Ko'rish"
+                            title={t('admin.table.view')}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -697,7 +699,7 @@ const AdminDashboard: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-xl font-bold">{editingTour ? 'Turni tahrirlash' : 'Yangi tur qo\'shish'}</h3>
+              <h3 className="text-xl font-bold">{editingTour ? t('admin.modal.editTour') : t('admin.modal.addTour')}</h3>
               <button
                 onClick={() => {
                   setShowTourModal(false);
@@ -712,7 +714,7 @@ const AdminDashboard: React.FC = () => {
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nomi *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.name')} *</label>
                 <input
                   type="text"
                   value={tourFormData.title}
@@ -723,7 +725,7 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tavsif *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.description')} *</label>
                 <textarea
                   value={tourFormData.description}
                   onChange={(e) => setTourFormData({ ...tourFormData, description: e.target.value })}
@@ -735,7 +737,7 @@ const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Manzil *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.destination')} *</label>
                   <input
                     type="text"
                     value={tourFormData.destination}
@@ -746,7 +748,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Narxi (UZS) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.price')} *</label>
                   <input
                     type="number"
                     min="0"
@@ -755,13 +757,13 @@ const AdminDashboard: React.FC = () => {
                     onChange={(e) => setTourFormData({ ...tourFormData, price: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     required
-                    placeholder="Masalan: 3000000"
+                    placeholder={t('admin.form.pricePlaceholder')}
                   />
-                  <p className="text-xs text-gray-500 mt-1">O'zbek so'mida kiriting</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('admin.form.priceHint')}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Davomiyligi (kun) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.duration')} *</label>
                   <input
                     type="number"
                     min="1"
@@ -773,7 +775,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Max ishtirokchilar *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.maxParticipants')} *</label>
                   <input
                     type="number"
                     min="1"
@@ -787,7 +789,7 @@ const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Boshlanish sanasi *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.startDate')} *</label>
                   <input
                     type="date"
                     value={tourFormData.startDate}
@@ -798,7 +800,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tugash sanasi *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.endDate')} *</label>
                   <input
                     type="date"
                     value={tourFormData.endDate}
@@ -811,14 +813,14 @@ const AdminDashboard: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kategoriya *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.category')} *</label>
                   <select
                     value={tourFormData.categoryId}
                     onChange={(e) => setTourFormData({ ...tourFormData, categoryId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     required
                   >
-                    <option value="">Kategoriya tanlang</option>
+                    <option value="">{t('admin.form.selectCategory')}</option>
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
@@ -828,20 +830,20 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.form.status')}</label>
                   <select
                     value={tourFormData.status}
                     onChange={(e) => setTourFormData({ ...tourFormData, status: e.target.value as 'ACTIVE' | 'INACTIVE' })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   >
-                    <option value="ACTIVE">Faol</option>
-                    <option value="INACTIVE">Nofaol</option>
+                    <option value="ACTIVE">{t('admin.table.active')}</option>
+                    <option value="INACTIVE">{t('admin.table.inactive')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Rasmlar URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.form.images')}</label>
                 {tourFormData.images.map((image, index) => (
                   <div key={index} className="flex items-center space-x-2 mb-2">
                     <input
@@ -866,19 +868,19 @@ const AdminDashboard: React.FC = () => {
                   className="text-emerald-600 hover:text-emerald-700 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Rasm qo'shish</span>
+                  <span>{t('admin.form.addImage')}</span>
                 </button>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Kiritilgan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.form.included')}</label>
                 {tourFormData.inclusions.map((inclusion, index) => (
                   <div key={index} className="flex items-center space-x-2 mb-2">
                     <input
                       type="text"
                       value={inclusion}
                       onChange={(e) => updateArrayField('inclusions', index, e.target.value)}
-                      placeholder="Nima kiritilgan"
+                      placeholder={t('admin.form.includedPlaceholder')}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                     {tourFormData.inclusions.length > 1 && (
@@ -896,19 +898,19 @@ const AdminDashboard: React.FC = () => {
                   className="text-emerald-600 hover:text-emerald-700 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Qo'shish</span>
+                  <span>{t('admin.form.add')}</span>
                 </button>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Kiritilmagan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.form.excluded')}</label>
                 {tourFormData.exclusions.map((exclusion, index) => (
                   <div key={index} className="flex items-center space-x-2 mb-2">
                     <input
                       type="text"
                       value={exclusion}
                       onChange={(e) => updateArrayField('exclusions', index, e.target.value)}
-                      placeholder="Nima kiritilmagan"
+                      placeholder={t('admin.form.excludedPlaceholder')}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                     {tourFormData.exclusions.length > 1 && (
@@ -926,7 +928,7 @@ const AdminDashboard: React.FC = () => {
                   className="text-emerald-600 hover:text-emerald-700 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Qo'shish</span>
+                  <span>{t('admin.form.add')}</span>
                 </button>
               </div>
             </div>
@@ -940,13 +942,13 @@ const AdminDashboard: React.FC = () => {
                 }}
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
               >
-                Bekor qilish
+                {t('admin.form.cancel')}
               </button>
               <button
                 onClick={editingTour ? handleUpdateTour : handleCreateTour}
                 className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
               >
-                {editingTour ? 'Yangilash' : 'Qo\'shish'}
+                {editingTour ? t('admin.form.update') : t('admin.form.add')}
               </button>
             </div>
           </div>

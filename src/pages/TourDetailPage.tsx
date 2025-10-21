@@ -285,11 +285,11 @@ const TourDetailPage: React.FC = () => {
             {/* Кнопка */}
             <button 
               type="submit"
-              disabled={isSubmitting || !isAuthenticated}
+              disabled={isSubmitting}
               className="w-[250px] h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg" 
               style={{ letterSpacing: '-0.4px', lineHeight: '20px', fontFamily: 'Montserrat, sans-serif' }}
             >
-              {isSubmitting ? t('tourDetail.submitting') : !isAuthenticated ? t('tourDetail.signIn') : t('tourDetail.makeOrder')}
+              {isSubmitting ? t('tourDetail.submitting') : t('tourDetail.makeOrder')}
             </button>
           </div>
         </form>

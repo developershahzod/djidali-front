@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type ButtonState = 'idle' | 'loading' | 'success';
 
 const NewContactPage: React.FC = () => {
-  const [country, setCountry] = useState('O\'zbekiston');
+  const { t } = useLanguage();
+  const [country, setCountry] = useState('');
   const [phone, setPhone] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
@@ -40,14 +42,14 @@ const NewContactPage: React.FC = () => {
             className="text-[clamp(32px,4.17vw,60px)] font-medium leading-[100%] tracking-[-1.8px] text-[#333333]"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
-            Bog'lanish
+            {t('contactPage.hero.title')}
           </h1>
           <div className="flex flex-col gap-[clamp(4px,0.42vw,6px)]">
             <p
               className="text-[clamp(12px,1.11vw,16px)] font-medium leading-[28px] tracking-[-0.48px] text-[#333333]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Telefon raqam
+              {t('contactPage.form.phone')}
             </p>
             <p
               className="text-[clamp(20px,2.43vw,35px)] font-medium leading-[100%] tracking-[-0.7px] text-[#333333]"
@@ -80,13 +82,13 @@ const NewContactPage: React.FC = () => {
                 className="text-[60px] font-medium leading-[60px] tracking-[-1.8px] mb-[20px]"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Biz bilan bog'laning
+                {t('contactPage.form.title')}
               </h2>
               <p
                 className="text-[16px] font-medium leading-[28px] tracking-[-0.48px]"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Biz bilan bog'lanish uchun quyidagi formani to'ldiring
+                {t('contactPage.form.description')}
               </p>
             </div>
           </div>
@@ -100,7 +102,7 @@ const NewContactPage: React.FC = () => {
                 className="block text-[14px] font-medium leading-[20px] tracking-[-0.28px] text-[#333333] opacity-50 mb-[3px]"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Mamlakat
+                {t('contactPage.form.country')}
               </label>
               <select
                 value={country}
@@ -108,16 +110,17 @@ const NewContactPage: React.FC = () => {
                 className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] outline-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                <option>O'zbekiston</option>
-                <option>Rossiya</option>
-                <option>Qozog'iston</option>
-                <option>Qirg'iziston</option>
-                <option>Tojikiston</option>
-                <option>Turkmaniston</option>
-                <option>AQSh</option>
-                <option>Buyuk Britaniya</option>
-                <option>Germaniya</option>
-                <option>Fransiya</option>
+                <option value="">{t('contactPage.form.countryPlaceholder')}</option>
+                <option value="uz">O'zbekiston</option>
+                <option value="ru">Rossiya</option>
+                <option value="kz">Qozog'iston</option>
+                <option value="kg">Qirg'iziston</option>
+                <option value="tj">Tojikiston</option>
+                <option value="tm">Turkmaniston</option>
+                <option value="us">AQSh</option>
+                <option value="gb">Buyuk Britaniya</option>
+                <option value="de">Germaniya</option>
+                <option value="fr">Fransiya</option>
               </select>
             </div>
 
@@ -127,7 +130,7 @@ const NewContactPage: React.FC = () => {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Telefon raqamingizni kiriting"
+                placeholder={t('contactPage.form.phonePlaceholder')}
                 className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
@@ -139,7 +142,7 @@ const NewContactPage: React.FC = () => {
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Mavzu"
+                placeholder={t('contactPage.form.subject')}
                 className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
@@ -150,7 +153,7 @@ const NewContactPage: React.FC = () => {
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Xabaringizni kiriting"
+                placeholder={t('contactPage.form.messagePlaceholder')}
                 className="w-full h-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none resize-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
@@ -170,7 +173,7 @@ const NewContactPage: React.FC = () => {
                 className="text-[20px] font-medium leading-[100%] tracking-[-0.4px] text-[#333333] cursor-pointer"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Men <span className="underline text-white">maxfiylik siyosati</span>ga roziman
+                {t('contactPage.form.privacy')} <span className="underline text-white">{t('contactPage.form.privacyLink')}</span>
               </label>
             </div>
 
@@ -185,7 +188,7 @@ const NewContactPage: React.FC = () => {
                   className="text-white text-[20px] font-bold leading-[20px] tracking-[-0.4px]"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  Yuborish
+                  {t('contactPage.form.submit')}
                 </span>
               )}
               {buttonState === 'loading' && (
@@ -210,7 +213,7 @@ const NewContactPage: React.FC = () => {
         <div className="relative w-[50%]  h-[1256px]">
           <img
             src="/contact-nature-image.webp"
-            alt="O'zbekistonning go'zal tabiatini kashf eting"
+            alt={t('contactPage.image.title')}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] from-[23%] to-transparent" />
@@ -219,13 +222,13 @@ const NewContactPage: React.FC = () => {
               className="text-[50px] font-medium leading-[60px] tracking-[-1.5px]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              O'zbekistonning go'zal tabiatini kashf eting
+              {t('contactPage.image.title')}
             </h2>
             <p
               className="text-[50px] font-medium leading-[60px] tracking-[-1.5px] text-[#D8CCB3]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              va unutilmas sayohatlar
+              {t('contactPage.image.subtitle')}
             </p>
           </div>
         </div>
@@ -241,13 +244,13 @@ const NewContactPage: React.FC = () => {
               className="text-[16px] font-medium leading-[28px] tracking-[-0.48px] text-[#333333]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Ish vaqti
+              {t('contactPage.info.workingHours')}
             </p>
             <p
               className="text-[45px] font-medium leading-[55px] tracking-[-1.35px] text-[#333333]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              9:00 - 18:00
+              {t('contactPage.info.workingHoursValue')}
             </p>
           </div>
           <div className="flex flex-col gap-[6px]">
@@ -255,13 +258,13 @@ const NewContactPage: React.FC = () => {
               className="text-[16px] font-medium leading-[28px] tracking-[-0.48px] text-[#333333]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Elektron pochta
+              {t('contactPage.info.email')}
             </p>
             <p
               className="text-[45px] font-medium leading-[55px] tracking-[-1.35px] text-[#333333]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              info@djidali.uz
+              {t('contactPage.info.emailValue')}
             </p>
           </div>
         </div>
@@ -282,19 +285,19 @@ const NewContactPage: React.FC = () => {
             className="text-[60px] font-medium leading-[60px] tracking-[-1.8px] text-[#333333]"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
-            Joylashuv
+            {t('contactPage.location.title')}
           </h2>
           <div className="relative w-[1340px] h-[500px] rounded-[20px] overflow-hidden border border-white">
-            <img 
-              src="/contact-map.webp" 
-              alt="Map" 
-              className="absolute inset-0 w-full h-full object-cover"
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2996.5346818847944!2d69.2401!3d41.3111!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38ae8b0cc379e9c3%3A0xa5a9323b4aa5cb98!2sAmir%20Temur%20Avenue%2C%20Tashkent%2C%20Uzbekistan!5e0!3m2!1sen!2s!4v1234567890"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="DJIDALI Office Location"
             />
-            {/* Map Pin */}
-            <div className="absolute top-[240px] left-[655px] w-[20px] h-[20px]">
-              <div className="absolute inset-[-80%_-110%_-140%_-110%] bg-[#8F7B49] rounded-full opacity-30" />
-              <div className="absolute inset-0 bg-[#8F7B49] rounded-full" />
-            </div>
           </div>
         </div>
       </div>

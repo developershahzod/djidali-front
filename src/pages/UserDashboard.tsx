@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Heart, User, Calendar, DollarSign, MapPin, CreditCard, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Package, Heart, User, Calendar, MapPin, CreditCard, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { djidaliApi, ApiOrder } from '../services/djidaliApi';
 import { clickPaymentService } from '../services/clickPayment';
 
 const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [paymentStatuses, setPaymentStatuses] = useState<Record<string, 'waiting' | 'confirmed' | 'rejected'>>({});
@@ -71,13 +73,13 @@ const UserDashboard: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'FULLY_PAID':
-        return 'To\'liq to\'langan';
+        return t('userDashboard.status.fullyPaid');
       case 'CONFIRMED':
-        return 'Tasdiqlangan';
+        return t('userDashboard.status.confirmed');
       case 'PENDING':
-        return 'Kutilmoqda';
+        return t('userDashboard.status.pending');
       case 'CANCELLED':
-        return 'Bekor qilingan';
+        return t('userDashboard.status.cancelled');
       default:
         return status;
     }
@@ -109,11 +111,11 @@ const UserDashboard: React.FC = () => {
   const getPaymentStatusText = (status: 'waiting' | 'confirmed' | 'rejected') => {
     switch (status) {
       case 'confirmed':
-        return 'To\'langan';
+        return t('userDashboard.payment.paid');
       case 'waiting':
-        return 'Kutilmoqda';
+        return t('userDashboard.payment.waiting');
       case 'rejected':
-        return 'Rad etilgan';
+        return t('userDashboard.payment.rejected');
     }
   };
 
@@ -133,16 +135,16 @@ const UserDashboard: React.FC = () => {
                 className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors group"
               >
                 <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[16px] font-medium">Asosiy sahifaga</span>
+                <span className="text-[16px] font-medium">{t('userDashboard.header.backToHome')}</span>
               </button>
               <div className="h-8 w-px bg-white/30"></div>
               <h1 className="text-[40px] font-bold text-white leading-none tracking-tight">
-                Mening Panelaim
+                {t('userDashboard.header.title')}
               </h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-[12px] text-white/70 uppercase tracking-wide">Xush kelibsiz</p>
+                <p className="text-[12px] text-white/70 uppercase tracking-wide">{t('userDashboard.header.welcome')}</p>
                 <p className="text-[18px] font-semibold text-white">{user?.firstName} {user?.lastName}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30">
@@ -163,7 +165,7 @@ const UserDashboard: React.FC = () => {
                 <Package className="w-8 h-8 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">Buyurtmalarim</p>
+                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.myOrders')}</p>
                 <p className="text-[48px] font-bold text-[#333] leading-none">{orders.length}</p>
               </div>
             </div>
@@ -177,7 +179,7 @@ const UserDashboard: React.FC = () => {
                 <Calendar className="w-8 h-8 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">Faol turlar</p>
+                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.activeTours')}</p>
                 <p className="text-[48px] font-bold text-[#333] leading-none">
                   {orders.filter(o => o.status === 'CONFIRMED' || o.status === 'FULLY_PAID').length}
                 </p>
@@ -194,9 +196,9 @@ const UserDashboard: React.FC = () => {
                 <Heart className="w-8 h-8 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">Saqlanganlar</p>
+                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.saved')}</p>
                 <p className="text-[24px] font-bold text-amber-600 underline hover:text-amber-700 leading-none">
-                  Ko'rish →
+                  {t('userDashboard.stats.view')} →
                 </p>
               </div>
             </div>
@@ -207,28 +209,28 @@ const UserDashboard: React.FC = () => {
         {/* Orders List */}
         <div className="bg-white rounded-[20px] shadow-lg border-2 border-[#e8e4db] overflow-hidden">
           <div className="bg-gradient-to-r from-[#8f7b49] to-[#a08957] px-[40px] py-[30px]">
-            <h2 className="text-[32px] font-bold text-white tracking-tight">Mening buyurtmalarim</h2>
+            <h2 className="text-[32px] font-bold text-white tracking-tight">{t('userDashboard.orders.title')}</h2>
           </div>
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-[80px]">
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8f7b49] border-t-transparent"></div>
-              <p className="text-[18px] text-[#666] mt-6">Yuklanmoqda...</p>
+              <p className="text-[18px] text-[#666] mt-6">{t('userDashboard.orders.loading')}</p>
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-[80px] px-[40px]">
               <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <Package className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-[28px] font-bold text-[#333] mb-3">Hozircha buyurtmalar yo'q</h3>
+              <h3 className="text-[28px] font-bold text-[#333] mb-3">{t('userDashboard.orders.empty')}</h3>
               <p className="text-[18px] text-[#666] mb-8 max-w-md mx-auto">
-                Ajoyib sayohatni boshlang va unutilmas xotiralar yarating!
+                {t('userDashboard.orders.emptyDesc')}
               </p>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/tours')}
                 className="bg-gradient-to-r from-[#8f7b49] to-[#a08957] text-white px-8 py-4 rounded-[12px] text-[18px] font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
-                Turlarni ko'rish →
+                {t('userDashboard.orders.viewTours')} →
               </button>
             </div>
           ) : (
@@ -268,7 +270,7 @@ const UserDashboard: React.FC = () => {
                             <MapPin className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
-                            <p className="text-[12px] text-[#999] uppercase">Manzil</p>
+                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.destination')}</p>
                             <p className="text-[16px] font-semibold text-[#333]">{order.tour?.destination || 'N/A'}</p>
                           </div>
                         </div>
@@ -278,17 +280,14 @@ const UserDashboard: React.FC = () => {
                             <User className="w-5 h-5 text-purple-600" />
                           </div>
                           <div>
-                            <p className="text-[12px] text-[#999] uppercase">Ishtirokchilar</p>
-                            <p className="text-[16px] font-semibold text-[#333]">{order.participants} kishi</p>
+                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.participants')}</p>
+                            <p className="text-[16px] font-semibold text-[#333]">{order.participants} {t('userDashboard.orders.people')}</p>
                           </div>
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-emerald-600" />
-                          </div>
                           <div>
-                            <p className="text-[12px] text-[#999] uppercase">Narx</p>
+                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.price')}</p>
                             <p className="text-[18px] font-bold text-emerald-600">
                               {order.totalAmount.toLocaleString()} UZS
                             </p>
@@ -310,7 +309,7 @@ const UserDashboard: React.FC = () => {
                         
                         <div className="flex items-center gap-3">
                           <CreditCard className="w-5 h-5 text-[#999]" />
-                          <span className="text-[14px] font-medium text-[#666]">To'lov:</span>
+                          <span className="text-[14px] font-medium text-[#666]">{t('userDashboard.orders.payment')}:</span>
                           {paymentStatuses[order.id] ? (
                             <div className="flex items-center gap-2">
                               <span className={`inline-flex px-3 py-1.5 text-[13px] font-bold rounded-full border-2 ${getPaymentStatusColor(paymentStatuses[order.id])}`}>
@@ -320,7 +319,7 @@ const UserDashboard: React.FC = () => {
                                 onClick={() => checkPaymentStatus(order.id)}
                                 disabled={checkingPayment[order.id]}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                title="Yangilash"
+                                title={t('userDashboard.orders.refresh')}
                               >
                                 <RefreshCw className={`w-4 h-4 text-[#666] ${checkingPayment[order.id] ? 'animate-spin' : ''}`} />
                               </button>
@@ -331,7 +330,7 @@ const UserDashboard: React.FC = () => {
                               disabled={checkingPayment[order.id]}
                               className="px-4 py-2 bg-blue-600 text-white text-[14px] font-semibold rounded-[8px] hover:bg-blue-700 transition-colors"
                             >
-                              {checkingPayment[order.id] ? 'Tekshirilmoqda...' : 'Tekshirish'}
+                              {checkingPayment[order.id] ? t('userDashboard.orders.checking') : t('userDashboard.orders.check')}
                             </button>
                           )}
                         </div>

@@ -56,7 +56,7 @@ const TourListHero: React.FC<TourListHeroProps> = ({ filters, onFilterChange, on
 
   return (
     <section
-      className="relative overflow-hidden bg-[#B4A785] text-white min-h-[clamp(500px,48.61vw,700px)] pb-[clamp(40px,2.78vw,0px)] lg:pb-0"
+      className="relative overflow-hidden bg-[#B4A785] text-white h-screen pb-[clamp(40px,2.78vw,0px)] lg:pb-0"
     >
       {/* Decorative Wave Element */}
       <div className="hidden lg:block absolute left-1/2 top-[clamp(60px,6.88vw,99px)] w-[clamp(900px,104.31vw,1502px)] h-[clamp(150px,17.15vw,247px)] -translate-x-1/2">
