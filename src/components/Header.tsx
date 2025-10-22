@@ -22,10 +22,11 @@ const Header: React.FC = () => {
     navigate('/');
   };
 
-  const languageOptions: Array<{ value: 'ru' | 'uz' | 'en'; label: string }> = useMemo(() => ([
+  const languageOptions: Array<{ value: 'ru' | 'uz' | 'en' | 'de'; label: string }> = useMemo(() => ([
     { value: 'ru', label: 'RU' },
     { value: 'uz', label: 'UZ' },
     { value: 'en', label: 'EN' },
+    { value: 'de', label: 'DE' },
   ]), []);
 
   // Close dropdown when clicking outside
@@ -42,7 +43,7 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  const handleLanguageChange = (lang: 'ru' | 'uz' | 'en') => {
+  const handleLanguageChange = (lang: 'ru' | 'uz' | 'en' | 'de') => {
     setLanguage(lang);
     setIsLanguageDropdownOpen(false);
   };
