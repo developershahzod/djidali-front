@@ -1,0 +1,9 @@
+{
+  "nav": {
+    "about": "About",
+    "categories": "Categories",
+    "news": "News",
+    "why-us": "Why Us"
+  },
+  "tourDetail.maxParticipants": "Max. {maxParticipants} people"
+}

@@ -1,0 +1,3737 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "summary": "Basic health check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": { "status": "up" },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/api": {
+      "get": {
+        "operationId": "AppController_getInfo",
+        "summary": "Root endpoint",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "example": "Travel ERP API" },
+                    "version": { "type": "string", "example": "1.0.0" },
+                    "description": {
+                      "type": "string",
+                      "example": "Travel agency management system API"
+                    },
+                    "documentation": {
+                      "type": "string",
+                      "example": "/api/docs"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Register a new user",
+        "description": "Create a new user account with email and password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User registered successfully" },
+          "400": { "description": "Validation failed" },
+          "409": { "description": "Email already exists" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/auth/test-body": {
+      "post": {
+        "operationId": "AuthController_testBody",
+        "parameters": [],
+        "responses": {
+          "200": { "description": "" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Login user",
+        "description": "Authenticate user and receive JWT tokens",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "description": "JWT access token"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "description": "JWT refresh token"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "email": { "type": "string" },
+                        "name": { "type": "string" },
+                        "role": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Invalid credentials" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refreshTokens",
+        "summary": "Refresh access token",
+        "description": "Get a new access token using a valid refresh token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshTokenDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "accessToken": { "type": "string" },
+                    "refreshToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid refresh token" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "Logout user",
+        "description": "Invalidate user refresh token and logout",
+        "parameters": [],
+        "responses": {
+          "200": { "description": "Logged out successfully" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "summary": "Get current user profile",
+        "description": "Retrieve the profile of the currently authenticated user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "sub": { "type": "string", "description": "User ID" },
+                    "email": { "type": "string" },
+                    "name": { "type": "string" },
+                    "role": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "summary": "Request password reset",
+        "description": "Send a password reset link to the user email",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ForgotPasswordDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent if account exists"
+          },
+          "400": { "description": "Invalid email" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "summary": "Reset password",
+        "description": "Reset password using the token received via email",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResetPasswordDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Password reset successfully" },
+          "400": { "description": "Invalid or expired token" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["auth"]
+      }
+    },
+    "/api/users/managers": {
+      "get": {
+        "operationId": "UsersController_getManagers",
+        "summary": "Get all sales managers (Admin only)",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      },
+      "post": {
+        "operationId": "UsersController_createManager",
+        "summary": "Create new sales manager (Admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateUserDto" }
+            }
+          }
+        },
+        "responses": { "201": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/users/{id}/status": {
+      "patch": {
+        "operationId": "UsersController_toggleUserStatus",
+        "summary": "Toggle user active status (Admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "summary": "Get current user profile",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      },
+      "put": {
+        "operationId": "UsersController_updateProfile",
+        "summary": "Update current user profile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateProfileDto" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/users/activity": {
+      "get": {
+        "operationId": "UsersController_getActivityLogs",
+        "summary": "Get current user activity logs",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/tours": {
+      "post": {
+        "operationId": "ToursController_create",
+        "summary": "Create new tour",
+        "description": "Creates a new tour with all details including itinerary, pricing, and availability",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTourDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tour created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateTourDto" }
+              }
+            }
+          },
+          "400": { "description": "Bad request - validation failed" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "get": {
+        "operationId": "ToursController_findAll",
+        "summary": "Get all tours",
+        "description": "Retrieve a paginated list of tours with optional filtering by destination, status, and category. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default: 10, max: 100)",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "destination",
+            "required": false,
+            "in": "query",
+            "description": "Filter by destination",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tour status",
+            "schema": {
+              "enum": ["ACTIVE", "CANCELLED", "COMPLETED", "FULLY_BOOKED"],
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code (uz, ru, eng, de). If not specified, returns all languages.",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tours retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "uuid": "3c4c3860-6511-4da2-b0b6-22c1c4f775aa",
+                        "id": "tour-samarkand-001",
+                        "title": {
+                          "uz": "Samarqand safari",
+                          "ru": "Самаркандское сафари",
+                          "eng": "Samarkand Safari",
+                          "de": "Samarkand Safari"
+                        },
+                        "destination": "Samarkand",
+                        "status": "ACTIVE",
+                        "isHidden": false,
+                        "startDate": "2024-06-01T00:00:00.000Z",
+                        "endDate": "2024-06-04T00:00:00.000Z",
+                        "_count": { "orders": 0 }
+                      }
+                    ],
+                    "total": 1,
+                    "page": 1,
+                    "totalPages": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      }
+    },
+    "/api/tours/upload-images": {
+      "post": {
+        "operationId": "ToursController_uploadImages",
+        "summary": "Upload tour images",
+        "description": "Upload up to 10 images for a tour. Max file size: 5MB per image",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "binary" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Images uploaded successfully" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "413": { "description": "File too large" },
+          "415": { "description": "Unsupported media type" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/tours/upcoming": {
+      "get": {
+        "operationId": "ToursController_getUpcoming",
+        "summary": "Get upcoming tours",
+        "description": "Supports multilingual responses",
+        "parameters": [
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      }
+    },
+    "/api/tours/popular": {
+      "get": {
+        "operationId": "ToursController_getPopular",
+        "summary": "Get popular tours",
+        "description": "Supports multilingual responses",
+        "parameters": [
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      }
+    },
+    "/api/tours/search": {
+      "get": {
+        "operationId": "ToursController_search",
+        "summary": "Search tours",
+        "description": "Supports multilingual responses",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      }
+    },
+    "/api/tours/{id}": {
+      "get": {
+        "operationId": "ToursController_findOne",
+        "summary": "Get tour by ID",
+        "description": "Retrieve detailed information about a specific tour. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Tour ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Tour details retrieved successfully" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Tour not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      },
+      "put": {
+        "operationId": "ToursController_update",
+        "summary": "Update tour (Admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTourDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "bearer": [] }]
+      },
+      "delete": {
+        "operationId": "ToursController_remove",
+        "summary": "Soft delete tour (Admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/tours/{id}/availability": {
+      "get": {
+        "operationId": "ToursController_checkAvailability",
+        "summary": "Check tour availability",
+        "description": "Check real-time availability and remaining spots for a specific tour",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Tour ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Availability information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "available": { "type": "boolean" },
+                    "totalSpots": { "type": "number" },
+                    "bookedSpots": { "type": "number" },
+                    "remainingSpots": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Tour not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"]
+      }
+    },
+    "/api/tours/{id}/visibility": {
+      "patch": {
+        "operationId": "ToursController_toggleVisibility",
+        "summary": "Toggle tour visibility (Admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/tours/{id}/status": {
+      "patch": {
+        "operationId": "ToursController_updateStatus",
+        "summary": "Update tour status",
+        "description": "Change the status of a tour (e.g., ACTIVE, FULLY_BOOKED, COMPLETED)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Tour ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "status": {
+                    "enum": ["ACTIVE", "CANCELLED", "COMPLETED", "FULLY_BOOKED"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Tour status updated successfully" },
+          "400": { "description": "Invalid status transition" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tours"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/tour-categories": {
+      "post": {
+        "operationId": "TourCategoriesController_create",
+        "summary": "Create category (Admin only)",
+        "description": "Create a new tour category with hierarchical support",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCategoryDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Category created successfully" },
+          "400": {
+            "description": "Bad request - invalid data or max depth exceeded"
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Admin role required" },
+          "409": { "description": "Conflict - slug already exists" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "get": {
+        "operationId": "TourCategoriesController_findAll",
+        "summary": "Get all categories",
+        "description": "Get flat list of all active categories. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of categories" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      }
+    },
+    "/api/tour-categories/tree": {
+      "get": {
+        "operationId": "TourCategoriesController_getTree",
+        "summary": "Get category tree",
+        "description": "Get hierarchical tree of all active categories. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Category tree retrieved successfully" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      }
+    },
+    "/api/tour-categories/search": {
+      "get": {
+        "operationId": "TourCategoriesController_search",
+        "summary": "Search categories",
+        "description": "Search categories by name or description. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Search query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Search results" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      }
+    },
+    "/api/tour-categories/{id}": {
+      "get": {
+        "operationId": "TourCategoriesController_findOne",
+        "summary": "Get category by ID",
+        "description": "Get detailed information about a specific category. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Category details" },
+          "404": { "description": "Category not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      },
+      "patch": {
+        "operationId": "TourCategoriesController_update",
+        "summary": "Update category (Admin only)",
+        "description": "Update category information",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCategoryDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Category updated successfully" },
+          "404": { "description": "Category not found" },
+          "409": { "description": "Conflict - slug already exists" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "delete": {
+        "operationId": "TourCategoriesController_remove",
+        "summary": "Delete category (Admin only)",
+        "description": "Soft delete a category (sets isActive to false). Cannot delete if has active children or associated tours.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Category deleted successfully" },
+          "400": { "description": "Cannot delete - has children or tours" },
+          "404": { "description": "Category not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/tour-categories/slug/{slug}": {
+      "get": {
+        "operationId": "TourCategoriesController_findBySlug",
+        "summary": "Get category by slug",
+        "description": "Get category information by URL-friendly slug. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "description": "Category slug",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Category details" },
+          "404": { "description": "Category not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      }
+    },
+    "/api/tour-categories/{id}/breadcrumbs": {
+      "get": {
+        "operationId": "TourCategoriesController_getBreadcrumbs",
+        "summary": "Get breadcrumbs for category",
+        "description": "Get breadcrumb trail from root to current category. Supports multilingual responses.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang",
+            "required": false,
+            "in": "query",
+            "description": "Language code",
+            "schema": { "enum": ["uz", "ru", "eng", "de"], "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Breadcrumbs array from root to current category"
+          },
+          "404": { "description": "Category not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"]
+      }
+    },
+    "/api/tour-categories/{id}/toggle-active": {
+      "patch": {
+        "operationId": "TourCategoriesController_toggleActive",
+        "summary": "Toggle category active status (Admin only)",
+        "description": "Activate or deactivate a category",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Category status toggled" },
+          "404": { "description": "Category not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["tour-categories"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "operationId": "OrdersController_create",
+        "summary": "👔 Create new order (Staff Only - ADMIN/SALES_MANAGER)",
+        "description": "\n**FOR STAFF ONLY** - This endpoint is for staff members (ADMIN/SALES_MANAGER) to create orders on behalf of clients.\n\n⚠️ **IMPORTANT**:\n- Requires ADMIN or SALES_MANAGER role\n- 'clientId' field is REQUIRED (must reference existing client in clients table)\n- Total amount is calculated automatically from tour price × participants\n\n**If you are a CUSTOMER, use POST /api/customer/orders instead!**\n\n**What happens:**\n1. Validates tour availability and remaining spots\n2. Verifies clientId exists in clients table\n3. Calculates total amount automatically\n4. Creates order with PENDING status\n5. Sets automatic expiration after 30 minutes of inactivity\n6. Links order to the specified client (clientId)\n7. Assigns the current staff member as manager (managerId)\n",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Order creation payload (clientId is REQUIRED for staff orders)",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOrderDto" },
+              "examples": {
+                "validStaffRequest": {
+                  "summary": "✅ Correct Staff Order Request",
+                  "description": "This is the correct format for staff creating orders for clients. clientId MUST be included.",
+                  "value": {
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "clientId": "123e4567-e89b-12d3-a456-426614174001",
+                    "participants": 2,
+                    "notes": "Client requested vegetarian meals"
+                  }
+                },
+                "invalidStaffRequest": {
+                  "summary": "❌ WRONG - Missing clientId",
+                  "description": "This will fail with 400 Bad Request. clientId is required for staff orders.",
+                  "value": {
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "participants": 2,
+                    "notes": "This will fail - missing clientId!"
+                  }
+                },
+                "customerShouldNotUse": {
+                  "summary": "⛔ CUSTOMERS: Do NOT use this endpoint",
+                  "description": "If you are a customer, use POST /api/customer/orders instead. This endpoint requires ADMIN/SALES_MANAGER role.",
+                  "value": {
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "participants": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "✅ Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "order-uuid",
+                    "orderNumber": "ORD-20241007-0001",
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "clientId": "123e4567-e89b-12d3-a456-426614174001",
+                    "managerId": "manager-uuid",
+                    "participants": 2,
+                    "totalAmount": 1000,
+                    "paidAmount": 0,
+                    "status": "PENDING",
+                    "notes": "Client requested vegetarian meals",
+                    "expiresAt": "2024-10-07T10:30:00.000Z",
+                    "createdAt": "2024-10-07T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "❌ Bad request - validation failed, missing clientId, or foreign key constraint error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "examples": {
+                    "missingClientId": {
+                      "summary": "Missing clientId",
+                      "value": {
+                        "statusCode": 400,
+                        "message": "clientId is required for staff orders. Use POST /customer/orders for customer orders.",
+                        "error": "Bad Request"
+                      }
+                    },
+                    "invalidClientId": {
+                      "summary": "Invalid clientId (Foreign Key Error)",
+                      "value": {
+                        "statusCode": 400,
+                        "message": "Foreign key constraint violated: orders_client_id_fkey. The provided clientId does not exist in the clients table.",
+                        "error": "Bad Request"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": {
+            "description": "⛔ Forbidden - ADMIN or SALES_MANAGER role required. Customers should use POST /api/customer/orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "❌ Tour or client not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "get": {
+        "operationId": "OrdersController_findAll",
+        "summary": "Get all orders",
+        "description": "Retrieve a paginated list of orders with optional filtering",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default: 10)",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by order status",
+            "schema": {
+              "enum": [
+                "PENDING",
+                "CONFIRMED",
+                "PARTIALLY_PAID",
+                "FULLY_PAID",
+                "CANCELLED",
+                "COMPLETED",
+                "REFUNDED",
+                "EXPIRED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "managerId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by manager ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of orders retrieved successfully" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/search": {
+      "get": {
+        "operationId": "OrdersController_search",
+        "summary": "Search orders",
+        "description": "Search orders by order number or client details with advanced filtering",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Search query (order number or client info)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status",
+            "schema": {
+              "enum": [
+                "PENDING",
+                "CONFIRMED",
+                "PARTIALLY_PAID",
+                "FULLY_PAID",
+                "CANCELLED",
+                "COMPLETED",
+                "REFUNDED",
+                "EXPIRED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "managerId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by manager",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by start date (ISO format)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by end date (ISO format)",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Search results" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/my-orders": {
+      "get": {
+        "operationId": "OrdersController_getMyOrders",
+        "summary": "Get orders managed by current user",
+        "parameters": [],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_findOne",
+        "summary": "Get order by ID",
+        "description": "Retrieve detailed information about a specific order including client, tour, and payment details",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Order ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order details retrieved successfully" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Order not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "put": {
+        "operationId": "OrdersController_update",
+        "summary": "Update order",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateOrderDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/number/{orderNumber}": {
+      "get": {
+        "operationId": "OrdersController_findByOrderNumber",
+        "summary": "Get order by order number",
+        "description": "Retrieve order details using the unique order number (e.g., ORD-2024-001)",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "required": true,
+            "in": "path",
+            "description": "Unique order number",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order found" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Order not found" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/status": {
+      "patch": {
+        "operationId": "OrdersController_updateStatus",
+        "summary": "Update order status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateOrderStatusDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/assign": {
+      "patch": {
+        "operationId": "OrdersController_assignManager",
+        "summary": "Assign manager to order",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/client/{clientId}": {
+      "get": {
+        "operationId": "OrdersController_getOrdersByClient",
+        "summary": "Get orders by client ID",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/expiring-soon": {
+      "get": {
+        "operationId": "OrdersController_getOrdersExpiringSoon",
+        "summary": "Get orders expiring soon",
+        "parameters": [
+          {
+            "name": "minutes",
+            "required": false,
+            "in": "query",
+            "description": "Minutes until expiration (default: 60)",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/extend-expiration": {
+      "patch": {
+        "operationId": "OrdersController_extendExpiration",
+        "summary": "Extend order expiration time",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "additionalMinutes": {
+                    "type": "number",
+                    "description": "Additional minutes to extend expiration"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/cancel-expiration": {
+      "patch": {
+        "operationId": "OrdersController_cancelExpiration",
+        "summary": "Cancel order expiration (for paid orders)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/expire": {
+      "post": {
+        "operationId": "OrdersController_expireOrderManually",
+        "summary": "Manually expire an order",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "description": "Reason for manual expiration"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/orders/{id}/update-activity": {
+      "patch": {
+        "operationId": "OrdersController_updateOrderActivity",
+        "summary": "Update order activity timestamp",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "tags": ["orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/customer/orders": {
+      "post": {
+        "operationId": "CustomerOrdersController_create",
+        "summary": "🛒 Create new order (Customer)",
+        "description": "\n**FOR CUSTOMERS ONLY** - This endpoint is for authenticated customers to create their own orders.\n\n⚠️ **IMPORTANT**:\n- Customer ID is automatically set from your JWT token\n- Do NOT include 'clientId' in the request body\n- Total amount is calculated automatically from tour price × participants\n\nIf you are staff (ADMIN/SALES_MANAGER) creating an order for a client, use POST /api/orders instead.\n\n**What happens:**\n1. Validates tour availability and remaining spots\n2. Calculates total amount automatically\n3. Creates order with PENDING status\n4. Sets automatic expiration after 30 minutes of inactivity\n5. Links order to your user account (customerId)\n",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Order creation payload (DO NOT include clientId)",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOrderDto" },
+              "examples": {
+                "validRequest": {
+                  "summary": "✅ Correct Customer Order Request",
+                  "description": "This is the correct format for customer orders. Note: clientId is NOT included.",
+                  "value": {
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "participants": 2,
+                    "notes": "Special dietary requirements"
+                  }
+                },
+                "invalidRequest": {
+                  "summary": "❌ WRONG - Do not include clientId",
+                  "description": "This will fail with 400 Bad Request. Never include clientId for customer orders.",
+                  "value": {
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "clientId": "123e4567-e89b-12d3-a456-426614174001",
+                    "participants": 2,
+                    "notes": "This will fail!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "✅ Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "order-uuid",
+                    "orderNumber": "ORD-20241007-0001",
+                    "tourId": "da5c0ba3-e001-4aa7-88b5-5b2927e05cbc",
+                    "customerId": "e6740b08-ed4a-40a7-932a-42462f98364e",
+                    "participants": 2,
+                    "totalAmount": 1000,
+                    "paidAmount": 0,
+                    "status": "PENDING",
+                    "notes": "Special dietary requirements",
+                    "expiresAt": "2024-10-07T10:30:00.000Z",
+                    "createdAt": "2024-10-07T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "❌ Bad request - validation failed, clientId provided, or tour not available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "clientId should not be provided for customer orders. It is automatically set from your JWT token.",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - CUSTOMER role required" },
+          "404": { "description": "❌ Tour not found" }
+        },
+        "tags": ["customer-orders"],
+        "security": [{ "JWT-auth": [] }]
+      },
+      "get": {
+        "operationId": "CustomerOrdersController_getMyOrders",
+        "summary": "Get my orders",
+        "description": "Retrieve all orders for the authenticated customer",
+        "parameters": [],
+        "responses": {
+          "200": { "description": "List of customer orders" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - CUSTOMER role required" }
+        },
+        "tags": ["customer-orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/customer/orders/{id}": {
+      "get": {
+        "operationId": "CustomerOrdersController_getOrder",
+        "summary": "Get order details",
+        "description": "Retrieve detailed information about a specific order. Only accessible by the order owner.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Order ID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order details" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - CUSTOMER role required" },
+          "404": { "description": "Order not found or access denied" }
+        },
+        "tags": ["customer-orders"],
+        "security": [{ "JWT-auth": [] }]
+      }
+    },
+    "/api/clients": {
+      "post": {
+        "operationId": "ClientsController_create",
+        "summary": "Create new client",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateClientDto" }
+            }
+          }
+        },
+        "responses": { "201": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      },
+      "get": {
+        "operationId": "ClientsController_findAll",
+        "summary": "Get all clients with pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/clients/search": {
+      "get": {
+        "operationId": "ClientsController_search",
+        "summary": "Search clients",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/clients/import": {
+      "post": {
+        "operationId": "ClientsController_importClients",
+        "summary": "Import multiple clients",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "responses": { "201": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/clients/{id}": {
+      "get": {
+        "operationId": "ClientsController_findOne",
+        "summary": "Get client by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      },
+      "put": {
+        "operationId": "ClientsController_update",
+        "summary": "Update client",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateClientDto" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      },
+      "delete": {
+        "operationId": "ClientsController_remove",
+        "summary": "Delete client",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/clients/{id}/statistics": {
+      "get": {
+        "operationId": "ClientsController_getStatistics",
+        "summary": "Get client statistics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/clients/{id}/orders": {
+      "get": {
+        "operationId": "ClientsController_getOrders",
+        "summary": "Get client's orders",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Clients"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/initiate": {
+      "post": {
+        "operationId": "PaymentsController_initiatePayment",
+        "summary": "Initiate payment for an order",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/InitiatePaymentDto" }
+            }
+          }
+        },
+        "responses": { "201": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/{id}/status": {
+      "get": {
+        "operationId": "PaymentsController_getPaymentStatus",
+        "summary": "Get payment status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/{id}/retry": {
+      "post": {
+        "operationId": "PaymentsController_retryPayment",
+        "summary": "Retry failed payment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "201": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/{id}/refund": {
+      "post": {
+        "operationId": "PaymentsController_refundPayment",
+        "summary": "Refund payment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "201": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/order/{orderId}": {
+      "get": {
+        "operationId": "PaymentsController_getOrderPayments",
+        "summary": "Get payments for an order",
+        "parameters": [
+          {
+            "name": "orderId",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/statistics": {
+      "get": {
+        "operationId": "PaymentsController_getStatistics",
+        "summary": "Get payment statistics",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "method",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/payments/click/prepare": {
+      "post": {
+        "operationId": "PaymentsController_clickPrepare",
+        "summary": "Click payment preparation webhook",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/click/complete": {
+      "post": {
+        "operationId": "PaymentsController_clickComplete",
+        "summary": "Click payment completion webhook",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/payme/webhook": {
+      "post": {
+        "operationId": "PaymentsController_paymeWebhook",
+        "summary": "PayMe payment webhook",
+        "parameters": [
+          {
+            "name": "authorization",
+            "required": true,
+            "in": "header",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/uzum/webhook": {
+      "post": {
+        "operationId": "PaymentsController_uzumWebhook",
+        "summary": "Uzum payment webhook",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Payments"]
+      }
+    },
+    "/api/bookings": {
+      "post": {
+        "operationId": "BookingsController_createBooking",
+        "summary": "Create a public booking (no auth required)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateBookingDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "order": { "type": "object" },
+                    "client": { "type": "object" },
+                    "message": { "type": "string" },
+                    "bookingReference": {
+                      "type": "string",
+                      "example": "BK202312310001"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad request - validation failed" },
+          "404": { "description": "Tour not found" }
+        },
+        "tags": ["Public Bookings"]
+      }
+    },
+    "/api/bookings/status/{reference}": {
+      "get": {
+        "operationId": "BookingsController_getBookingStatus",
+        "summary": "Get booking status by reference or order number",
+        "parameters": [
+          {
+            "name": "reference",
+            "required": true,
+            "in": "path",
+            "description": "Booking reference (e.g., BK202312310001) or order number",
+            "schema": { "example": "BK202312310001", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "bookingReference": { "type": "string" },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "PENDING",
+                        "CONFIRMED",
+                        "PARTIALLY_PAID",
+                        "FULLY_PAID",
+                        "CANCELLED",
+                        "COMPLETED",
+                        "REFUNDED"
+                      ]
+                    },
+                    "order": { "type": "object" },
+                    "client": { "type": "object" },
+                    "tour": { "type": "object" },
+                    "payments": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    },
+                    "timeline": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Booking not found" }
+        },
+        "tags": ["Public Bookings"]
+      }
+    },
+    "/api/bookings/client/{email}": {
+      "get": {
+        "operationId": "BookingsController_lookupClient",
+        "summary": "Lookup client and booking history by email",
+        "parameters": [
+          {
+            "name": "email",
+            "required": true,
+            "in": "path",
+            "description": "Client email address",
+            "schema": { "example": "john.doe@example.com", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client lookup successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "exists": { "type": "boolean" },
+                    "client": { "type": "object", "nullable": true },
+                    "bookingHistory": {
+                      "type": "array",
+                      "items": { "type": "object" },
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Public Bookings"]
+      }
+    },
+    "/api/bookings/available-tours": {
+      "get": {
+        "operationId": "BookingsController_getAvailableTours",
+        "summary": "Get available tours for booking",
+        "parameters": [
+          {
+            "name": "destination",
+            "required": false,
+            "in": "query",
+            "description": "Filter by destination",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by start date (ISO format)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by end date (ISO format)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "description": "Minimum price filter",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Maximum price filter",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available tours retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "title": { "type": "string" },
+                      "destination": { "type": "string" },
+                      "startDate": { "type": "string" },
+                      "endDate": { "type": "string" },
+                      "price": { "type": "number" },
+                      "maxParticipants": { "type": "number" },
+                      "availability": {
+                        "type": "object",
+                        "properties": {
+                          "available": { "type": "boolean" },
+                          "totalSpots": { "type": "number" },
+                          "bookedSpots": { "type": "number" },
+                          "remainingSpots": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Public Bookings"]
+      }
+    },
+    "/api/bookings/{reference}": {
+      "delete": {
+        "operationId": "BookingsController_cancelBooking",
+        "summary": "Cancel a booking (public endpoint with restrictions)",
+        "parameters": [
+          {
+            "name": "reference",
+            "required": true,
+            "in": "path",
+            "description": "Booking reference or order number to cancel",
+            "schema": { "example": "BK202312310001", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "order": { "type": "object" },
+                    "client": { "type": "object" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Cannot cancel booking in current status" },
+          "404": { "description": "Booking not found" }
+        },
+        "tags": ["Public Bookings"]
+      }
+    },
+    "/api/statistics/dashboard": {
+      "get": {
+        "operationId": "StatisticsController_getDashboard",
+        "summary": "Get dashboard statistics",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Statistics"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/statistics/sales": {
+      "get": {
+        "operationId": "StatisticsController_getSales",
+        "summary": "Get sales statistics",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "schema": { "enum": ["day", "week", "month"], "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Statistics"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/statistics/tours": {
+      "get": {
+        "operationId": "StatisticsController_getTours",
+        "summary": "Get tour statistics",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Statistics"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/statistics/managers": {
+      "get": {
+        "operationId": "StatisticsController_getManagers",
+        "summary": "Get manager performance statistics (Admin only)",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Statistics"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/statistics/revenue": {
+      "get": {
+        "operationId": "StatisticsController_getRevenue",
+        "summary": "Get revenue by period",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": ["day", "week", "month", "year"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Statistics"],
+        "security": [{ "bearer": [] }]
+      }
+    },
+    "/api/health/live": {
+      "get": {
+        "operationId": "HealthController_live",
+        "summary": "Liveness probe for Kubernetes",
+        "parameters": [],
+        "responses": { "200": { "description": "Service is alive" } },
+        "tags": ["Health"]
+      }
+    },
+    "/api/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "summary": "Readiness probe for Kubernetes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": { "status": "up" },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/api/health/startup": {
+      "get": {
+        "operationId": "HealthController_startup",
+        "summary": "Startup probe for Kubernetes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "info": {
+                      "type": "object",
+                      "example": { "database": { "status": "up" } },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": { "status": "up" },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["status"],
+                        "properties": { "status": { "type": "string" } },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/api/health/metrics": {
+      "get": {
+        "operationId": "HealthController_metrics",
+        "summary": "Get application metrics",
+        "parameters": [],
+        "responses": { "200": { "description": "Application metrics" } },
+        "tags": ["Health"]
+      }
+    },
+    "/api/api/v2/quotes": {
+      "post": {
+        "operationId": "QuotesController_create",
+        "summary": "Create pricing quote",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateQuoteDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuoteResponseDto" }
+              }
+            }
+          }
+        },
+        "tags": ["Quotes (v2)"]
+      }
+    },
+    "/api/api/v2/quotes/{id}": {
+      "get": {
+        "operationId": "QuotesController_findOne",
+        "summary": "Get quote by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuoteResponseDto" }
+              }
+            }
+          }
+        },
+        "tags": ["Quotes (v2)"]
+      }
+    },
+    "/api/api/v2/bookings": {
+      "post": {
+        "operationId": "BookingsV2Controller_create",
+        "summary": "Create booking from quote",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateBookingV2Dto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingV2ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Bookings (v2)"]
+      }
+    },
+    "/api/api/v2/bookings/{id}": {
+      "get": {
+        "operationId": "BookingsV2Controller_findOne",
+        "summary": "Get booking by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingV2ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Bookings (v2)"]
+      }
+    },
+    "/api/api/v2/bookings/order-number/{orderNumber}": {
+      "get": {
+        "operationId": "BookingsV2Controller_findByOrderNumber",
+        "summary": "Get booking by order number",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingV2ResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Bookings (v2)"]
+      }
+    }
+  },
+  "info": {
+    "title": "Travel ERP API",
+    "description": "Comprehensive API documentation for Travel ERP System - Tour Management Platform",
+    "version": "1.0",
+    "contact": {
+      "name": "Travel ERP Support",
+      "url": "https://djidali.uz",
+      "email": "support@djidali.uz"
+    },
+    "license": { "name": "Private", "url": "https://djidali.uz/license" }
+  },
+  "tags": [
+    { "name": "auth", "description": "Authentication endpoints" },
+    { "name": "users", "description": "User management endpoints" },
+    { "name": "clients", "description": "Client management endpoints" },
+    { "name": "tours", "description": "Tour management endpoints" },
+    { "name": "orders", "description": "Order management endpoints" },
+    { "name": "bookings", "description": "Booking management endpoints" },
+    { "name": "payments", "description": "Payment processing endpoints" },
+    { "name": "reports", "description": "Reporting and analytics endpoints" },
+    { "name": "health", "description": "Health check endpoints" }
+  ],
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Development server" },
+    {
+      "url": "https://demo-api.djidali.uz",
+      "description": "Demo/Staging server"
+    },
+    { "url": "https://api.djidali.uz", "description": "Production server" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePass123",
+            "description": "User password (min 8 characters)"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John",
+            "description": "First name"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe",
+            "description": "Last name"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+998901234567",
+            "description": "Phone number"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["ADMIN", "SALES_MANAGER", "CUSTOMER"],
+            "default": "CUSTOMER",
+            "description": "User role (defaults to CUSTOMER for public registration)"
+          },
+          "passportNumber": {
+            "type": "string",
+            "example": "AB1234567",
+            "description": "Passport number (for customers)"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "1990-01-15T00:00:00.000Z",
+            "description": "Date of birth (for customers)"
+          },
+          "nationality": {
+            "type": "string",
+            "example": "Uzbekistan",
+            "description": "Nationality (for customers)"
+          },
+          "address": {
+            "type": "string",
+            "example": "Tashkent, Uzbekistan",
+            "description": "Address (for customers)"
+          }
+        },
+        "required": ["email", "password", "firstName", "lastName"]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com",
+            "description": "User email address",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePass123",
+            "description": "User password",
+            "minLength": 8
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": { "refreshToken": { "type": "string" } },
+        "required": ["refreshToken"]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "john@example.com" }
+        },
+        "required": ["email"]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "newPassword": { "type": "string", "example": "NewSecurePass123" }
+        },
+        "required": ["token", "newPassword"]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "john@example.com" },
+          "passwordHash": { "type": "string", "example": "SecurePass123" },
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "phoneNumber": { "type": "string", "example": "+998901234567" },
+          "role": {
+            "type": "string",
+            "enum": ["ADMIN", "SALES_MANAGER", "CUSTOMER"]
+          }
+        },
+        "required": ["email", "passwordHash", "firstName", "lastName"]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "phoneNumber": { "type": "string", "example": "+998901234567" },
+          "avatar": { "type": "string" }
+        }
+      },
+      "MultilingualTextDto": {
+        "type": "object",
+        "properties": {
+          "uz": {
+            "type": "string",
+            "example": "Turar joy",
+            "description": "Text in Uzbek (required)",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "ru": {
+            "type": "string",
+            "example": "Проживание",
+            "description": "Text in Russian",
+            "maxLength": 500
+          },
+          "eng": {
+            "type": "string",
+            "example": "Accommodation",
+            "description": "Text in English",
+            "maxLength": 500
+          },
+          "de": {
+            "type": "string",
+            "example": "Unterkunft",
+            "description": "Text in German",
+            "maxLength": 500
+          }
+        },
+        "required": ["uz"]
+      },
+      "TourStatus": {
+        "type": "string",
+        "description": "Current status of the tour",
+        "default": "ACTIVE",
+        "enum": ["ACTIVE", "CANCELLED", "COMPLETED", "FULLY_BOOKED"]
+      },
+      "TourProgramDayInputDto": {
+        "type": "object",
+        "properties": {
+          "dayNumber": {
+            "type": "number",
+            "description": "Day number in the tour (1-based, used for ordering)",
+            "minimum": 1,
+            "example": 1
+          },
+          "titleUz": {
+            "type": "string",
+            "description": "Title in Uzbek (required)",
+            "example": "Kelib tushish va shahar bo'ylab sayr"
+          },
+          "titleRu": {
+            "type": "string",
+            "description": "Title in Russian",
+            "example": "Прибытие и обзорная экскурсия по городу"
+          },
+          "titleEng": {
+            "type": "string",
+            "description": "Title in English",
+            "example": "Arrival and City Tour"
+          },
+          "titleDe": {
+            "type": "string",
+            "description": "Title in German",
+            "example": "Ankunft und Stadtrundfahrt"
+          },
+          "descriptionUz": {
+            "type": "string",
+            "description": "Description in Uzbek (HTML allowed, required)",
+            "example": "<p>Mehmonlarni kutib olish, mehmonxonaga joylashish, kechki ekskursiya.</p>"
+          },
+          "descriptionRu": {
+            "type": "string",
+            "description": "Description in Russian (HTML allowed)",
+            "example": "<p>Встреча, размещение в отеле, вечерняя прогулка.</p>"
+          },
+          "descriptionEng": {
+            "type": "string",
+            "description": "Description in English (HTML allowed)",
+            "example": "<p>Airport pickup, hotel check-in, evening city walk.</p>"
+          },
+          "descriptionDe": {
+            "type": "string",
+            "description": "Description in German (HTML allowed)"
+          }
+        },
+        "required": ["dayNumber", "titleUz", "descriptionUz"]
+      },
+      "CreateTourDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Amazing Samarkand Tour",
+            "description": "The title of the tour (legacy field, use multilingual fields instead)",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "example": "Experience the beauty of ancient Samarkand with our guided tour through historical monuments",
+            "description": "Detailed description of the tour (legacy field, use multilingual fields instead)",
+            "minLength": 10
+          },
+          "titleUz": {
+            "type": "string",
+            "example": "Samarqand safari",
+            "description": "Tour title in Uzbek (required)",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "titleRu": {
+            "type": "string",
+            "example": "Самаркандское сафари",
+            "description": "Tour title in Russian",
+            "maxLength": 200
+          },
+          "titleEng": {
+            "type": "string",
+            "example": "Samarkand Safari",
+            "description": "Tour title in English",
+            "maxLength": 200
+          },
+          "titleDe": {
+            "type": "string",
+            "example": "Samarkand Safari",
+            "description": "Tour title in German",
+            "maxLength": 200
+          },
+          "descriptionUz": {
+            "type": "string",
+            "example": "Qadimiy Samarqand go'zalligi bilan tanishing",
+            "description": "Tour description in Uzbek (required, supports HTML)",
+            "minLength": 10
+          },
+          "descriptionRu": {
+            "type": "string",
+            "example": "Познакомьтесь с красотой древнего Самарканда",
+            "description": "Tour description in Russian (supports HTML)"
+          },
+          "descriptionEng": {
+            "type": "string",
+            "example": "Experience the beauty of ancient Samarkand",
+            "description": "Tour description in English (supports HTML)"
+          },
+          "descriptionDe": {
+            "type": "string",
+            "example": "Erleben Sie die Schönheit des alten Samarkand",
+            "description": "Tour description in German (supports HTML)"
+          },
+          "destination": {
+            "type": "string",
+            "example": "Samarkand",
+            "description": "The main destination or location of the tour",
+            "maxLength": 100
+          },
+          "duration": {
+            "type": "number",
+            "example": 5,
+            "description": "Duration in days"
+          },
+          "price": {
+            "type": "number",
+            "example": 500,
+            "description": "Price per person",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["UZS", "USD"],
+            "default": "UZS",
+            "description": "Currency for the tour price"
+          },
+          "maxParticipants": {
+            "type": "number",
+            "example": 20,
+            "description": "Maximum number of participants allowed",
+            "minimum": 1
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2024-06-01T00:00:00Z",
+            "description": "Tour start date in ISO 8601 format",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2024-06-05T00:00:00Z",
+            "description": "Tour end date in ISO 8601 format",
+            "format": "date-time"
+          },
+          "images": {
+            "example": ["image1.jpg", "image2.jpg"],
+            "description": "Array of image URLs",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "itinerary": {
+            "type": "object",
+            "example": {
+              "day1": "Arrival and city tour",
+              "day2": "Historical sites visit"
+            },
+            "description": "Day-by-day itinerary"
+          },
+          "inclusions": {
+            "example": [
+              {
+                "uz": "Turar joy",
+                "ru": "Проживание",
+                "eng": "Accommodation",
+                "de": "Unterkunft"
+              },
+              {
+                "uz": "Ovqatlanish",
+                "ru": "Питание",
+                "eng": "Meals",
+                "de": "Mahlzeiten"
+              }
+            ],
+            "description": "What is included in the tour (multilingual)",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MultilingualTextDto" }
+          },
+          "exclusions": {
+            "example": [
+              {
+                "uz": "Shaxsiy xarajatlar",
+                "ru": "Личные расходы",
+                "eng": "Personal expenses",
+                "de": "Persönliche Ausgaben"
+              },
+              {
+                "uz": "Sayohat sug'urtasi",
+                "ru": "Туристическая страховка",
+                "eng": "Travel insurance",
+                "de": "Reiseversicherung"
+              }
+            ],
+            "description": "What is not included in the tour (multilingual)",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MultilingualTextDto" }
+          },
+          "status": { "$ref": "#/components/schemas/TourStatus" },
+          "categoryId": {
+            "type": "string",
+            "example": "uuid-of-category",
+            "description": "Primary category ID for the tour"
+          },
+          "legacyTourContent": {
+            "type": "string",
+            "description": "Legacy single-language tour content (deprecated). If provided without tourContentUz, it will be mapped to tourContentUz on create."
+          },
+          "tourContentUz": {
+            "type": "string",
+            "description": "Long-form tour content in Uzbek (preferred primary language)."
+          },
+          "tourContentRu": {
+            "type": "string",
+            "description": "Long-form tour content in Russian."
+          },
+          "tourContentEng": {
+            "type": "string",
+            "description": "Long-form tour content in English."
+          },
+          "tourContentDe": {
+            "type": "string",
+            "description": "Long-form tour content in German."
+          },
+          "program": {
+            "description": "Structured day-by-day tour program. On update, sending this array replaces the existing program for the tour.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TourProgramDayInputDto" }
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "titleUz",
+          "descriptionUz",
+          "destination",
+          "duration",
+          "price",
+          "maxParticipants",
+          "startDate",
+          "endDate",
+          "images",
+          "itinerary",
+          "inclusions",
+          "exclusions"
+        ]
+      },
+      "UpdateTourDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Amazing Samarkand Tour",
+            "description": "The title of the tour (legacy field, use multilingual fields instead)",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "example": "Experience the beauty of ancient Samarkand with our guided tour through historical monuments",
+            "description": "Detailed description of the tour (legacy field, use multilingual fields instead)",
+            "minLength": 10
+          },
+          "titleUz": {
+            "type": "string",
+            "example": "Samarqand safari",
+            "description": "Tour title in Uzbek (required)",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "titleRu": {
+            "type": "string",
+            "example": "Самаркандское сафари",
+            "description": "Tour title in Russian",
+            "maxLength": 200
+          },
+          "titleEng": {
+            "type": "string",
+            "example": "Samarkand Safari",
+            "description": "Tour title in English",
+            "maxLength": 200
+          },
+          "titleDe": {
+            "type": "string",
+            "example": "Samarkand Safari",
+            "description": "Tour title in German",
+            "maxLength": 200
+          },
+          "descriptionUz": {
+            "type": "string",
+            "example": "Qadimiy Samarqand go'zalligi bilan tanishing",
+            "description": "Tour description in Uzbek (required, supports HTML)",
+            "minLength": 10
+          },
+          "descriptionRu": {
+            "type": "string",
+            "example": "Познакомьтесь с красотой древнего Самарканда",
+            "description": "Tour description in Russian (supports HTML)"
+          },
+          "descriptionEng": {
+            "type": "string",
+            "example": "Experience the beauty of ancient Samarkand",
+            "description": "Tour description in English (supports HTML)"
+          },
+          "descriptionDe": {
+            "type": "string",
+            "example": "Erleben Sie die Schönheit des alten Samarkand",
+            "description": "Tour description in German (supports HTML)"
+          },
+          "destination": {
+            "type": "string",
+            "example": "Samarkand",
+            "description": "The main destination or location of the tour",
+            "maxLength": 100
+          },
+          "duration": {
+            "type": "number",
+            "example": 5,
+            "description": "Duration in days"
+          },
+          "price": {
+            "type": "number",
+            "example": 500,
+            "description": "Price per person",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["UZS", "USD"],
+            "default": "UZS",
+            "description": "Currency for the tour price"
+          },
+          "maxParticipants": {
+            "type": "number",
+            "example": 20,
+            "description": "Maximum number of participants allowed",
+            "minimum": 1
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2024-06-01T00:00:00Z",
+            "description": "Tour start date in ISO 8601 format",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2024-06-05T00:00:00Z",
+            "description": "Tour end date in ISO 8601 format",
+            "format": "date-time"
+          },
+          "images": {
+            "example": ["image1.jpg", "image2.jpg"],
+            "description": "Array of image URLs",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "itinerary": {
+            "type": "object",
+            "example": {
+              "day1": "Arrival and city tour",
+              "day2": "Historical sites visit"
+            },
+            "description": "Day-by-day itinerary"
+          },
+          "inclusions": {
+            "example": [
+              {
+                "uz": "Turar joy",
+                "ru": "Проживание",
+                "eng": "Accommodation",
+                "de": "Unterkunft"
+              },
+              {
+                "uz": "Ovqatlanish",
+                "ru": "Питание",
+                "eng": "Meals",
+                "de": "Mahlzeiten"
+              }
+            ],
+            "description": "What is included in the tour (multilingual)",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MultilingualTextDto" }
+          },
+          "exclusions": {
+            "example": [
+              {
+                "uz": "Shaxsiy xarajatlar",
+                "ru": "Личные расходы",
+                "eng": "Personal expenses",
+                "de": "Persönliche Ausgaben"
+              },
+              {
+                "uz": "Sayohat sug'urtasi",
+                "ru": "Туристическая страховка",
+                "eng": "Travel insurance",
+                "de": "Reiseversicherung"
+              }
+            ],
+            "description": "What is not included in the tour (multilingual)",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MultilingualTextDto" }
+          },
+          "status": { "$ref": "#/components/schemas/TourStatus" },
+          "categoryId": {
+            "type": "string",
+            "example": "uuid-of-category",
+            "description": "Primary category ID for the tour"
+          },
+          "legacyTourContent": {
+            "type": "string",
+            "description": "Legacy single-language tour content (deprecated). If provided without tourContentUz, it will be mapped to tourContentUz on create."
+          },
+          "tourContentUz": {
+            "type": "string",
+            "description": "Long-form tour content in Uzbek (preferred primary language)."
+          },
+          "tourContentRu": {
+            "type": "string",
+            "description": "Long-form tour content in Russian."
+          },
+          "tourContentEng": {
+            "type": "string",
+            "description": "Long-form tour content in English."
+          },
+          "tourContentDe": {
+            "type": "string",
+            "description": "Long-form tour content in German."
+          },
+          "program": {
+            "description": "Structured day-by-day tour program. On update, sending this array replaces the existing program for the tour.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TourProgramDayInputDto" }
+          }
+        }
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "European Tours",
+            "description": "Category name (legacy field, use multilingual fields instead)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "slug": {
+            "type": "string",
+            "example": "europe",
+            "description": "URL-friendly slug (unique)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "example": "Explore beautiful European destinations",
+            "description": "Category description (legacy field, use multilingual fields instead)"
+          },
+          "nameUz": {
+            "type": "string",
+            "example": "Yevropa sayohatlari",
+            "description": "Category name in Uzbek (required)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "nameRu": {
+            "type": "string",
+            "example": "Европейские туры",
+            "description": "Category name in Russian",
+            "maxLength": 100
+          },
+          "nameEng": {
+            "type": "string",
+            "example": "European Tours",
+            "description": "Category name in English",
+            "maxLength": 100
+          },
+          "nameDe": {
+            "type": "string",
+            "example": "Europäische Touren",
+            "description": "Category name in German",
+            "maxLength": 100
+          },
+          "descriptionUz": {
+            "type": "string",
+            "example": "Chiroyli Yevropa yo'nalishlarini kashf eting",
+            "description": "Category description in Uzbek",
+            "maxLength": 500
+          },
+          "descriptionRu": {
+            "type": "string",
+            "example": "Исследуйте красивые европейские направления",
+            "description": "Category description in Russian",
+            "maxLength": 500
+          },
+          "descriptionEng": {
+            "type": "string",
+            "example": "Explore beautiful European destinations",
+            "description": "Category description in English",
+            "maxLength": 500
+          },
+          "descriptionDe": {
+            "type": "string",
+            "example": "Erkunden Sie schöne europäische Reiseziele",
+            "description": "Category description in German",
+            "maxLength": 500
+          },
+          "icon": {
+            "type": "string",
+            "example": "/icons/europe.svg",
+            "description": "Icon URL or path"
+          },
+          "parentId": {
+            "type": "string",
+            "example": "uuid-of-parent-category",
+            "description": "Parent category ID (for hierarchical structure)"
+          },
+          "sortOrder": {
+            "type": "number",
+            "example": 10,
+            "description": "Sort order (lower numbers appear first)",
+            "minimum": 0
+          }
+        },
+        "required": ["name", "slug", "nameUz"]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "European Tours",
+            "description": "Category name (legacy field, use multilingual fields instead)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "slug": {
+            "type": "string",
+            "example": "europe",
+            "description": "URL-friendly slug (unique)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "example": "Explore beautiful European destinations",
+            "description": "Category description (legacy field, use multilingual fields instead)"
+          },
+          "nameUz": {
+            "type": "string",
+            "example": "Yevropa sayohatlari",
+            "description": "Category name in Uzbek (required)",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "nameRu": {
+            "type": "string",
+            "example": "Европейские туры",
+            "description": "Category name in Russian",
+            "maxLength": 100
+          },
+          "nameEng": {
+            "type": "string",
+            "example": "European Tours",
+            "description": "Category name in English",
+            "maxLength": 100
+          },
+          "nameDe": {
+            "type": "string",
+            "example": "Europäische Touren",
+            "description": "Category name in German",
+            "maxLength": 100
+          },
+          "descriptionUz": {
+            "type": "string",
+            "example": "Chiroyli Yevropa yo'nalishlarini kashf eting",
+            "description": "Category description in Uzbek",
+            "maxLength": 500
+          },
+          "descriptionRu": {
+            "type": "string",
+            "example": "Исследуйте красивые европейские направления",
+            "description": "Category description in Russian",
+            "maxLength": 500
+          },
+          "descriptionEng": {
+            "type": "string",
+            "example": "Explore beautiful European destinations",
+            "description": "Category description in English",
+            "maxLength": 500
+          },
+          "descriptionDe": {
+            "type": "string",
+            "example": "Erkunden Sie schöne europäische Reiseziele",
+            "description": "Category description in German",
+            "maxLength": 500
+          },
+          "icon": {
+            "type": "string",
+            "example": "/icons/europe.svg",
+            "description": "Icon URL or path"
+          },
+          "parentId": {
+            "type": "string",
+            "example": "uuid-of-parent-category",
+            "description": "Parent category ID (for hierarchical structure)"
+          },
+          "sortOrder": {
+            "type": "number",
+            "example": 10,
+            "description": "Sort order (lower numbers appear first)",
+            "minimum": 0
+          }
+        }
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "clientId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "participants": { "type": "number", "example": 2 },
+          "notes": {
+            "type": "string",
+            "example": "Special dietary requirements"
+          },
+          "totalAmount": { "type": "number" }
+        },
+        "required": ["tourId", "participants"]
+      },
+      "UpdateOrderDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "clientId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "participants": { "type": "number", "example": 2 },
+          "notes": {
+            "type": "string",
+            "example": "Special dietary requirements"
+          },
+          "totalAmount": { "type": "number" }
+        }
+      },
+      "UpdateOrderStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONFIRMED",
+              "PARTIALLY_PAID",
+              "FULLY_PAID",
+              "CANCELLED",
+              "COMPLETED",
+              "REFUNDED",
+              "EXPIRED"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "example": "Payment received via bank transfer"
+          }
+        },
+        "required": ["status"]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "john.doe@example.com" },
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "phoneNumber": { "type": "string", "example": "+998901234567" },
+          "passportNumber": { "type": "string", "example": "AA1234567" },
+          "dateOfBirth": { "type": "string", "example": "1990-01-01" },
+          "nationality": { "type": "string", "example": "Uzbekistan" }
+        },
+        "required": ["email", "firstName", "lastName", "phoneNumber"]
+      },
+      "UpdateClientDto": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "john.doe@example.com" },
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "phoneNumber": { "type": "string", "example": "+998901234567" },
+          "passportNumber": { "type": "string", "example": "AA1234567" },
+          "dateOfBirth": { "type": "string", "example": "1990-01-01" },
+          "nationality": { "type": "string", "example": "Uzbekistan" }
+        }
+      },
+      "InitiatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CLICK",
+              "PAYME",
+              "UZUM",
+              "VISA",
+              "MASTERCARD",
+              "CASH",
+              "BANK_TRANSFER"
+            ],
+            "example": "CLICK"
+          },
+          "amount": {
+            "type": "number",
+            "example": 500000,
+            "description": "Amount in UZS"
+          }
+        },
+        "required": ["orderId", "method"]
+      },
+      "CreateClientInfoDto": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "john.doe@example.com" },
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "phoneNumber": { "type": "string", "example": "+998901234567" },
+          "passportNumber": { "type": "string", "example": "AA1234567" },
+          "nationality": { "type": "string", "example": "Uzbekistan" }
+        },
+        "required": ["email", "firstName", "lastName", "phoneNumber"]
+      },
+      "CreateBookingDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "participants": { "type": "number", "example": 2 },
+          "notes": {
+            "type": "string",
+            "example": "Special dietary requirements"
+          },
+          "clientInfo": { "$ref": "#/components/schemas/CreateClientInfoDto" }
+        },
+        "required": ["tourId", "participants", "clientInfo"]
+      },
+      "CreateQuoteDto": { "type": "object", "properties": {} },
+      "QuoteResponseDto": { "type": "object", "properties": {} },
+      "CreateBookingV2Dto": { "type": "object", "properties": {} },
+      "BookingV2ResponseDto": { "type": "object", "properties": {} }
+    }
+  }
+}

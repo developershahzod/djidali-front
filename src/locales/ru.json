@@ -1,0 +1,9 @@
+{
+  "nav": {
+    "about": "О нас",
+    "categories": "Категории",
+    "news": "Новости",
+    "why-us": "Почему мы"
+  },
+  "tourDetail.maxParticipants": "Макс. {maxParticipants} человек"
+}
