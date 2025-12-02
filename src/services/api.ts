@@ -958,6 +958,107 @@ class ApiService {
     const params = lang ? `?lang=${lang}` : "";
     return this.request<News>(`/news/admin/${id}${params}`);
   }
+
+  // ============================================
+  // Public Booking API (NestJS Backend)
+  // ============================================
+
+  /**
+   * Create a public booking (no auth required for creating the booking)
+   * This creates an order in the backend
+   */
+  async createPublicBooking(data: {
+    tourId: string;
+    participants: number;
+    notes?: string;
+    clientInfo: {
+      email: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      passportNumber?: string;
+      nationality?: string;
+    };
+  }): Promise<{
+    success: boolean;
+    order: {
+      id: string;
+      orderNumber: string;
+      totalAmount: number;
+      status: string;
+    };
+    client: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+    message: string;
+    bookingReference: string;
+  }> {
+    return this.request("/bookings", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Get booking status by reference
+   */
+  async getBookingStatus(reference: string): Promise<{
+    bookingReference: string;
+    status: string;
+    order: any;
+    client: any;
+    tour: any;
+    payments: any[];
+    timeline: any[];
+  }> {
+    return this.request(`/bookings/status/${reference}`);
+  }
+
+  /**
+   * Initiate payment for an order (requires auth)
+   * Returns payment URL for Click redirect
+   */
+  async initiateOrderPayment(data: {
+    orderId: string;
+    method: "CLICK" | "PAYME";
+    amount?: number;
+  }): Promise<{
+    transactionId: string;
+    paymentUrl: string;
+    status: string;
+    data: {
+      paymentId: string;
+      isDuplicate?: boolean;
+    };
+  }> {
+    return this.request("/payments/initiate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Get payment status
+   */
+  async getPaymentStatus(paymentId: string): Promise<{
+    id: string;
+    status: string;
+    amount: number;
+    method: string;
+    orderId: string;
+  }> {
+    return this.request(`/payments/${paymentId}/status`);
+  }
+
+  /**
+   * Get payments for an order
+   */
+  async getOrderPayments(orderId: string): Promise<any[]> {
+    return this.request(`/payments/order/${orderId}`);
+  }
 }
 
 // Create and export singleton instance

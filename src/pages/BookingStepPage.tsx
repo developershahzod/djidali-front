@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link, useParams } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { getImageUrl, getTourPrimaryImage } from "../utils/imageUtils";
 import { format } from "date-fns";
 import { ru, uz, de, enUS } from "date-fns/locale";
+import apiService from "../services/api";
 
 // Icons as SVG components
 const CalendarIcon = () => (
@@ -86,8 +87,9 @@ interface BookingData {
 const BookingStepPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { tourId } = useParams<{ tourId: string }>();
   const { translate, language } = useLanguage();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   // Form state - Step 1
   const [fullName, setFullName] = useState("");
@@ -101,11 +103,19 @@ const BookingStepPage: React.FC = () => {
 
   // Form state - Step 2 (Payment)
   const [paymentMethod, setPaymentMethod] = useState<"uzcard" | "click">(
-    "uzcard",
+    "click",
   );
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
+
+  // API integration state
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [bookingReference, setBookingReference] = useState<string | null>(null);
+  const [tour, setTour] = useState<any>(null);
+  const [tourLoading, setTourLoading] = useState(true);
 
   // Get booking data from location state or use defaults
   const bookingData: BookingData = location.state?.bookingData || {
@@ -188,6 +198,43 @@ const BookingStepPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate, location]);
 
+  // Fetch tour data from API
+  useEffect(() => {
+    const fetchTour = async () => {
+      if (!tourId) {
+        setTourLoading(false);
+        return;
+      }
+
+      try {
+        setTourLoading(true);
+        const tourData = await apiService.getTour(Number(tourId));
+        setTour(tourData);
+      } catch (err) {
+        console.error("Failed to fetch tour:", err);
+        setError(
+          translate({
+            ru: "Не удалось загрузить информацию о туре",
+            uz: "Tur ma'lumotlarini yuklab bo'lmadi",
+            en: "Failed to load tour information",
+            de: "Tour-Informationen konnten nicht geladen werden",
+          }),
+        );
+      } finally {
+        setTourLoading(false);
+      }
+    };
+
+    fetchTour();
+  }, [tourId]);
+
+  // Pre-fill user email if authenticated
+  useEffect(() => {
+    if (user && user.email && !email) {
+      setEmail(user.email);
+    }
+  }, [user]);
+
   const handleCancel = () => {
     if (currentStep === 2) {
       setCurrentStep(1);
@@ -196,11 +243,13 @@ const BookingStepPage: React.FC = () => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    setError(null);
+
     if (currentStep === 1) {
       // Validate Step 1
       if (!agreeToPolicy) {
-        alert(
+        setError(
           translate({
             ru: "Пожалуйста, примите Политику Конфиденциальности",
             uz: "Iltimos, Maxfiylik siyosatini qabul qiling",
@@ -210,31 +259,172 @@ const BookingStepPage: React.FC = () => {
         );
         return;
       }
-      // Move to Step 2
-      setCurrentStep(2);
+
+      if (!fullName || !phone || !email) {
+        setError(
+          translate({
+            ru: "Пожалуйста, заполните все обязательные поля",
+            uz: "Iltimos, barcha majburiy maydonlarni to'ldiring",
+            en: "Please fill in all required fields",
+            de: "Bitte füllen Sie alle Pflichtfelder aus",
+          }),
+        );
+        return;
+      }
+
+      // Create booking via API
+      setIsLoading(true);
+      try {
+        // Parse full name into firstName and lastName
+        const nameParts = fullName.trim().split(" ");
+        const firstName = nameParts[0] || "";
+        const lastName = nameParts.slice(1).join(" ") || firstName;
+
+        const response = await apiService.createPublicBooking({
+          tourId: tourId || displayBookingData.tourId,
+          participants: displayTotalParticipants,
+          notes: specialRequests || undefined,
+          clientInfo: {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phone,
+          },
+        });
+
+        // Store order info for payment step
+        setOrderId(response.order.id);
+        setBookingReference(response.bookingReference);
+
+        // Move to Step 2
+        setCurrentStep(2);
+      } catch (err: any) {
+        console.error("Failed to create booking:", err);
+        setError(
+          err.message ||
+            translate({
+              ru: "Не удалось создать бронирование. Попробуйте еще раз.",
+              uz: "Bron yaratib bo'lmadi. Qaytadan urinib ko'ring.",
+              en: "Failed to create booking. Please try again.",
+              de: "Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+            }),
+        );
+      } finally {
+        setIsLoading(false);
+      }
     } else {
-      // Process payment and navigate to complete page
-      navigate("/complete", {
-        state: {
-          bookingData,
-          contactInfo: {
-            fullName,
-            phone,
-            email,
-            emergencyName,
-            emergencyPhone,
-            specialRequests,
-          },
-          paymentInfo: {
-            paymentMethod,
-            cardholderName,
-            cardNumber,
-            expiryDate,
-          },
-        },
-      });
+      // Step 2: Process payment
+      if (paymentMethod === "click") {
+        // Initiate Click payment
+        if (!orderId) {
+          setError(
+            translate({
+              ru: "Ошибка: ID заказа отсутствует",
+              uz: "Xato: Buyurtma ID topilmadi",
+              en: "Error: Order ID is missing",
+              de: "Fehler: Bestell-ID fehlt",
+            }),
+          );
+          return;
+        }
+
+        setIsLoading(true);
+        try {
+          const paymentResponse = await apiService.initiateOrderPayment({
+            orderId: orderId,
+            method: "CLICK",
+            amount: displayTotalPrice,
+          });
+
+          // Redirect to Click payment page
+          if (paymentResponse.paymentUrl) {
+            window.location.href = paymentResponse.paymentUrl;
+          } else {
+            throw new Error("Payment URL not received");
+          }
+        } catch (err: any) {
+          console.error("Failed to initiate payment:", err);
+          setError(
+            err.message ||
+              translate({
+                ru: "Не удалось инициировать оплату. Попробуйте еще раз.",
+                uz: "To'lovni boshlab bo'lmadi. Qaytadan urinib ko'ring.",
+                en: "Failed to initiate payment. Please try again.",
+                de: "Zahlung konnte nicht eingeleitet werden. Bitte versuchen Sie es erneut.",
+              }),
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        // For UZCARD/HUMO - not yet implemented, show message
+        setError(
+          translate({
+            ru: "UZCARD/HUMO оплата пока недоступна. Пожалуйста, используйте Click.",
+            uz: "UZCARD/HUMO to'lovi hali mavjud emas. Click dan foydalaning.",
+            en: "UZCARD/HUMO payment is not available yet. Please use Click.",
+            de: "UZCARD/HUMO-Zahlung ist noch nicht verfügbar. Bitte verwenden Sie Click.",
+          }),
+        );
+      }
     }
   };
+
+  // Update bookingData with tour data from API if available
+  const displayBookingData: BookingData = tour
+    ? {
+        tourId: tour.id?.toString() || tourId || "1",
+        tourTitle:
+          tour.titleRu || tour.title || tour.name || bookingData.tourTitle,
+        tourLocation:
+          tour.locationRu || tour.location || bookingData.tourLocation,
+        tourType: tour.tourType?.name || tour.category?.name || "Туризм",
+        tourImage:
+          tour.images?.[0]?.imageUrl ||
+          tour.coverImage ||
+          bookingData.tourImage,
+        startDate:
+          location.state?.bookingData?.startDate || bookingData.startDate,
+        endDate: location.state?.bookingData?.endDate || bookingData.endDate,
+        participants:
+          location.state?.bookingData?.participants || bookingData.participants,
+        pricePerPerson:
+          typeof tour.price === "number"
+            ? tour.price
+            : bookingData.pricePerPerson,
+        duration: tour.duration || bookingData.duration,
+      }
+    : bookingData;
+
+  // Recalculate prices based on displayBookingData
+  const displayTotalParticipants =
+    displayBookingData.participants.adults +
+    displayBookingData.participants.children;
+  const displaySubtotal =
+    displayBookingData.pricePerPerson * displayBookingData.duration;
+  const displayDiscount = Math.round(displaySubtotal * 0.1); // 10% discount
+  const displayServiceFee = 200000;
+  const displayTotalPrice =
+    displaySubtotal - displayDiscount + displayServiceFee;
+
+  // Show loading state while fetching tour
+  if (tourLoading) {
+    return (
+      <div className="min-h-screen bg-[#F4F2ED] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8F7B49] mx-auto mb-4"></div>
+          <p className="text-[#333333] text-lg">
+            {translate({
+              ru: "Загрузка...",
+              uz: "Yuklanmoqda...",
+              en: "Loading...",
+              de: "Laden...",
+            })}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -243,6 +433,19 @@ const BookingStepPage: React.FC = () => {
     >
       {/* Main Content */}
       <div className="pt-[178px] px-[50px] pb-[100px]">
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center max-w-[1340px]">
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-700 hover:text-red-900 font-bold"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Page Title */}
         <h1 className="text-[90px] font-medium text-[#333333] leading-[100px] tracking-[-2.7px] mb-[60px]">
           {translate({
@@ -658,14 +861,43 @@ const BookingStepPage: React.FC = () => {
               {/* Continue Button */}
               <button
                 onClick={handleContinue}
-                className="flex-1 h-[80px] bg-[#8F7B49] text-white rounded-[10px] text-[20px] font-bold leading-[20px] tracking-[-0.4px] hover:bg-[#7A6640] transition-colors"
+                disabled={isLoading}
+                className={`flex-1 h-[80px] bg-[#8F7B49] text-white rounded-[10px] text-[20px] font-bold leading-[20px] tracking-[-0.4px] transition-colors ${
+                  isLoading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-[#7A6640]"
+                }`}
               >
-                {translate({
-                  ru: "Продолжить",
-                  uz: "Davom etish",
-                  en: "Continue",
-                  de: "Fortfahren",
-                })}
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    {translate({
+                      ru: "Обработка...",
+                      uz: "Jarayon...",
+                      en: "Processing...",
+                      de: "Verarbeitung...",
+                    })}
+                  </span>
+                ) : (
+                  translate({
+                    ru:
+                      currentStep === 2 && paymentMethod === "click"
+                        ? "Оплатить через Click"
+                        : "Продолжить",
+                    uz:
+                      currentStep === 2 && paymentMethod === "click"
+                        ? "Click orqali to'lash"
+                        : "Davom etish",
+                    en:
+                      currentStep === 2 && paymentMethod === "click"
+                        ? "Pay with Click"
+                        : "Continue",
+                    de:
+                      currentStep === 2 && paymentMethod === "click"
+                        ? "Mit Click bezahlen"
+                        : "Fortfahren",
+                  })
+                )}
               </button>
             </div>
           </div>
@@ -675,15 +907,15 @@ const BookingStepPage: React.FC = () => {
             {/* Tour Image */}
             <div className="relative h-[255px] rounded-[20px] overflow-hidden mb-[20px]">
               <img
-                src={bookingData.tourImage}
-                alt={bookingData.tourTitle}
+                src={displayBookingData.tourImage}
+                alt={displayBookingData.tourTitle}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/20 rounded-[20px]" />
               {/* Tour Type Badge */}
               <div className="absolute bottom-[12px] right-[12px] bg-white rounded-[16px] px-[6px] py-[2px]">
                 <span className="text-[16px] font-medium text-[#333333] leading-[16px] tracking-[-0.32px]">
-                  {bookingData.tourType}
+                  {displayBookingData.tourType}
                 </span>
               </div>
             </div>
@@ -691,10 +923,10 @@ const BookingStepPage: React.FC = () => {
             {/* Tour Title and Location */}
             <div className="px-[20px] mb-[24px]">
               <h3 className="text-[32px] font-medium text-[#333333] leading-[40px] tracking-[-0.64px] mb-[20px]">
-                {bookingData.tourTitle}
+                {displayBookingData.tourTitle}
               </h3>
               <p className="text-[20px] font-normal text-[#333333] leading-[24px] tracking-[-0.4px]">
-                {bookingData.tourLocation}
+                {displayBookingData.tourLocation}
               </p>
             </div>
 
@@ -717,7 +949,7 @@ const BookingStepPage: React.FC = () => {
                       })}
                     </span>
                     <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatDate(bookingData.startDate)}
+                      {formatDate(displayBookingData.startDate)}
                     </span>
                   </div>
                 </div>
@@ -740,7 +972,7 @@ const BookingStepPage: React.FC = () => {
                       })}
                     </span>
                     <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatDate(bookingData.endDate)}
+                      {formatDate(displayBookingData.endDate)}
                     </span>
                   </div>
                 </div>
@@ -763,7 +995,7 @@ const BookingStepPage: React.FC = () => {
                       })}
                     </span>
                     <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {totalParticipants}
+                      {displayTotalParticipants}
                     </span>
                   </div>
                 </div>
@@ -786,7 +1018,7 @@ const BookingStepPage: React.FC = () => {
                       })}
                     </span>
                     <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatPrice(bookingData.pricePerPerson)}
+                      {formatPrice(displayBookingData.pricePerPerson)}
                     </span>
                   </div>
                 </div>
@@ -809,8 +1041,8 @@ const BookingStepPage: React.FC = () => {
                 {/* Subtotal */}
                 <div className="flex justify-between items-end">
                   <span className="text-[16px] font-medium text-[#767676] leading-[16px] tracking-[-0.32px]">
-                    {formatPrice(bookingData.pricePerPerson)} x{" "}
-                    {bookingData.duration}{" "}
+                    {formatPrice(displayBookingData.pricePerPerson)} x{" "}
+                    {displayBookingData.duration}{" "}
                     {translate({
                       ru: "ночи",
                       uz: "tun",
@@ -819,7 +1051,7 @@ const BookingStepPage: React.FC = () => {
                     })}
                   </span>
                   <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(subtotal)}
+                    {formatPrice(displaySubtotal)}
                   </span>
                 </div>
 
@@ -834,7 +1066,7 @@ const BookingStepPage: React.FC = () => {
                     })}
                   </span>
                   <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(discount)}
+                    {formatPrice(displayDiscount)}
                   </span>
                 </div>
 
@@ -849,7 +1081,7 @@ const BookingStepPage: React.FC = () => {
                     })}
                   </span>
                   <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(serviceFee)}
+                    {formatPrice(displayServiceFee)}
                   </span>
                 </div>
               </div>
@@ -865,7 +1097,7 @@ const BookingStepPage: React.FC = () => {
                   })}
                 </span>
                 <span className="text-[28px] font-medium text-[#827042] leading-[38px] tracking-[-0.56px]">
-                  {formatPrice(totalPrice)}
+                  {formatPrice(displayTotalPrice)}
                 </span>
               </div>
             </div>
