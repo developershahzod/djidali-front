@@ -1,49 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Calendar, 
-  MapPin, 
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Eye,
+  Calendar,
+  MapPin,
   Users,
   ChevronDown,
   ChevronUp,
-  ArrowUpDown
-} from 'lucide-react';
-import AdminLayout from '../../layouts/AdminLayout';
-import { djidaliApi } from '../../services/djidaliApi';
-import { formatCurrency, formatDate, getStatusBadge, cn } from '../../lib/utils';
-import { ApiTour } from '../../services/djidaliApi';
+  ArrowUpDown,
+} from "lucide-react";
+import AdminLayout from "../../layouts/AdminLayout";
+import { djidaliApi } from "../../services/djidaliApi";
+import {
+  formatCurrency,
+  formatDate,
+  getStatusBadge,
+  cn,
+} from "../../lib/utils";
+import { ApiTour } from "../../services/djidaliApi";
 
 const statuses = [
-  { name: 'All', value: 'all' },
-  { name: 'Draft', value: 'draft' },
-  { name: 'Published', value: 'published' },
-  { name: 'Upcoming', value: 'upcoming' },
-  { name: 'Ongoing', value: 'ongoing' },
-  { name: 'Completed', value: 'completed' },
-  { name: 'Cancelled', value: 'cancelled' },
+  { name: "All", value: "all" },
+  { name: "Draft", value: "draft" },
+  { name: "Published", value: "published" },
+  { name: "Upcoming", value: "upcoming" },
+  { name: "Ongoing", value: "ongoing" },
+  { name: "Completed", value: "completed" },
+  { name: "Cancelled", value: "cancelled" },
 ];
 
 const sortOptions = [
-  { name: 'Newest', value: 'newest' },
-  { name: 'Oldest', value: 'oldest' },
-  { name: 'Price: Low to High', value: 'price_asc' },
-  { name: 'Price: High to Low', value: 'price_desc' },
-  { name: 'Most Booked', value: 'popular' },
+  { name: "Newest", value: "newest" },
+  { name: "Oldest", value: "oldest" },
+  { name: "Price: Low to High", value: "price_asc" },
+  { name: "Price: High to Low", value: "price_desc" },
+  { name: "Most Booked", value: "popular" },
 ];
 
 const ToursPage = () => {
   const [tours, setTours] = useState<ApiTour[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
@@ -53,59 +58,28 @@ const ToursPage = () => {
     const fetchTours = async () => {
       try {
         setLoading(true);
-        // In a real app, you would fetch this data from your API
-        // const response = await djidaliApi.getAdminTours({
-        //   page: currentPage,
-        //   limit: itemsPerPage,
-        //   status: statusFilter !== 'all' ? statusFilter : undefined,
-        //   search: searchQuery,
-        //   sort: sortBy,
-        // });
-        // setTours(response.data);
-        
-        // Mock data for demonstration
-        setTimeout(() => {
-          const mockTours: ApiTour[] = Array.from({ length: 15 }, (_, i) => ({
-            id: `tour-${i + 1}`,
-            title: `Tour ${i + 1}`,
-            description: `This is a description for tour ${i + 1}`,
-            destination: ['Tashkent', 'Samarkand', 'Bukhara', 'Khiva'][i % 4],
-            duration: [1, 3, 5, 7][i % 4],
-            price: { amount: 100 * (i + 1), currency: 'USD' },
-            maxParticipants: 10 + (i % 5) * 2,
-            startDate: new Date(Date.now() + i * 2 * 24 * 60 * 60 * 1000).toISOString(),
-            endDate: new Date(Date.now() + (i * 2 + 3) * 24 * 60 * 60 * 1000).toISOString(),
-            images: [
-              'https://images.unsplash.com/photo-1527631746610-bca00a040d60?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-            ],
-            status: ['draft', 'published', 'upcoming', 'ongoing', 'completed', 'cancelled'][i % 6],
-            category: {
-              id: `cat-${i % 3 + 1}`,
-              name: ['Adventure', 'Cultural', 'Luxury'][i % 3],
-              slug: ['adventure', 'cultural', 'luxury'][i % 3],
-            },
-            _count: {
-              orders: Math.floor(Math.random() * 100),
-            },
-            createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - i * 12 * 60 * 60 * 1000).toISOString(),
-          }));
-          
-          setTours(mockTours);
-          setLoading(false);
-        }, 800);
+        const response = await djidaliApi.getTours({
+          page: currentPage,
+          limit: itemsPerPage,
+          status:
+            statusFilter !== "all" ? statusFilter.toUpperCase() : undefined,
+          search: searchQuery || undefined,
+        });
+        setTours(response.data || []);
       } catch (error) {
-        console.error('Error fetching tours:', error);
+        console.error("Error fetching tours:", error);
+        setTours([]);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchTours();
-  }, [statusFilter, sortBy, currentPage, searchQuery]);
+  }, [statusFilter, sortBy, currentPage, searchQuery, itemsPerPage]);
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedTours(new Set(tours.map(tour => tour.id)));
+      setSelectedTours(new Set(tours.map((tour) => tour.id)));
     } else {
       setSelectedTours(new Set());
     }
@@ -123,8 +97,8 @@ const ToursPage = () => {
 
   const handleDeleteSelected = () => {
     // In a real app, you would make an API call to delete the selected tours
-    console.log('Deleting tours:', Array.from(selectedTours));
-    setTours(tours.filter(tour => !selectedTours.has(tour.id)));
+    console.log("Deleting tours:", Array.from(selectedTours));
+    setTours(tours.filter((tour) => !selectedTours.has(tour.id)));
     setSelectedTours(new Set());
   };
 
@@ -135,34 +109,42 @@ const ToursPage = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        tour =>
+        (tour) =>
           tour.title.toLowerCase().includes(query) ||
           tour.destination.toLowerCase().includes(query) ||
-          tour.description.toLowerCase().includes(query)
+          tour.description.toLowerCase().includes(query),
       );
     }
 
     // Apply status filter
-    if (statusFilter !== 'all') {
-      result = result.filter(tour => tour.status === statusFilter);
+    if (statusFilter !== "all") {
+      result = result.filter((tour) => tour.status === statusFilter);
     }
 
     // Apply sorting
     switch (sortBy) {
-      case 'newest':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case "newest":
+        result.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
         break;
-      case 'oldest':
-        result.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case "oldest":
+        result.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        );
         break;
-      case 'price_asc':
+      case "price_asc":
         result.sort((a, b) => (a.price?.amount || 0) - (b.price?.amount || 0));
         break;
-      case 'price_desc':
+      case "price_desc":
         result.sort((a, b) => (b.price?.amount || 0) - (a.price?.amount || 0));
         break;
-      case 'popular':
-        result.sort((a, b) => (b._count?.orders || 0) - (a._count?.orders || 0));
+      case "popular":
+        result.sort(
+          (a, b) => (b._count?.orders || 0) - (a._count?.orders || 0),
+        );
         break;
       default:
         break;
@@ -179,7 +161,7 @@ const ToursPage = () => {
   const totalPages = Math.ceil(filteredAndSortedTours.length / itemsPerPage);
 
   return (
-    <AdminLayout 
+    <AdminLayout
       title="Manage Tours"
       actions={
         <div className="flex space-x-2">
@@ -240,7 +222,10 @@ const ToursPage = () => {
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Status
                 </label>
                 <select
@@ -257,7 +242,10 @@ const ToursPage = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="sort" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="sort"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Sort By
                 </label>
                 <select
@@ -288,11 +276,16 @@ const ToursPage = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" className="relative w-12 px-6 sm:w-16 sm:px-8">
+                  <th
+                    scope="col"
+                    className="relative w-12 px-6 sm:w-16 sm:px-8"
+                  >
                     <input
                       type="checkbox"
                       className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary-500 sm:left-6 dark:border-gray-600 dark:bg-gray-800"
-                      checked={selectedTours.size === tours.length && tours.length > 0}
+                      checked={
+                        selectedTours.size === tours.length && tours.length > 0
+                      }
                       onChange={handleSelectAll}
                     />
                   </th>
@@ -337,8 +330,10 @@ const ToursPage = () => {
                     <tr
                       key={tour.id}
                       className={cn(
-                        selectedTours.has(tour.id) ? 'bg-gray-50 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50',
-                        'cursor-pointer'
+                        selectedTours.has(tour.id)
+                          ? "bg-gray-50 dark:bg-gray-700/50"
+                          : "hover:bg-gray-50 dark:hover:bg-gray-700/50",
+                        "cursor-pointer",
                       )}
                     >
                       <td className="relative w-12 px-6 sm:w-16 sm:px-8">
@@ -356,7 +351,10 @@ const ToursPage = () => {
                           <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md">
                             <img
                               className="h-full w-full object-cover"
-                              src={tour.images?.[0] || 'https://via.placeholder.com/40'}
+                              src={
+                                tour.images?.[0] ||
+                                "https://via.placeholder.com/40"
+                              }
                               alt={tour.title}
                             />
                           </div>
@@ -366,7 +364,10 @@ const ToursPage = () => {
                             </div>
                             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                               <Calendar className="mr-1 h-3 w-3" />
-                              <span>{formatDate(tour.startDate, 'MMM d')} - {formatDate(tour.endDate, 'MMM d, yyyy')}</span>
+                              <span>
+                                {formatDate(tour.startDate, "MMM d")} -{" "}
+                                {formatDate(tour.endDate, "MMM d, yyyy")}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -374,22 +375,30 @@ const ToursPage = () => {
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center">
                           <MapPin className="mr-1 h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-900 dark:text-gray-100">{tour.destination}</span>
+                          <span className="text-sm text-gray-900 dark:text-gray-100">
+                            {tour.destination}
+                          </span>
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {formatCurrency(tour.price?.amount || 0, tour.price?.currency || 'USD')}
+                          {formatCurrency(
+                            tour.price?.amount || 0,
+                            tour.price?.currency || "USD",
+                          )}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {tour.duration} days • {tour.maxParticipants} people max
+                          {tour.duration} days • {tour.maxParticipants} people
+                          max
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {getStatusBadge(tour.status || 'draft')}
+                        {getStatusBadge(tour.status || "draft")}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-white">{tour._count?.orders || 0}</div>
+                        <div className="text-sm text-gray-900 dark:text-white">
+                          {tour._count?.orders || 0}
+                        </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           {Math.floor(Math.random() * 20)} this month
                         </div>
@@ -419,7 +428,10 @@ const ToursPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan={7}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
                       No tours found. Try adjusting your search or filters.
                     </td>
                   </tr>
@@ -432,14 +444,18 @@ const ToursPage = () => {
             <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800 sm:px-6">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   disabled={currentPage === 1}
                   className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                   className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
@@ -449,11 +465,22 @@ const ToursPage = () => {
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
+                    Showing{" "}
                     <span className="font-medium">
-                      {Math.min(currentPage * itemsPerPage, filteredAndSortedTours.length)}
-                    </span>{' '}
-                    of <span className="font-medium">{filteredAndSortedTours.length}</span> results
+                      {(currentPage - 1) * itemsPerPage + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-medium">
+                      {Math.min(
+                        currentPage * itemsPerPage,
+                        filteredAndSortedTours.length,
+                      )}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-medium">
+                      {filteredAndSortedTours.length}
+                    </span>{" "}
+                    results
                   </p>
                 </div>
                 <div>
@@ -462,12 +489,17 @@ const ToursPage = () => {
                     aria-label="Pagination"
                   >
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                       className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
                     >
                       <span className="sr-only">Previous</span>
-                      <ChevronUp className="h-5 w-5 -rotate-90" aria-hidden="true" />
+                      <ChevronUp
+                        className="h-5 w-5 -rotate-90"
+                        aria-hidden="true"
+                      />
                     </button>
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNum;
@@ -486,11 +518,11 @@ const ToursPage = () => {
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           className={cn(
-                            'relative inline-flex items-center border px-4 py-2 text-sm font-medium focus:z-20',
+                            "relative inline-flex items-center border px-4 py-2 text-sm font-medium focus:z-20",
                             currentPage === pageNum
-                              ? 'z-10 border-primary-500 bg-primary-50 text-primary-600 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-400'
-                              : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600',
-                            pageNum > totalPages ? 'hidden' : ''
+                              ? "z-10 border-primary-500 bg-primary-50 text-primary-600 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-400"
+                              : "border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600",
+                            pageNum > totalPages ? "hidden" : "",
                           )}
                         >
                           {pageNum}
@@ -498,12 +530,17 @@ const ToursPage = () => {
                       );
                     })}
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                       className="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
                     >
                       <span className="sr-only">Next</span>
-                      <ChevronDown className="h-5 w-5 -rotate-90" aria-hidden="true" />
+                      <ChevronDown
+                        className="h-5 w-5 -rotate-90"
+                        aria-hidden="true"
+                      />
                     </button>
                   </nav>
                 </div>

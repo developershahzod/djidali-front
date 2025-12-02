@@ -5,7 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Multilingual Hunter Tor Search Clone</title>
-    <script src="http://localhost:8097"></script>
+    <script type="module">
+      // React Grab - Element selection tool for AI coding assistants
+      // Only loads in development mode
+      if (import.meta.env.DEV) {
+        import("react-grab");
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

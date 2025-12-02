@@ -1,80 +1,111 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens: {
-      'sm': '640px',
-      'md': '768px',
-      'lg': '1024px',
-      'xl': '1280px',
-      '2xl': '1536px',
-      '3xl': '1920px',
-      '4xl': '2560px',
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+      "3xl": "1920px",
+      "4xl": "2560px",
     },
     extend: {
       colors: {
+        // Enterprise "Trust" Palette - Professional Blue System
         primary: {
-          50: '#f5f3ed',
-          100: '#e8e3d3',
-          200: '#d4cab0',
-          300: '#bfac87',
-          400: '#a89563',
-          500: '#8f7b49',
-          600: '#7a673d',
-          700: '#645333',
-          800: '#50432c',
-          900: '#433826',
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#2563eb", // Primary action color
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
+          950: "#172554",
         },
-        earth: {
-          50: '#fafaf8',
-          100: '#f2f1ed',
-          200: '#e5e3da',
-          300: '#d1cdc0',
-          400: '#b5afa0',
-          500: '#9a9283',
-          600: '#7e7767',
-          700: '#635f52',
-          800: '#4d4a41',
-          900: '#3a3833',
+        // Navy sidebar colors
+        navy: {
+          800: "#1e293b", // Sidebar lighter
+          900: "#0f172a", // Sidebar primary
+          950: "#020617", // Sidebar darkest
         },
-        nature: {
-          50: '#f5f7f5',
-          100: '#e8ede8',
-          200: '#d1dbd1',
-          300: '#afc2af',
-          400: '#85a285',
-          500: '#5f8560',
-          600: '#4a6a4b',
-          700: '#3c553d',
-          800: '#324532',
-          900: '#2a3a2b',
-        }
+        // Success/Nature (muted, professional)
+        success: {
+          50: "#f0fdf4",
+          100: "#dcfce7",
+          500: "#22c55e",
+          600: "#16a34a",
+          700: "#15803d",
+        },
+        // Warning
+        warning: {
+          50: "#fffbeb",
+          100: "#fef3c7",
+          500: "#f59e0b",
+          600: "#d97706",
+        },
+        // Destructive
+        destructive: {
+          50: "#fef2f2",
+          100: "#fee2e2",
+          500: "#ef4444",
+          600: "#dc2626",
+          700: "#b91c1c",
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        heading: ['Montserrat', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "sans-serif",
+        ],
       },
       fontSize: {
-        'display-1': ['4.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'display-2': ['3.75rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'h1': ['3rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        'h2': ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        'h3': ['1.875rem', { lineHeight: '1.3', letterSpacing: '-0.01em' }],
-        'h4': ['1.5rem', { lineHeight: '1.4' }],
-        'body-lg': ['1.125rem', { lineHeight: '1.5' }],
-        'body': ['1rem', { lineHeight: '1.5' }],
-        'body-sm': ['0.875rem', { lineHeight: '1.5' }],
+        "display-1": [
+          "3rem",
+          { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" },
+        ],
+        "display-2": [
+          "2.25rem",
+          { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "600" },
+        ],
+        h1: [
+          "1.875rem",
+          { lineHeight: "1.25", letterSpacing: "-0.01em", fontWeight: "600" },
+        ],
+        h2: ["1.5rem", { lineHeight: "1.3", fontWeight: "600" }],
+        h3: ["1.25rem", { lineHeight: "1.4", fontWeight: "600" }],
+        h4: ["1.125rem", { lineHeight: "1.4", fontWeight: "500" }],
+        "body-lg": ["1rem", { lineHeight: "1.5" }],
+        body: ["0.875rem", { lineHeight: "1.5" }],
+        "body-sm": ["0.8125rem", { lineHeight: "1.5" }],
+        caption: ["0.75rem", { lineHeight: "1.4" }],
       },
       spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
-        '26': '6.5rem',
-        '30': '7.5rem',
+        18: "4.5rem",
+        22: "5.5rem",
       },
       borderRadius: {
-        '4xl': '2rem',
-        '5xl': '2.5rem',
-      }
+        // Enterprise: Sharp, professional corners
+        sm: "0.25rem", // 4px
+        DEFAULT: "0.375rem", // 6px
+        md: "0.375rem", // 6px
+        lg: "0.5rem", // 8px - max for cards
+      },
+      boxShadow: {
+        // Subtle, professional shadows
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        DEFAULT:
+          "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        card: "0 1px 3px 0 rgb(0 0 0 / 0.08)",
+      },
     },
   },
   plugins: [],

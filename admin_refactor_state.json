@@ -1,0 +1,34 @@
+{
+  "task": "Admin Panel Architecture Rescue",
+  "status": "implementing",
+  "discovery": {
+    "AdminDashboard.tsx": "800+ lines monolithic component, NOT using AdminLayout",
+    "AdminLayout.tsx": "EXISTS with vertical sidebar - NOT BEING USED!",
+    "issue": "Dashboard ignores the layout, uses horizontal tabs instead"
+  },
+  "layout_migration": {
+    "current": "horizontal_tabs_in_monolith",
+    "target": "vertical_sidebar_via_AdminLayout",
+    "status": "in_progress"
+  },
+  "locale_standardization": {
+    "current": "mixed_ru_uz_en",
+    "target": "russian",
+    "status": "pending"
+  },
+  "new_resources": {
+    "hero_settings": false,
+    "news_crud": false
+  },
+  "table_cleanup": {
+    "action_buttons_to_icons": false,
+    "visual_noise_reduced": false
+  },
+  "ui_framework": "custom_tailwind_glassmorphism",
+  "files_to_modify": [
+    "src/pages/AdminDashboard.tsx",
+    "src/layouts/AdminLayout.tsx",
+    "src/App.tsx"
+  ],
+  "last_updated": "2025-12-02T02:10:00Z"
+}

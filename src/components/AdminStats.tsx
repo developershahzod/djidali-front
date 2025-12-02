@@ -1,5 +1,12 @@
-import React from 'react';
-import { TrendingUp, Users, Package, DollarSign } from 'lucide-react';
+import React from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Package,
+  Users,
+  FolderTree,
+  DollarSign,
+} from "lucide-react";
 
 interface StatsCardProps {
   title: string;
@@ -7,29 +14,42 @@ interface StatsCardProps {
   icon: React.ReactNode;
   trend?: string;
   trendUp?: boolean;
-  color: string;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, trend, trendUp, color }) => {
+const StatsCard: React.FC<StatsCardProps> = ({
+  title,
+  value,
+  icon,
+  trend,
+  trendUp,
+}) => {
   return (
-    <div className="group relative overflow-hidden rounded-[26px] border border-white/60 bg-white/70 px-6 py-7 shadow-[0_28px_78px_-45px_rgba(44,32,18,0.45)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_36px_90px_-40px_rgba(44,32,18,0.55)]">
-      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#F0E4D0] via-transparent to-transparent opacity-80" />
-      <div className="absolute right-3 bottom-3 h-16 w-16 rounded-full bg-[#BFA480]/10 blur-2xl" />
-
-      <div className="relative flex items-center justify-between mb-6">
-        <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${color} shadow-inner shadow-white/40`}>{icon}</div>
+    <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-card">
+      <div className="flex items-center justify-between">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+          {icon}
+        </div>
         {trend && (
           <div
-            className={`flex items-center space-x-1 rounded-full border border-white/60 px-3 py-1 text-xs font-semibold backdrop-blur-sm ${trendUp ? 'text-emerald-600' : 'text-rose-500'}`}
+            className={`flex items-center gap-1 text-xs font-medium ${
+              trendUp ? "text-success-600" : "text-destructive-600"
+            }`}
           >
-            <TrendingUp className={`w-4 h-4 ${!trendUp ? 'rotate-180' : ''}`} />
+            {trendUp ? (
+              <TrendingUp className="h-3.5 w-3.5" />
+            ) : (
+              <TrendingDown className="h-3.5 w-3.5" />
+            )}
             <span>{trend}</span>
           </div>
         )}
       </div>
-
-      <div className="relative text-3xl font-semibold text-[#2C2319] tracking-tight">{value}</div>
-      <div className="relative mt-3 text-sm font-medium uppercase tracking-[0.32em] text-[#8E7A5E]">{title}</div>
+      <div className="mt-4">
+        <p className="text-2xl font-semibold text-slate-900 tabular-nums">
+          {value}
+        </p>
+        <p className="mt-1 text-sm text-slate-500">{title}</p>
+      </div>
     </div>
   );
 };
@@ -48,34 +68,30 @@ const AdminStats: React.FC<AdminStatsProps> = ({
   totalRevenue = 0,
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mb-10">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       <StatsCard
-        title="Jami turlar"
+        title="Всего туров"
         value={toursCount}
-        icon={<Package className="w-6 h-6 text-[#2F3A4A]" />}
-        color="bg-[#E0E9FF]"
+        icon={<Package className="h-5 w-5" />}
       />
       <StatsCard
-        title="Jami buyurtmalar"
+        title="Всего заказов"
         value={ordersCount}
-        icon={<Users className="w-6 h-6 text-[#2F4A3A]" />}
+        icon={<Users className="h-5 w-5" />}
         trend="+12%"
         trendUp={true}
-        color="bg-[#DFF4EA]"
       />
       <StatsCard
-        title="Kategoriyalar"
+        title="Категорий"
         value={categoriesCount}
-        icon={<TrendingUp className="w-6 h-6 text-[#432F4A]" />}
-        color="bg-[#EDE2F8]"
+        icon={<FolderTree className="h-5 w-5" />}
       />
       <StatsCard
-        title="Jami daromad"
+        title="Общий доход"
         value={`${totalRevenue.toLocaleString()} UZS`}
-        icon={<DollarSign className="w-6 h-6 text-[#654321]" />}
+        icon={<DollarSign className="h-5 w-5" />}
         trend="+8%"
         trendUp={true}
-        color="bg-[#F7ECD6]"
       />
     </div>
   );

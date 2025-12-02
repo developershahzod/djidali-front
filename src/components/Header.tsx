@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header: React.FC = () => {
   const { language, setLanguage, translate } = useLanguage();
@@ -16,20 +16,26 @@ const Header: React.FC = () => {
     if (isAuthenticated) {
       logout();
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
-  const languageOptions: Array<{ value: 'ru' | 'uz' | 'en' | 'de'; label: string }> = useMemo(() => ([
-    { value: 'ru', label: 'RU' },
-    { value: 'uz', label: 'UZ' },
-    { value: 'en', label: 'EN' },
-    { value: 'de', label: 'DE' },
-  ]), []);
+  const languageOptions: Array<{
+    value: "ru" | "uz" | "en" | "de";
+    label: string;
+  }> = useMemo(
+    () => [
+      { value: "ru", label: "RU" },
+      { value: "uz", label: "UZ" },
+      { value: "en", label: "EN" },
+      { value: "de", label: "DE" },
+    ],
+    [],
+  );
 
   // Detect background brightness
   useEffect(() => {
@@ -41,7 +47,11 @@ const Header: React.FC = () => {
       const centerY = headerRect.top + headerRect.height / 2;
 
       const element = document.elementFromPoint(centerX, centerY);
-      if (!element || element === headerRef.current || headerRef.current.contains(element)) {
+      if (
+        !element ||
+        element === headerRef.current ||
+        headerRef.current.contains(element)
+      ) {
         return;
       }
 
@@ -65,37 +75,44 @@ const Header: React.FC = () => {
       requestAnimationFrame(checkBackgroundBrightness);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsLanguageDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const handleLanguageChange = (lang: 'ru' | 'uz' | 'en' | 'de') => {
+  const handleLanguageChange = (lang: "ru" | "uz" | "en" | "de") => {
     setLanguage(lang);
     setIsLanguageDropdownOpen(false);
   };
 
-  const dashboardLink = user?.role === 'ADMIN' || user?.role === 'SALES_MANAGER'
-    ? '/admin'
-    : '/dashboard';
+  const dashboardLink =
+    user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
+      ? "/admin"
+      : "/dashboard";
 
   return (
-    <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
+    <header
+      ref={headerRef}
+      className="fixed top-0 left-0 right-0 z-50 pt-4 px-4"
+    >
       <div className="backdrop-blur-sm bg-[rgba(51,51,51,0.1)] rounded-[16px] px-[32px] py-[12px] shadow-lg max-w-[1440px] mx-auto flex justify-between items-center text-white">
         <div onClick={handleLogoClick} className="cursor-pointer">
           <img
@@ -104,40 +121,65 @@ const Header: React.FC = () => {
             className="h-[54px] w-[54px] cursor-pointer hover:opacity-90 transition-opacity"
           />
         </div>
-        
+
         <nav className="hidden lg:flex items-center gap-[4px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <button
-            onClick={() => navigate('/about')}
+            onClick={() => navigate("/about")}
             className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
           >
-            {translate({ ru: 'О нас', uz: 'Biz haqimizda', en: 'About', de: 'Über uns' })}
+            {translate({
+              ru: "О нас",
+              uz: "Biz haqimizda",
+              en: "About",
+              de: "Über uns",
+            })}
           </button>
           <button
-            onClick={() => navigate('/tours')}
+            onClick={() => navigate("/tourism-types")}
             className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
           >
-            {translate({ ru: 'Категории', uz: 'Kategoriyalar', en: 'Categories', de: 'Kategorien' })}
+            {translate({
+              ru: "Виды туризма",
+              uz: "Turizm turlari",
+              en: "Tourism Types",
+              de: "Tourismusarten",
+            })}
           </button>
           <button
-            onClick={() => navigate('/news')}
+            onClick={() => navigate("/tours")}
             className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
           >
-            {translate({ ru: 'Новости', uz: 'Yangiliklar', en: 'News', de: 'Nachrichten' })}
+            {translate({
+              ru: "Наши туры",
+              uz: "Bizning turlarimiz",
+              en: "Our Tours",
+              de: "Unsere Touren",
+            })}
           </button>
           <button
-            onClick={() => navigate('/why-us')}
+            onClick={() => navigate("/news")}
             className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
           >
-            {translate({ ru: 'Почему мы', uz: 'Nima uchun biz', en: 'Why us', de: 'Warum wir' })}
+            {translate({
+              ru: "Новости",
+              uz: "Yangiliklar",
+              en: "News",
+              de: "Nachrichten",
+            })}
           </button>
           <button
-            onClick={() => navigate('/contact')}
+            onClick={() => navigate("/contact")}
             className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
           >
-            {translate({ ru: 'Контакты', uz: 'Aloqa', en: 'Contact', de: 'Kontakt' })}
+            {translate({
+              ru: "Контакты",
+              uz: "Aloqa",
+              en: "Contact",
+              de: "Kontakt",
+            })}
           </button>
         </nav>
-        
+
         <div className="flex items-center gap-[32px] flex-shrink-0">
           <div className="relative" ref={dropdownRef}>
             <button
@@ -145,7 +187,7 @@ const Header: React.FC = () => {
               className="flex items-center gap-[4px] text-white hover:text-white/80 transition-all"
             >
               <span className="text-[14px] font-medium uppercase leading-[16px]">
-                {languageOptions.find(opt => opt.value === language)?.label}
+                {languageOptions.find((opt) => opt.value === language)?.label}
               </span>
               <img
                 src="/language-dropdown-arrow.svg"
@@ -162,8 +204,8 @@ const Header: React.FC = () => {
                     onClick={() => handleLanguageChange(option.value)}
                     className={`w-full px-4 py-2.5 text-left text-[14px] font-medium uppercase transition-all ${
                       language === option.value
-                        ? 'bg-white/20 text-white'
-                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        ? "bg-white/20 text-white"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     {option.label}
@@ -179,16 +221,30 @@ const Header: React.FC = () => {
                 to={dashboardLink}
                 className="text-white bg-white/10 border border-white hover:bg-white/20 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
               >
-                {user?.role === 'ADMIN' || user?.role === 'SALES_MANAGER' 
-                  ? translate({ ru: 'Панель админа', uz: 'Admin paneli', en: 'Admin Panel', de: 'Admin-Panel' })
-                  : translate({ ru: 'Личный кабинет', uz: 'Shaxsiy kabinet', en: 'User Panel', de: 'Benutzerpanel' })
-                }
+                {user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
+                  ? translate({
+                      ru: "Панель админа",
+                      uz: "Admin paneli",
+                      en: "Admin Panel",
+                      de: "Admin-Panel",
+                    })
+                  : translate({
+                      ru: "Личный кабинет",
+                      uz: "Shaxsiy kabinet",
+                      en: "User Panel",
+                      de: "Benutzerpanel",
+                    })}
               </Link>
               <button
                 onClick={handleAuthAction}
                 className="text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
               >
-                {translate({ ru: 'Выйти', uz: 'Chiqish', en: 'Logout', de: 'Abmelden' })}
+                {translate({
+                  ru: "Выйти",
+                  uz: "Chiqish",
+                  en: "Logout",
+                  de: "Abmelden",
+                })}
               </button>
             </div>
           ) : (
@@ -196,7 +252,12 @@ const Header: React.FC = () => {
               onClick={handleAuthAction}
               className="text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
             >
-              {translate({ ru: 'Забронировать', uz: 'Bron qilish', en: 'Book', de: 'Buchen' })}
+              {translate({
+                ru: "Забронировать",
+                uz: "Bron qilish",
+                en: "Book",
+                de: "Buchen",
+              })}
             </button>
           )}
         </div>
