@@ -212,7 +212,7 @@ const NewContactPage: React.FC = () => {
         {/* Image Container - Right - 735x1256px */}
         <div className="relative w-[50%]  h-[1256px]">
           <img
-            src="../public/fcd4ea8bf176e4851a46f14de3020f62faed656d.jpg"
+            src="/fcd4ea8bf176e4851a46f14de3020f62faed656d.jpg"
             alt={t('contactPage.image.title')}
             className="absolute inset-0 w-full h-full object-cover"
           />

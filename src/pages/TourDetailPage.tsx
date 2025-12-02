@@ -301,10 +301,10 @@ const TourDetailPage: React.FC = () => {
         </section>
 
         {/* Container Section */}
-        <section className="relative bg-white" style={{ height: "394px" }}>
+        <section className="relative bg-white md:h-[394px] px-[clamp(20px,3.47vw,50px)] py-[clamp(30px,4.17vw,60px)]">
           {/* Tour Details */}
-          <div className="absolute top-[80px] left-[50px] right-[50px] flex justify-between items-center max-w-full">
-            <div className="flex flex-col gap-[10px] w-[234px]">
+          <div className="md:absolute md:top-[80px] md:left-[50px] md:right-[50px] flex flex-col md:flex-row justify-between items-start md:items-center max-w-full gap-[20px]">
+            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -318,8 +318,8 @@ const TourDetailPage: React.FC = () => {
                 {t("tourDetail.maxPrefix")} {tour.maxParticipants ?? 10}
               </div>
             </div>
-            <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
-            <div className="flex flex-col gap-[10px] w-[234px]">
+            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
+            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -335,8 +335,8 @@ const TourDetailPage: React.FC = () => {
                   : t("tourDetail.minAgeValue")}
               </div>
             </div>
-            <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
-            <div className="flex flex-col gap-[10px] w-[234px]">
+            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
+            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -350,27 +350,14 @@ const TourDetailPage: React.FC = () => {
                 {(tour.category as any)?.name || t("tourDetail.ecotourism")}
               </div>
             </div>
-            <div className="w-[62px] h-[1px] bg-gray-300 rotate-90" />
-            <div className="flex flex-col gap-[10px] w-[234px]">
-              <div
-                className="text-[20px] leading-[24px]"
-                style={{ letterSpacing: "-0.4px" }}
-              >
-                {translate("tourDetail.difficulty")}
-              </div>
-              <div
-                className="text-[32px] font-medium leading-[40px]"
-                style={{ letterSpacing: "-0.64px" }}
-              >
-                {(tour as any).difficulty || t("tourDetail.easy")}
-              </div>
-            </div>
+            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
+           
           </div>
 
           {/* Booking Form */}
           <form
             onSubmit={handleSubmit}
-            className="absolute top-[234px] left-[50px] right-[50px]"
+            className="md:absolute md:top-[234px] md:left-[50px] md:right-[50px] mt-[30px] md:mt-0"
           >
             {bookingSuccess && (
               <div
@@ -389,7 +376,7 @@ const TourDetailPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex gap-[20px] items-end">
+            <div className="flex flex-col md:flex-row gap-[16px] md:gap-[20px] items-stretch md:items-end">
               {/* Участники */}
               <div className="flex-1">
                 <label
@@ -443,7 +430,7 @@ const TourDetailPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-[250px] h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full md:w-[250px] h-[60px] md:h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 style={{
                   letterSpacing: "-0.4px",
                   lineHeight: "20px",
@@ -459,7 +446,7 @@ const TourDetailPage: React.FC = () => {
         </section>
 
         {/* About Section */}
-        <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
+        <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
           <h2
             className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
             style={{ letterSpacing: "-1.8px" }}
@@ -467,14 +454,14 @@ const TourDetailPage: React.FC = () => {
             {t("tourDetail.aboutTour")}
           </h2>
           <div
-            className="text-[35px] text-black leading-[60px] mb-[40px]"
+            className="text-[clamp(18px,2.43vw,35px)] text-black leading-[clamp(28px,4.17vw,60px)] mb-[40px]"
             style={{ letterSpacing: "-0.7px" }}
           >
             <p>{tour.description || t("tourDetail.defaultDescription")}</p>
           </div>
 
-          <div className="flex gap-[31px]">
-            <div className="w-[426px]">
+          <div className="flex flex-col md:flex-row gap-[31px]">
+            <div className="w-full md:w-[426px]">
               <h3
                 className="text-[32px] font-medium text-[#333333] leading-[40px] mb-[20px]"
                 style={{ letterSpacing: "-0.64px" }}
@@ -508,7 +495,7 @@ const TourDetailPage: React.FC = () => {
                 );
               })}
             </div>
-            <div className="w-[426px] pl-8 border-l border-gray-200">
+            <div className="w-full md:w-[426px] md:pl-8 md:border-l md:border-gray-200">
               <h3
                 className="text-[32px] font-medium text-[#333333] leading-[40px] mb-[20px]"
                 style={{ letterSpacing: "-0.64px" }}
@@ -545,7 +532,7 @@ const TourDetailPage: React.FC = () => {
         </section>
 
         {/* Gallery Section */}
-        <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
+        <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
           <h2
             className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
             style={{ letterSpacing: "-1.8px" }}
@@ -555,7 +542,7 @@ const TourDetailPage: React.FC = () => {
           {galleryImages.length > 0 ? (
             <div className="flex flex-col gap-0">
               {/* Top Image */}
-              <div className="w-full h-[500px] rounded-t-[20px] overflow-hidden">
+              <div className="w-full h-[clamp(240px,34.72vw,500px)] rounded-t-[20px] overflow-hidden">
                 <img
                   src={galleryImages[0]}
                   alt={`${tour.title} - Lahza 1`}
@@ -563,12 +550,12 @@ const TourDetailPage: React.FC = () => {
                 />
               </div>
               {/* Bottom Images */}
-              <div className="flex gap-0">
+              <div className="flex flex-col md:flex-row gap-0">
                 {galleryImages.slice(1, 3).length > 0 ? (
                   galleryImages.slice(1, 3).map((image, index) => (
                     <div
                       key={index}
-                      className={`w-1/2 h-[586px] overflow-hidden ${index === 0 ? "rounded-bl-[20px]" : "rounded-br-[20px]"}`}
+                      className={`w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden ${index === 0 ? "rounded-bl-[20px]" : "rounded-br-[20px]"}`}
                     >
                       <img
                         src={image}
@@ -580,14 +567,14 @@ const TourDetailPage: React.FC = () => {
                 ) : (
                   // If only 1 image, duplicate it for layout
                   <>
-                    <div className="w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
+                    <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-bl-[20px]">
                       <img
                         src={galleryImages[0]}
                         alt={`${tour.title} - Lahza 2`}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
+                    <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-br-[20px]">
                       <img
                         src={galleryImages[0]}
                         alt={`${tour.title} - Lahza 3`}
@@ -607,7 +594,7 @@ const TourDetailPage: React.FC = () => {
 
         {/* Program Section */}
         {itineraryItems.length > 0 && (
-          <section className="px-[50px] py-[80px] max-w-[1440px] mx-auto">
+          <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
             <h2
               className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
               style={{ letterSpacing: "-1.8px" }}
@@ -623,10 +610,10 @@ const TourDetailPage: React.FC = () => {
                     className="border-2 border-silver rounded-[20px] px-[40px] py-[38px] cursor-pointer hover:border-[#8f7b49] transition-colors"
                     onClick={() => setActiveDay(isOpen ? null : item.dayNumber)}
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-[30px] items-center flex-1">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-[16px]">
+                      <div className="flex gap-[30px] items-center flex-1 w-full">
                         <div
-                          className="text-[35px] font-medium text-black w-[273px]"
+                          className="text-[35px] font-medium text-black w-full md:w-[273px]"
                           style={{ letterSpacing: "-0.7px" }}
                         >
                           {t("tourDetail.day")} {item.dayNumber}
@@ -654,7 +641,7 @@ const TourDetailPage: React.FC = () => {
                     </div>
                     {isOpen && (
                       <div
-                        className="mt-4 text-[20px] text-black pl-[303px]"
+                        className="mt-4 text-[20px] text-black pl-0 md:pl-[303px]"
                         style={{ letterSpacing: "-0.4px" }}
                       >
                         {item.description}
@@ -670,7 +657,7 @@ const TourDetailPage: React.FC = () => {
         {/* Location Section */}
         <section
           id="location"
-          className="px-[50px] py-[80px] max-w-[1440px] mx-auto"
+          className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto"
         >
           <h2
             className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
@@ -678,7 +665,7 @@ const TourDetailPage: React.FC = () => {
           >
             {t("tourDetail.locationTitle")}
           </h2>
-          <div className="relative w-full h-[500px] rounded-[20px] overflow-hidden border border-white">
+          <div className="relative w-full h-[clamp(300px,34.72vw,500px)] rounded-[20px] overflow-hidden border border-white">
             <iframe
               src={`https://maps.google.com/maps?q=${encodeURIComponent(tour.destination || tour.location || t("tourDetail.defaultLocation"))}&output=embed`}
               width="100%"

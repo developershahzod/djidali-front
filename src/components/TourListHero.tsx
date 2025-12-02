@@ -110,14 +110,14 @@ const TourListHero: React.FC<TourListHeroProps> = ({
       {/* Original TourListHero background */}
       <div className="absolute inset-0">
         <img
-          src="../public/4c9440e694c34a2077b88db951060112fbd0015d.jpg"
+          src="/4c9440e694c34a2077b88db951060112fbd0015d.jpg"
           alt="Tour background"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-center pb-0 pt-30">
+      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-end pb-[clamp(30px,4.17vw,60px)] pt-30">
         <div className="max-w-[min(1400px,100%)] w-full">
           <div className="rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[clamp(12px,1.11vw,16px)]">
             {/* Куда (Destination) */}

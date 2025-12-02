@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                 {translate({ ru: 'Почему мы', uz: 'Nima uchun biz', en: 'Why us', de: 'Warum wir' })}
               </button>
               <button
-                onClick={() => navigate('/about#interesting')}
+                onClick={() => navigate('/news')}
                 className="font-medium text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >

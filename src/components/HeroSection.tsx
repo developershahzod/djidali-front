@@ -44,9 +44,10 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
       </div>
 
-      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-center pb-0 pt-30">
-        <div className="mb-[clamp(40px,6.67vw,96px)]">
-          <h1 className="text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
+      {/* Title at the top */}
+      <div className="absolute top-[clamp(80px,11.11vw,160px)] left-0 right-0 z-10">
+        <div className="max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)]">
+          <h1 className="mt-[70px] md:mt-0 text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
             {translate({
               ru: "ДАЛЬВЕРЗИН - лесоохотничье хозяйство",
               uz: "DALVARZIN - o'rmon va ov xo'jaligi",
@@ -55,7 +56,9 @@ const HeroSection: React.FC = () => {
             })}
           </h1>
         </div>
+      </div>
 
+      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-end pb-[clamp(30px,4.17vw,60px)] pt-30">
         <div className="max-w-[min(1400px,100%)] w-full">
           <div className="rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[clamp(12px,1.11vw,16px)]">
             {/* Куда (Destination) */}
