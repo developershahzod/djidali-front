@@ -1,11 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { X, Heart, Share2, Star, Users, Calendar, MapPin, Plus, Minus, Play, Clock, Award, Shield } from 'lucide-react';
-import { ApiTour } from '../services/djidaliApi';
-import { Tour } from '../services/api';
-import { useLanguage } from '../contexts/LanguageContext';
-import TourRegistrationForm from './TourRegistrationForm';
-import { toggleWishlistItem, isInWishlist } from '../utils/wishlist';
-import { getImageUrl } from '../utils/imageUtils';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  Heart,
+  Share2,
+  Star,
+  Users,
+  Calendar,
+  MapPin,
+  Plus,
+  Minus,
+  Play,
+  Clock,
+  Award,
+  Shield,
+} from "lucide-react";
+import { ApiTour } from "../services/djidaliApi";
+import { Tour } from "../services/api";
+import { useLanguage } from "../contexts/LanguageContext";
+import TourRegistrationForm from "./TourRegistrationForm";
+import { toggleWishlistItem, isInWishlist } from "../utils/wishlist";
+import { getImageUrl } from "../utils/imageUtils";
 
 interface TourDetailModalProps {
   tour: ApiTour | Tour | any;
@@ -13,12 +27,18 @@ interface TourDetailModalProps {
   onClose: () => void;
 }
 
-const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose }) => {
+const TourDetailModal: React.FC<TourDetailModalProps> = ({
+  tour,
+  isOpen,
+  onClose,
+}) => {
   const { t } = useLanguage();
-  const [selectedDate, setSelectedDate] = useState('1 – 5 Noyabr 2025');
+  const [selectedDate, setSelectedDate] = useState("1 – 5 Noyabr 2025");
   const [participants, setParticipants] = useState(1);
   const [showRegistration, setShowRegistration] = useState(false);
-  const [isLiked, setIsLiked] = useState(() => isInWishlist(tour.id.toString()));
+  const [isLiked, setIsLiked] = useState(() =>
+    isInWishlist(tour.id.toString()),
+  );
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
@@ -26,8 +46,9 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
       setIsLiked(isInWishlist(tour.id.toString()));
     };
 
-    window.addEventListener('wishlist-updated', handleWishlistUpdate);
-    return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+    window.addEventListener("wishlist-updated", handleWishlistUpdate);
+    return () =>
+      window.removeEventListener("wishlist-updated", handleWishlistUpdate);
   }, [tour.id]);
 
   const handleClose = () => {
@@ -47,14 +68,15 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
 
   const tourImages = Array.isArray(tour.images)
     ? tour.images
-        .filter(img => {
+        .filter((img) => {
           if (!img) return false;
-          if (typeof img === 'string') return img.trim() !== '';
-          if (typeof img === 'object' && (img as any).image_url) return true;
+          if (typeof img === "string") return img.trim() !== "";
+          if (typeof img === "object" && (img as any).image_url) return true;
           return false;
         })
-        .map(img => {
-          if (typeof img === 'object' && (img as any).image_url) return getImageUrl((img as any).image_url);
+        .map((img) => {
+          if (typeof img === "object" && (img as any).image_url)
+            return getImageUrl((img as any).image_url);
           return getImageUrl(img as string);
         })
     : [];
@@ -62,13 +84,17 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
 
   return (
     <>
-      <div className={`fixed inset-0 z-50 bg-black transition-opacity duration-300 overflow-y-auto ${
-        isClosing ? 'bg-opacity-0' : 'bg-opacity-50'
-      }`}>
+      <div
+        className={`fixed inset-0 z-50 bg-black transition-opacity duration-300 overflow-y-auto ${
+          isClosing ? "bg-opacity-0" : "bg-opacity-50"
+        }`}
+      >
         <div className="flex items-center justify-center min-h-screen p-2 sm:p-4">
-          <div className={`bg-white w-full sm:w-[95%] max-w-7xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-2xl transform transition-all duration-300 ${
-            isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-          }`}>
+          <div
+            className={`bg-white w-full sm:w-[95%] max-w-7xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-2xl transform transition-all duration-300 ${
+              isClosing ? "scale-95 opacity-0" : "scale-100 opacity-100"
+            }`}
+          >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between z-10 rounded-t-2xl">
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-2">
@@ -77,7 +103,9 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                 <div className="flex items-center gap-4 text-gray-600">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
-                    <span className="text-sm">{tour.destination || tour.location || 'Unknown'}</span>
+                    <span className="text-sm">
+                      {tour.destination || tour.location || "Unknown"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
@@ -85,7 +113,9 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
-                    <span className="text-sm">Макс. {tour.maxParticipants || 10}</span>
+                    <span className="text-sm">
+                      Макс. {tour.maxParticipants || 10}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -94,7 +124,9 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   onClick={handleToggleLike}
                   className="p-3 hover:bg-gray-100 rounded-full transition-all"
                 >
-                  <Heart className={`w-6 h-6 ${isLiked ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
+                  <Heart
+                    className={`w-6 h-6 ${isLiked ? "text-red-500 fill-current" : "text-gray-600"}`}
+                  />
                 </button>
                 <button className="p-3 hover:bg-gray-100 rounded-full transition-all">
                   <Share2 className="w-6 h-6 text-gray-600" />
@@ -128,7 +160,10 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                     {images.length > 1 && (
                       <div className="col-span-2 grid grid-cols-3 gap-4">
                         {images.slice(1, 4).map((img, idx) => (
-                          <div key={idx} className="relative group overflow-hidden rounded-xl shadow-sm">
+                          <div
+                            key={idx}
+                            className="relative group overflow-hidden rounded-xl shadow-sm"
+                          >
                             <img
                               src={img}
                               alt={`Tour image ${idx + 2}`}
@@ -143,26 +178,34 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   <div className="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mb-8">
                     <div className="text-center">
                       <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 font-medium">Изображение недоступно</p>
+                      <p className="text-gray-600 font-medium">
+                        Изображение недоступно
+                      </p>
                     </div>
                   </div>
                 )}
 
                 <div className="bg-gray-50 rounded-2xl p-8 mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">О туре</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    О туре
+                  </h2>
                   <div className="grid grid-cols-3 gap-6 mb-6">
                     <div className="text-center">
                       <div className="w-12 h-12 bg-[#8B7355] rounded-full flex items-center justify-center mx-auto mb-3">
                         <Clock className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="font-bold text-gray-900 mb-1">{tour.duration} дней</h3>
+                      <h3 className="font-bold text-gray-900 mb-1">
+                        {tour.duration} дней
+                      </h3>
                       <p className="text-sm text-gray-600">Длительность</p>
                     </div>
                     <div className="text-center">
                       <div className="w-12 h-12 bg-[#8B7355] rounded-full flex items-center justify-center mx-auto mb-3">
                         <Users className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="font-bold text-gray-900 mb-1">до {tour.maxParticipants || 12} человек</h3>
+                      <h3 className="font-bold text-gray-900 mb-1">
+                        до {tour.maxParticipants || 12} человек
+                      </h3>
                       <p className="text-sm text-gray-600">Макс. участников</p>
                     </div>
                     <div className="text-center">
@@ -177,7 +220,9 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
 
                 {/* Description */}
                 <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Tur haqida</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    Tur haqida
+                  </h2>
                   <div className="prose prose-gray max-w-none">
                     <p className="text-gray-700 leading-relaxed">
                       {tour.description}
@@ -188,14 +233,32 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                 {/* What's Included */}
                 {tour.inclusions && tour.inclusions.length > 0 && (
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Tur tarkibida</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                      Tur tarkibida
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {tour.inclusions.map((inclusion, idx) => (
-                        <div key={idx} className="flex items-center space-x-3 p-4 bg-green-50 rounded-xl">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-gray-700">{inclusion}</span>
-                        </div>
-                      ))}
+                      {tour.inclusions.map((inclusion, idx) => {
+                        // Safely convert inclusion to string (handles multilingual objects)
+                        const inclusionText =
+                          typeof inclusion === "string"
+                            ? inclusion
+                            : inclusion?.uz ||
+                              inclusion?.ru ||
+                              inclusion?.eng ||
+                              inclusion?.de ||
+                              "";
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center space-x-3 p-4 bg-green-50 rounded-xl"
+                          >
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-gray-700">
+                              {inclusionText}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -210,10 +273,21 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                 <div className="bg-white rounded-2xl p-6 sticky top-6 border border-gray-200">
                   <div className="text-center mb-6">
                     <div className="text-3xl font-bold text-gray-900 mb-1">
-                      {((typeof tour.price === 'object' && tour.price?.amount) || (typeof tour.price === 'number' ? tour.price : 0)).toLocaleString()} UZS
+                      {(
+                        (typeof tour.price === "object" &&
+                          tour.price?.amount) ||
+                        (typeof tour.price === "number" ? tour.price : 0)
+                      ).toLocaleString()}{" "}
+                      UZS
                     </div>
                     <div className="text-gray-600">
-                      {Math.round(((typeof tour.price === 'object' && tour.price?.amount) || (typeof tour.price === 'number' ? tour.price : 0)) / tour.duration).toLocaleString()} UZS / kun • {tour.duration} kun
+                      {Math.round(
+                        ((typeof tour.price === "object" &&
+                          tour.price?.amount) ||
+                          (typeof tour.price === "number" ? tour.price : 0)) /
+                          tour.duration,
+                      ).toLocaleString()}{" "}
+                      UZS / kun • {tour.duration} kun
                     </div>
                   </div>
 
@@ -240,13 +314,17 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                     </label>
                     <div className="flex items-center justify-between border border-gray-200 rounded-xl px-4 py-3">
                       <button
-                        onClick={() => setParticipants(Math.max(1, participants - 1))}
+                        onClick={() =>
+                          setParticipants(Math.max(1, participants - 1))
+                        }
                         className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
                         disabled={participants <= 1}
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="font-semibold text-lg">{participants} kishi</span>
+                      <span className="font-semibold text-lg">
+                        {participants} kishi
+                      </span>
                       <button
                         onClick={() => setParticipants(participants + 1)}
                         className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
@@ -263,11 +341,15 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
                       <Shield className="w-5 h-5 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Kafolatlangan tur</span>
+                      <span className="text-sm font-medium text-green-800">
+                        Kafolatlangan tur
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-xl">
                       <Clock className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-800">Tezkor bron qilish</span>
+                      <span className="text-sm font-medium text-blue-800">
+                        Tezkor bron qilish
+                      </span>
                     </div>
                   </div>
 
@@ -275,7 +357,14 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   <div className="bg-gray-50 rounded-xl p-4 mb-6">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600">Tur narxi:</span>
-                      <span className="font-medium">{((typeof tour.price === 'object' && tour.price?.amount) || (typeof tour.price === 'number' ? tour.price : 0)).toLocaleString()} UZS</span>
+                      <span className="font-medium">
+                        {(
+                          (typeof tour.price === "object" &&
+                            tour.price?.amount) ||
+                          (typeof tour.price === "number" ? tour.price : 0)
+                        ).toLocaleString()}{" "}
+                        UZS
+                      </span>
                     </div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600">Ishtirokchilar:</span>
@@ -284,7 +373,13 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                     <div className="border-t border-gray-200 pt-2 flex justify-between items-center">
                       <span className="text-lg font-bold">Jami:</span>
                       <span className="text-xl font-bold text-emerald-600">
-                        {(((typeof tour.price === 'object' && tour.price?.amount) || (typeof tour.price === 'number' ? tour.price : 0)) * participants).toLocaleString()} UZS
+                        {(
+                          ((typeof tour.price === "object" &&
+                            tour.price?.amount) ||
+                            (typeof tour.price === "number" ? tour.price : 0)) *
+                          participants
+                        ).toLocaleString()}{" "}
+                        UZS
                       </span>
                     </div>
                   </div>
@@ -298,7 +393,14 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, isOpen, onClose
                   </button>
 
                   <div className="text-center text-sm text-gray-600 mb-6">
-                    Oldindan to'lov — {Math.round(((typeof tour.price === 'object' && tour.price?.amount) || (typeof tour.price === 'number' ? tour.price : 0)) * 0.15).toLocaleString()} UZS<br />
+                    Oldindan to'lov —{" "}
+                    {Math.round(
+                      ((typeof tour.price === "object" && tour.price?.amount) ||
+                        (typeof tour.price === "number" ? tour.price : 0)) *
+                        0.15,
+                    ).toLocaleString()}{" "}
+                    UZS
+                    <br />
                     To'liq to'lov 24 soat ichida
                   </div>
                 </div>

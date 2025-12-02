@@ -312,7 +312,13 @@ const convertApiTourToTour = (apiTour: any, lang: string): Tour => {
         (sum, order) => sum + (order.participants || 0),
         0,
       ) || 0,
-    location: apiTour.destination || "",
+    location: (() => {
+      const dest = apiTour.destination;
+      if (!dest) return "";
+      if (typeof dest === "string") return dest;
+      // If destination is a translation object, get the localized value
+      return getLocalizedText(dest, lang) || "";
+    })(),
     category_id: 1, // Default category ID
     category: apiTour.category
       ? {
@@ -359,8 +365,20 @@ const convertApiTourToTour = (apiTour: any, lang: string): Tour => {
     rating: 4.5, // Default rating
     reviews_count: apiTour._count?.orders || 0,
     image: images[0]?.image_url || "",
-    badge: apiTour.tags?.[0] || undefined,
-    type: apiTour.type || "standard",
+    badge: (() => {
+      const tag = apiTour.tags?.[0];
+      if (!tag) return undefined;
+      if (typeof tag === "string") return tag;
+      // If tag is a translation object, get the localized value
+      return getLocalizedText(tag, lang) || undefined;
+    })(),
+    type: (() => {
+      const typeValue = apiTour.type;
+      if (!typeValue) return "standard";
+      if (typeof typeValue === "string") return typeValue;
+      // If type is a translation object, get the localized value
+      return getLocalizedText(typeValue, lang) || "standard";
+    })(),
     guide: apiTour.guide
       ? {
           name: apiTour.guide.name || "Guide",
