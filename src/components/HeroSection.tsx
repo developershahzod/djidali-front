@@ -47,7 +47,7 @@ const HeroSection: React.FC = () => {
       {/* Title at the top */}
       <div className="absolute top-[clamp(80px,11.11vw,160px)] left-0 right-0 z-10">
         <div className="max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)]">
-          <h1 className="mt-[70px] md:mt-0 text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
+          <h1 className="mt-[170px] md:mt-100 text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
             {translate({
               ru: "ДАЛЬВЕРЗИН - лесоохотничье хозяйство",
               uz: "DALVARZIN - o'rmon va ov xo'jaligi",

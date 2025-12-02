@@ -144,7 +144,7 @@ const Header: React.FC = () => {
             <img
               src="/logo.webp"
               alt="DJIDALI"
-              className="h-[54px] w-[54px] cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-[36px] w-[36px] md:h-[54px] md:w-[54px] cursor-pointer hover:opacity-90 transition-opacity"
             />
           </div>
 
@@ -206,7 +206,7 @@ const Header: React.FC = () => {
           </button>
         </nav>
 
-        <div className="flex items-center gap-[32px] flex-shrink-0">
+        <div className="flex items-center gap-[16px] lg:gap-[32px] flex-shrink-0">
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -242,7 +242,7 @@ const Header: React.FC = () => {
           </div>
 
           {isAuthenticated ? (
-            <div className="flex items-center gap-[8px]">
+            <div className="hidden lg:flex items-center gap-[8px]">
               <Link
                 to={dashboardLink}
                 className="text-white bg-white/10 border border-white hover:bg-white/20 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
@@ -276,7 +276,7 @@ const Header: React.FC = () => {
           ) : (
             <button
               onClick={handleAuthAction}
-              className="text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
+              className="hidden lg:block text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
             >
               {translate({
                 ru: "Забронировать",
@@ -348,7 +348,7 @@ const Header: React.FC = () => {
               <img
                 src="/logo.webp"
                 alt="DJIDALI"
-                className="h-[54px] w-[54px]"
+                className="h-[36px] w-[36px] mx-[5px]"
               />
             </div>
           </div>

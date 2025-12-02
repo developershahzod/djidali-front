@@ -212,14 +212,7 @@ const Footer: React.FC = () => {
           >
             Linkedin
           </a>
-          <a 
-            href="https://twitter.com" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="hover:text-[#8F7B49] transition-colors whitespace-nowrap"
-          >
-            Twitter
-          </a>
+       
           </div>
         </div>
 

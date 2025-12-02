@@ -645,7 +645,7 @@ const NewAboutPage: React.FC = () => {
             {t("aboutPage.gallery.title")}
           </h2>
           <p
-            className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] text-[#333333] text-right tracking-[-0.02em] whitespace-pre"
+            className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] text-[#333333] text-left md:text-right tracking-[-0.02em]"
             style={{ fontFamily: "Montserrat, sans-serif" }}
           >
             <span className="font-bold">14</span>

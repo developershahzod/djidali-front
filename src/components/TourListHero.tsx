@@ -264,7 +264,7 @@ const TourListHero: React.FC<TourListHeroProps> = ({
           </div>
 
           {/* Filter and Sort Section */}
-          <div className="mt-8 flex items-center gap-[40px] text-white">
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-[16px] sm:gap-[40px] text-white">
             <div className="relative">
               <button
                 ref={filterButtonRef}
