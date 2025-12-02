@@ -472,7 +472,7 @@ function NewsCard({ item, isLarge = false }: NewsCardProps) {
           <img 
             alt={item.title} 
             className="object-cover size-full transition-transform duration-700 group-hover:scale-105" 
-            src={item.image.startsWith('/') ? item.image : `/public/${item.image}`} 
+            src={item.image.startsWith('/') ? item.image : `/${item.image}`} 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
