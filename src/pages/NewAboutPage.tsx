@@ -162,32 +162,33 @@ const NewAboutPage: React.FC = () => {
     {
       name: t("aboutPage.team.member1.name"),
       role: t("aboutPage.team.member1.role"),
-      image: "/about-team-1.webp",
+      image: "/about-team-2.webp",
+   
     },
     {
       name: t("aboutPage.team.member2.name"),
       role: t("aboutPage.team.member2.role"),
-      image: "/about-team-2.webp",
+      image: "/about-team-3.webp",
     },
     {
       name: t("aboutPage.team.member3.name"),
       role: t("aboutPage.team.member3.role"),
-      image: "/about-team-3.webp",
+      image: "/a4.png",
     },
     {
       name: t("aboutPage.team.member4.name"),
       role: t("aboutPage.team.member4.role"),
-      image: "/about-team-4.webp",
+  image: "/a1.png",
     },
     {
       name: t("aboutPage.team.member5.name"),
       role: t("aboutPage.team.member5.role"),
-      image: "/about-team-5.webp",
+     image: "/a2.png",
     },
     {
       name: t("aboutPage.team.member6.name"),
       role: t("aboutPage.team.member6.role"),
-      image: "/about-team-6.webp",
+   image: "/a3.png",
     },
   ];
 
@@ -635,12 +636,13 @@ const NewAboutPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 w-full">
           {teamMembers.map((member, index) => (
-            <div key={index} className="flex flex-col">
-              <div className="w-full aspect-[480/540]">
+            <div key={index} className="flex flex-col h-full">
+              <div className="w-full aspect-[480/540] overflow-hidden">
                 <img
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                   src={member.image}
+                  style={{ objectFit: 'cover' }}
                 />
               </div>
               <div className="bg-white border-2 border-[silver] px-[clamp(30px,3.47vw,50px)] py-[clamp(20px,1.94vw,28px)]">
