@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 interface EcoData {
   title: string;
@@ -259,6 +260,7 @@ const EcotourismPage: React.FC = () => {
           </div>
         </section>
       </main>
+      <ScrollToTopButton />
     </div>
   );
 };

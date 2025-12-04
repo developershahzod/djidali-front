@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 type CategorySlug =
   | "ecotourism"
@@ -808,6 +809,7 @@ const TourismTypeInfoPage: React.FC = () => {
           </section>
         </div>
       </main>
+      <ScrollToTopButton />
     </div>
   );
 };

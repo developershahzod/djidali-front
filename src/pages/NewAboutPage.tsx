@@ -1,11 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
+import ScrollToTopButton from "../components/ScrollToTopButton";
+import apiService from "../services/api";
 
 const NewAboutPage: React.FC = () => {
   const { t, translate } = useLanguage();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [stats, setStats] = useState({
+    yearsOfExperience: 10,
+    tourPackages: 30,
+    happyTravelers: 180,
+    regularClients: 341
+  });
+
+  // Fetch statistics from API
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await apiService.getStatistics();
+        // Map API data to display values
+        // API returns: total_tours (2), total_bookings (63), total_users
+        setStats({
+          yearsOfExperience: 10, // Static value - years of experience
+          tourPackages: data.total_tours || 30, // "64+ Туристические пакеты"
+          happyTravelers: data.total_bookings || 1, // "180 тыс Счастливые путешественники" (in thousands)
+          regularClients: Math.floor((data.total_users || 100) / 100) // "10 тыс Наши постоянные клиенты" (in thousands)
+        });
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error);
+        // Keep default values on error
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const whyUsFeatures = [
     {
@@ -210,11 +240,9 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">10</span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.regularClients}</span>
                     <span className="text-[clamp(36px,3.47vw,50px)]"> </span>
-                    <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">
-                      {t("aboutPage.hero.statsThousand")}
-                    </span>
+                   
                   </p>
                   <p
                     className="font-light text-[clamp(16px,1.39vw,20px)] leading-[1.4] tracking-[-0.02em] whitespace-nowrap"
@@ -339,7 +367,10 @@ const NewAboutPage: React.FC = () => {
       {/* Video Section */}
       <section className="bg-[#f4f2ed] py-[clamp(30px,3.47vw,50px)]">
         <div className="max-w-[min(1440px,90vw)] mx-auto px-[clamp(30px,3.47vw,50px)]">
-          <div className="relative aspect-[2.06/1] rounded-[clamp(12px,1.39vw,20px)] overflow-hidden cursor-pointer group">
+          <div 
+            className="relative aspect-[2.06/1] rounded-[clamp(12px,1.39vw,20px)] overflow-hidden cursor-pointer group"
+            onClick={() => window.open('https://www.youtube.com/watch?v=YOUR_VIDEO_ID', '_blank')}
+          >
             <img
               alt=""
               className="w-full h-full object-cover"
@@ -348,7 +379,7 @@ const NewAboutPage: React.FC = () => {
             <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] group-hover:bg-[rgba(0,0,0,0.3)] transition-colors duration-300" />
             
             {/* Play Icon */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-[clamp(60px,6.94vw,100px)] h-[clamp(60px,6.94vw,100px)] bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:bg-opacity-100 group-hover:scale-110 transition-all duration-300 shadow-2xl">
                 <svg 
                   className="w-[clamp(24px,2.78vw,40px)] h-[clamp(24px,2.78vw,40px)] ml-1" 
@@ -412,7 +443,7 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">10 </span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.yearsOfExperience} </span>
                     <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">
                       +
                     </span>
@@ -429,7 +460,7 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">64 </span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.tourPackages} </span>
                     <span className="text-[clamp(28px,2.78vw,40px)]">+</span>
                   </p>
                   <p
@@ -445,10 +476,8 @@ const NewAboutPage: React.FC = () => {
                   className="font-normal leading-[1] tracking-[-1px]"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
-                  <span className="text-[clamp(36px,3.47vw,50px)]">180 </span>
-                  <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">
-                    {t("aboutPage.hero.statsThousand")}
-                  </span>
+                  <span className="text-[clamp(36px,3.47vw,50px)]">{stats.happyTravelers} </span>
+                 
                 </p>
                 <p
                   className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] tracking-[-0.02em]"
@@ -740,6 +769,7 @@ const NewAboutPage: React.FC = () => {
           </div>
         </div>
       </section>
+      <ScrollToTopButton />
     </div>
   );
 };

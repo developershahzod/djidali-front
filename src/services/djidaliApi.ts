@@ -531,9 +531,78 @@ class DjidaliApiService {
   }
 
   async updateTour(id: string, tourData: Partial<ApiTour>): Promise<ApiTour> {
+    // Format data according to Swagger documentation
+    const formattedData: any = {
+      title: tourData.title,
+      description: tourData.description,
+      titleUz: tourData.titleUz,
+      titleRu: tourData.titleRu,
+      titleEng: tourData.titleEng,
+      titleDe: tourData.titleDe,
+      descriptionUz: tourData.descriptionUz,
+      descriptionRu: tourData.descriptionRu,
+      descriptionEng: tourData.descriptionEng,
+      descriptionDe: tourData.descriptionDe,
+      destination: tourData.destination,
+      duration: tourData.duration,
+      price: tourData.price,
+      currency: tourData.currency || 'UZS',
+      maxParticipants: tourData.maxParticipants,
+      startDate: tourData.startDate,
+      endDate: tourData.endDate,
+      images: tourData.images,
+      status: tourData.status,
+      categoryId: tourData.categoryId,
+    };
+
+    // Format inclusions array
+    if (tourData.inclusions && Array.isArray(tourData.inclusions)) {
+      formattedData.inclusions = tourData.inclusions.map((item: any) => ({
+        uz: item.uz || item.titleUz || '',
+        ru: item.ru || item.titleRu || '',
+        eng: item.eng || item.titleEng || item.en || '',
+        de: item.de || item.titleDe || '',
+      }));
+    }
+
+    // Format exclusions array
+    if (tourData.exclusions && Array.isArray(tourData.exclusions)) {
+      formattedData.exclusions = tourData.exclusions.map((item: any) => ({
+        uz: item.uz || item.titleUz || '',
+        ru: item.ru || item.titleRu || '',
+        eng: item.eng || item.titleEng || item.en || '',
+        de: item.de || item.titleDe || '',
+      }));
+    }
+
+    // Format program array (days) according to Swagger
+    const tourDataWithProgram = tourData as any;
+    if (tourDataWithProgram.program && Array.isArray(tourDataWithProgram.program)) {
+      formattedData.program = tourDataWithProgram.program.map((day: any) => ({
+        dayNumber: Number(day.dayNumber || day.day_number || 1),
+        titleUz: day.titleUz || day.title_uz || '',
+        titleRu: day.titleRu || day.title_ru || '',
+        titleEng: day.titleEng || day.title_eng || '',
+        titleDe: day.titleDe || day.title_de || '',
+        descriptionUz: day.descriptionUz || day.description_uz || '',
+        descriptionRu: day.descriptionRu || day.description_ru || '',
+        descriptionEng: day.descriptionEng || day.description_eng || '',
+        descriptionDe: day.descriptionDe || day.description_de || '',
+      }));
+    }
+
+    // Remove undefined values
+    Object.keys(formattedData).forEach(key => {
+      if (formattedData[key] === undefined) {
+        delete formattedData[key];
+      }
+    });
+
+    console.log('Sending tour update:', JSON.stringify(formattedData, null, 2));
+    
     return this.request<ApiTour>(`/tours/${id}`, {
       method: "PUT",
-      body: JSON.stringify(tourData),
+      body: JSON.stringify(formattedData),
     });
   }
 
@@ -719,7 +788,54 @@ class DjidaliApiService {
   }
 
   async deleteCategory(id: string): Promise<void> {
-    await this.request(`/tour-categories/${id}`, { method: "DELETE" });
+    const url = `${this.baseURL}/tour-categories/${id}`;
+    const currentToken = this.getFreshToken();
+    
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    
+    if (currentToken) {
+      headers["Authorization"] = `Bearer ${currentToken}`;
+    }
+    
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers,
+      });
+      
+      console.log('Delete category response status:', response.status);
+      
+      if (!response.ok) {
+        let errorMessage = `Failed to delete category: ${response.status}`;
+        
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+          } else {
+            const errorText = await response.text();
+            if (errorText) {
+              errorMessage = errorText;
+            }
+          }
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError);
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Success - don't try to parse response body for DELETE
+      console.log('Category deleted successfully');
+      return;
+      
+    } catch (error) {
+      console.error('Delete category error:', error);
+      throw error;
+    }
   }
 
   async toggleCategoryStatus(id: string): Promise<ApiCategory> {

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { svgPaths } from '../utils/svgPaths';
 import { useLanguage } from '../contexts/LanguageContext';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 // Import images with local paths
 const heroImage = '/about-hero.webp';
@@ -427,25 +428,6 @@ function Hero({ searchQuery, onSearchChange, newsCount }: HeroProps) {
         </button>
       </div>
 
-      {/* Filter and Sort */}
-      <div className="hidden md:flex absolute left-[50px] bottom-[70px] lg:top-[626px] gap-[40px] items-center">
-        <div className="flex gap-[16px] items-center cursor-pointer hover:opacity-80 transition-opacity">
-          <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
-            <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
-          </svg>
-          <p className="font-['Montserrat:Regular',sans-serif] text-[20px] text-white tracking-[-0.4px]">{translate({ ru: 'Фильтр', uz: 'Filtr', en: 'Filter', de: 'Filter' })}</p>
-        </div>
-        
-        <div className="h-[20px] w-0 border-r border-white/20"></div>
-        
-        <div className="flex gap-[16px] items-center cursor-pointer hover:opacity-80 transition-opacity">
-          <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
-            <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
-          </svg>
-          <p className="font-['Montserrat:Regular',sans-serif] text-[20px] text-white tracking-[-0.4px]">{translate({ ru: 'Сортировать', uz: 'Saralash', en: 'Sort', de: 'Sortieren' })}</p>
-        </div>
-      </div>
-
       {/* News Count */}
       <p className="hidden md:block absolute bottom-[50px] md:bottom-[78px] right-[20px] md:right-[50px] font-['Montserrat:Light',sans-serif] font-light text-[16px] md:text-[20px] text-white tracking-[-0.32px] md:tracking-[-0.4px]">
         <span className="font-['Montserrat:Bold',sans-serif] font-bold">{newsCount} {translate({ ru: 'доступных', uz: 'mavjud', en: 'available', de: 'verfügbar' })}</span>
@@ -641,6 +623,7 @@ export default function NewsPage() {
         searchQuery={searchQuery} 
         selectedCategory={selectedCategory}
       />
+      <ScrollToTopButton />
     </div>
   );
 }

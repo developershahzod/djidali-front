@@ -4,6 +4,7 @@ import HeroSection from '../components/HeroSection';
 import { useTours } from '../hooks/useTours';
 import { getTourPrimaryImage } from '../utils/imageUtils';
 import { useLanguage } from '../contexts/LanguageContext';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 
 const aboutImages = [
@@ -12,10 +13,28 @@ const aboutImages = [
   '/ac5bf1e47e292f5b7f1042422f23e28abae08055.webp'
 ];
 
+const aboutContent = [
+  {
+    text1: { ru: 'Мы помогаем вам найти ', uz: 'Biz sizga topishga yordam beramiz ', en: 'We help you find ', de: 'Wir helfen Ihnen zu finden ' },
+    highlight: { ru: 'путешествие вашей мечты', uz: 'orzuingizdagi sayohat', en: 'your dream journey', de: 'Ihre Traumreise' },
+    text2: { ru: ' и открыть красоту природы в её лучших проявлениях.', uz: ' va tabiatning eng yaxshi ko\'rinishlarida go\'zalligini kashf eting.', en: ' and discover the beauty of nature at its finest.', de: ' und die Schönheit der Natur in ihrer besten Form entdecken.' }
+  },
+  {
+    text1: { ru: 'Исследуйте ', uz: 'O\'rganing ', en: 'Explore ', de: 'Erkunden Sie ' },
+    highlight: { ru: 'уникальные маршруты', uz: 'noyob marshrutlar', en: 'unique routes', de: 'einzigartige Routen' },
+    text2: { ru: ' и откройте для себя скрытые жемчужины природы.', uz: ' va tabiatning yashirin marvaridlarini kashf eting.', en: ' and discover hidden gems of nature.', de: ' und entdecken Sie verborgene Naturjuwelen.' }
+  },
+  {
+    text1: { ru: 'Погрузитесь в ', uz: 'Sho\'ng\'ing ', en: 'Immerse yourself in ', de: 'Tauchen Sie ein in ' },
+    highlight: { ru: 'первозданную природу', uz: 'dastlabki tabiat', en: 'pristine nature', de: 'unberührte Natur' },
+    text2: { ru: ' и создайте незабываемые воспоминания.', uz: ' va unutilmas xotiralar yarating.', en: ' and create unforgettable memories.', de: ' und schaffen Sie unvergessliche Erinnerungen.' }
+  }
+];
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { tours, loading, error, pagination } = useTours({ limit: 5 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -103,9 +122,9 @@ const HomePage: React.FC = () => {
               {t('home.about.title')}
             </h2>
             <p className="font-normal leading-[1.25] text-[clamp(18px,2.22vw,32px)] tracking-[-0.03em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              <span>{t('home.about.text1')}</span>
-              <span className="text-[#8f7b49]">{t('home.about.highlight')}</span>
-              <span>{t('home.about.text2')}</span>
+              <span>{aboutContent[activeImageIndex].text1[language]}</span>
+              <span className="text-[#8f7b49]">{aboutContent[activeImageIndex].highlight[language]}</span>
+              <span>{aboutContent[activeImageIndex].text2[language]}</span>
             </p>
           </div>
 
@@ -164,9 +183,9 @@ const HomePage: React.FC = () => {
                 {t('home.about.title')}
               </h2>
               <p className="font-normal leading-[1.4] text-[18px] tracking-[-0.54px] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                <span>{t('home.about.text1')}</span>
-                <span className="text-[#8f7b49]">{t('home.about.highlight')}</span>
-                <span>{t('home.about.text2')}</span>
+                <span>{aboutContent[activeImageIndex].text1[language]}</span>
+                <span className="text-[#8f7b49]">{aboutContent[activeImageIndex].highlight[language]}</span>
+                <span>{aboutContent[activeImageIndex].text2[language]}</span>
               </p>
 
               {/* Icon on mobile */}
@@ -644,6 +663,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+      <ScrollToTopButton />
     </div>
   );
 };

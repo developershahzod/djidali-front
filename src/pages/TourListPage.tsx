@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { getTourPrimaryImage } from '../utils/imageUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTours } from '../hooks/useTours';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 export interface TourFilters {
   country: string;
@@ -374,6 +375,7 @@ const TourListPage: React.FC = () => {
           )}
         </div>
       </main>
+      <ScrollToTopButton />
     </div>
   );
 };

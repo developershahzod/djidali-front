@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 type ButtonState = 'idle' | 'loading' | 'success';
 
@@ -68,11 +69,12 @@ const NewContactPage: React.FC = () => {
           {/* Contact Info Block - 705x450px */}
           <div className="relative h-[450px] bg-[#8f7b49]">
             {/* Icon Container */}
-            <div className="absolute top-[clamp(40px,4.17vw,60px)] left-[clamp(20px,3.47vw,50px)] w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] bg-[#333333] rounded-[45px] flex items-center justify-center p-[25px]">
+            <div className="absolute top-[clamp(40px,4.17vw,60px)] left-[clamp(20px,3.47vw,50px)] w-[clamp(60px,5.56vw,80px)] h-[clamp(60px,5.56vw,80px)] bg-[#333333] rounded-[45px] flex items-center justify-center">
               <img 
                 src="/contact-icon-correct.svg" 
                 alt="Contact Icon" 
-                className="w-[40px] h-[40px]"
+                className="flex-shrink-0"
+                style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}
               />
             </div>
             
@@ -269,13 +271,16 @@ const NewContactPage: React.FC = () => {
           </div>
         </div>
         </div>
-        {/* Suitcase Icon Section - 735x408px */}
-        <div className="w-full lg:w-[50%] h-[clamp(300px,28.33vw,408px)] bg-[#CBC2AB] flex items-center justify-center">
-          <img 
-            src="/suitcase-icon.svg" 
-            alt="Suitcase" 
-            className="w-[clamp(150px,17.36vw,250px)] h-[clamp(150px,17.36vw,250px)]"
-          />
+        {/* Icon Section - 735x408px */}
+        <div className="w-full lg:w-[50%] h-[clamp(300px,28.33vw,408px)] flex">
+          {/* Travel Icon */}
+          <div className="w-full bg-[#8f7b49] flex items-center justify-center">
+            <img 
+              src="/about-icon-earth.svg" 
+              alt="Travel" 
+              className="w-[clamp(100px,12.5vw,180px)] h-[clamp(100px,12.5vw,180px)]"
+            />
+          </div>
         </div>
       </div>
       {/* Location Section - 1340x600px */}
@@ -301,6 +306,7 @@ const NewContactPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };

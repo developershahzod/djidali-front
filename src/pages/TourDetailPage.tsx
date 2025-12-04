@@ -6,6 +6,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { djidaliApi, ApiOrder } from "../services/djidaliApi";
 import PaymentModal from "../components/PaymentModal";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 interface ItineraryItem {
   dayNumber: number;
@@ -315,7 +316,7 @@ const TourDetailPage: React.FC = () => {
                 className="text-[32px] font-medium leading-[40px]"
                 style={{ letterSpacing: "-0.64px" }}
               >
-                {t("tourDetail.maxPrefix")} {tour.maxParticipants ?? 10}
+                {t("tourDetail.maxPrefix")} {(tour as any).max_participants ?? tour.maxParticipants ?? 10}
               </div>
             </div>
             <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
@@ -395,7 +396,7 @@ const TourDetailPage: React.FC = () => {
                     fontFamily: "Montserrat, sans-serif",
                   }}
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(
+                  {Array.from({ length: (tour as any).max_participants ?? tour.maxParticipants ?? 10 }, (_, i) => i + 1).map(
                     (num) => (
                       <option key={num} value={num}>
                         {num} {t("tourDetail.person")}
@@ -679,6 +680,7 @@ const TourDetailPage: React.FC = () => {
           </div>
         </section>
       </div>
+      <ScrollToTopButton />
     </>
   );
 };

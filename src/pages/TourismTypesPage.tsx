@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import Footer from '../components/Footer';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const TourismTypesPage: React.FC = () => {
   const { translate } = useLanguage();
@@ -410,8 +410,7 @@ const TourismTypesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      <ScrollToTopButton />
     </div>
 
   );

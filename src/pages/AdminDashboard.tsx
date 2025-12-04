@@ -260,15 +260,15 @@ const AdminDashboard: React.FC = () => {
       )
     ) {
       try {
+        console.log('Attempting to delete category:', id);
         await djidaliApi.deleteCategory(id);
-        fetchCategories();
+        console.log('Delete successful, fetching categories...');
+        await fetchCategories();
         alert("Category deleted successfully.");
       } catch (error) {
         console.error("Failed to delete category:", error);
-        alert(
-          "Error deleting category: " +
-            (error instanceof Error ? error.message : "Unknown error"),
-        );
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        alert(`Error deleting category: ${errorMessage}`);
       }
     }
   };

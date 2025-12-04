@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 type CategoryType = "routes" | "nature" | "comfort" | "team";
 
@@ -508,6 +509,7 @@ const WhyUsPage: React.FC = () => {
       <main className="bg-[#F5F5F0] mt-[60px] px-[50px] pb-[60px]">
         <div className="max-w-[1340px] mx-auto">{renderContent()}</div>
       </main>
+      <ScrollToTopButton />
     </div>
   );
 };
