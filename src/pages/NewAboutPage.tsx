@@ -8,6 +8,7 @@ const NewAboutPage: React.FC = () => {
   const { t, translate } = useLanguage();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showAllTeam, setShowAllTeam] = useState(false);
   const [stats, setStats] = useState({
     yearsOfExperience: 10,
     tourPackages: 30,
@@ -162,35 +163,71 @@ const NewAboutPage: React.FC = () => {
     {
       name: t("aboutPage.team.member1.name"),
       role: t("aboutPage.team.member1.role"),
-      image: "/about-team-2.webp",
-   
+      image: "/1.jpg",
     },
     {
       name: t("aboutPage.team.member2.name"),
       role: t("aboutPage.team.member2.role"),
-      image: "/about-team-3.webp",
+      image: "/2.jpg",
     },
     {
       name: t("aboutPage.team.member3.name"),
       role: t("aboutPage.team.member3.role"),
-      image: "/a4.png",
+      image: "/3.jpg",
     },
     {
       name: t("aboutPage.team.member4.name"),
       role: t("aboutPage.team.member4.role"),
-  image: "/a1.png",
+      image: "/4.jpg",
     },
     {
       name: t("aboutPage.team.member5.name"),
       role: t("aboutPage.team.member5.role"),
-     image: "/a2.png",
+      image: "/5.jpg",
     },
     {
       name: t("aboutPage.team.member6.name"),
       role: t("aboutPage.team.member6.role"),
-   image: "/a3.png",
+      image: "/6.jpg",
+    },
+    {
+      name: t("aboutPage.team.member7.name"),
+      role: t("aboutPage.team.member7.role"),
+      image: "/7.jpg",
+    },
+    {
+      name: t("aboutPage.team.member8.name"),
+      role: t("aboutPage.team.member8.role"),
+      image: "/8.jpg",
+    },
+    {
+      name: t("aboutPage.team.member9.name"),
+      role: t("aboutPage.team.member9.role"),
+      image: "/9.jpg",
+    },
+    {
+      name: t("aboutPage.team.member10.name"),
+      role: t("aboutPage.team.member10.role"),
+      image: "/10.jpg",
+    },
+    {
+      name: t("aboutPage.team.member11.name"),
+      role: t("aboutPage.team.member11.role"),
+      image: "/11.jpg",
+    },
+    {
+      name: t("aboutPage.team.member12.name"),
+      role: t("aboutPage.team.member12.role"),
+      image: "/12.jpg",
+    },
+    {
+      name: t("aboutPage.team.member13.name"),
+      role: t("aboutPage.team.member13.role"),
+      image: "/13.jpg",
     },
   ];
+
+  const displayedTeamMembers = showAllTeam ? teamMembers : teamMembers.slice(0, 6);
 
   return (
     <div className="bg-[#f4f2ed]">
@@ -635,7 +672,7 @@ const NewAboutPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 w-full">
-          {teamMembers.map((member, index) => (
+          {displayedTeamMembers.map((member, index) => (
             <div key={index} className="flex flex-col h-full">
               <div className="w-full aspect-[480/540] overflow-hidden">
                 <img
@@ -664,6 +701,23 @@ const NewAboutPage: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Show More Button */}
+        {!showAllTeam && teamMembers.length > 6 && (
+          <div className="flex justify-center mt-[clamp(40px,4.17vw,60px)]">
+            <button
+              onClick={() => setShowAllTeam(true)}
+              className="bg-[#8f7b49] hover:bg-[#7a6939] transition-colors rounded-[10px] px-[clamp(40px,3.89vw,56px)] py-[clamp(20px,2.08vw,30px)] h-[clamp(60px,5.56vw,80px)] flex items-center justify-center cursor-pointer"
+            >
+              <p
+                className="text-white text-[clamp(16px,1.39vw,20px)] font-bold leading-[1] tracking-[-0.02em]"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                {t("aboutPage.team.showMore")}
+              </p>
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Gallery Section */}
