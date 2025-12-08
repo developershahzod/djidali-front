@@ -99,7 +99,7 @@ const NewContactPage: React.FC = () => {
           <div className="min-h-[806px] bg-[#cbc2ab] px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)]">
             <form onSubmit={handleSubmit} className="flex flex-col gap-[20px] max-w-[605px]">
             {/* Country Dropdown - 605x80px */}
-            <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.2)] rounded-[10px] px-[20px] py-[18px] bg-transparent flex flex-col justify-center">
+            <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] bg-transparent flex flex-col justify-center overflow-visible">
               <label
                 className="block text-[14px] font-medium leading-[20px] tracking-[-0.28px] text-[#333333] opacity-50 mb-[3px]"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
@@ -109,10 +109,10 @@ const NewContactPage: React.FC = () => {
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] outline-none"
+                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] outline-none cursor-pointer"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                <option value="">{t('contactPage.form.countryPlaceholder')}</option>
+                <option value="" className="text-[#666666]">{t('contactPage.form.countryPlaceholder')}</option>
                 <option value="uz">O'zbekiston</option>
                 <option value="ru">Rossiya</option>
                 <option value="kz">Qozog'iston</option>
@@ -133,7 +133,7 @@ const NewContactPage: React.FC = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder={t('contactPage.form.phonePlaceholder')}
-                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none"
+                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
             </div>
@@ -145,18 +145,18 @@ const NewContactPage: React.FC = () => {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder={t('contactPage.form.subject')}
-                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none"
+                className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
             </div>
 
             {/* Message Textarea - 605x200px */}
-            <div className="w-full h-[200px] border-2 border-[rgba(51,51,51,0.2)] rounded-[10px] px-[20px] py-[28px]">
+            <div className="w-full h-[200px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[28px]">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t('contactPage.form.messagePlaceholder')}
-                className="w-full h-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:opacity-70 outline-none resize-none"
+                className="w-full h-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none resize-none"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               />
             </div>

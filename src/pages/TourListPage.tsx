@@ -281,6 +281,13 @@ const TourListPage: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+                    
+                    {/* Бейдж категории */}
+                    <div className="absolute bottom-[clamp(16px,2.22vw,32px)] right-[clamp(16px,2.22vw,32px)] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                      <p className="font-medium leading-[16px] text-[clamp(14px,1.11vw,16px)] tracking-[-0.02em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.category?.name || 'Экотуризм'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Кнопка-стрелка */}
@@ -302,6 +309,13 @@ const TourListPage: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
+                    
+                    {/* Бейдж категории */}
+                    <div className="absolute bottom-4 right-4 bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                      <p className="font-medium leading-[16px] text-[14px] tracking-[-0.28px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.category?.name || 'Экотуризм'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Content below */}

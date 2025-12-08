@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import { useTours } from '../hooks/useTours';
@@ -9,25 +9,38 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const aboutImages = [
   '/about-background.webp',
-  '/2242500ecee2019d2c913d6be87dc645865f15d5.webp',
-  '/ac5bf1e47e292f5b7f1042422f23e28abae08055.webp'
+  '/tree-planting.jpg'
 ];
 
 const aboutContent = [
   {
+    title: { ru: 'О нас', uz: 'Biz haqimizda', en: 'About us', de: 'Über uns' },
     text1: { ru: 'Мы помогаем вам найти ', uz: 'Biz sizga topishga yordam beramiz ', en: 'We help you find ', de: 'Wir helfen Ihnen zu finden ' },
     highlight: { ru: 'путешествие вашей мечты', uz: 'orzuingizdagi sayohat', en: 'your dream journey', de: 'Ihre Traumreise' },
-    text2: { ru: ' и открыть красоту природы в её лучших проявлениях.', uz: ' va tabiatning eng yaxshi ko\'rinishlarida go\'zalligini kashf eting.', en: ' and discover the beauty of nature at its finest.', de: ' und die Schönheit der Natur in ihrer besten Form entdecken.' }
+    text2: { ru: ' и открыть красоту природы в её лучших проявлениях.', uz: ' va tabiatning eng yaxshi ko\'rinishlarida go\'zalligini kashf eting.', en: ' and discover the beauty of nature at its finest.', de: ' und die Schönheit der Natur in ihrer besten Form entdecken.' },
+    bottomText: { ru: 'ДАЛЬВЕРЗИН         лесоохотничье хозяйство', uz: 'DALVERZIN         o\'rmon-ov xo\'jaligi', en: 'DALVERZIN         forestry and hunting', de: 'DALVERZIN         Forst- und Jagdwirtschaft' }
   },
   {
-    text1: { ru: 'Исследуйте ', uz: 'O\'rganing ', en: 'Explore ', de: 'Erkunden Sie ' },
-    highlight: { ru: 'уникальные маршруты', uz: 'noyob marshrutlar', en: 'unique routes', de: 'einzigartige Routen' },
-    text2: { ru: ' и откройте для себя скрытые жемчужины природы.', uz: ' va tabiatning yashirin marvaridlarini kashf eting.', en: ' and discover hidden gems of nature.', de: ' und entdecken Sie verborgene Naturjuwelen.' }
-  },
-  {
-    text1: { ru: 'Погрузитесь в ', uz: 'Sho\'ng\'ing ', en: 'Immerse yourself in ', de: 'Tauchen Sie ein in ' },
-    highlight: { ru: 'первозданную природу', uz: 'dastlabki tabiat', en: 'pristine nature', de: 'unberührte Natur' },
-    text2: { ru: ' и создайте незабываемые воспоминания.', uz: ' va unutilmas xotiralar yarating.', en: ' and create unforgettable memories.', de: ' und schaffen Sie unvergessliche Erinnerungen.' }
+    title: { ru: 'Высадка деревьев', uz: 'Daraxt ekish', en: 'Tree planting', de: 'Baumpflanzung' },
+    text1: { 
+      ru: 'В рамках мероприятия на территории лесоохотничьего хозяйства произведена посадка ', 
+      uz: 'Tadbir doirasida o\'rmon-ov xo\'jaligi hududida ', 
+      en: 'During the event, ', 
+      de: 'Im Rahmen der Veranstaltung wurden ' 
+    },
+    highlight: { 
+      ru: '665 деревьев 11 различных видов', 
+      uz: '11 xil turdan 665 ta daraxt ekildi', 
+      en: '665 trees of 11 different species were planted', 
+      de: '665 Bäume von 11 verschiedenen Arten gepflanzt' 
+    },
+    text2: { 
+      ru: ', а также высеяно 6 кг семян деревьев 3 видов.', 
+      uz: ', shuningdek 3 xil daraxt urug\'laridan 6 kg ekildi.', 
+      en: ', and 6 kg of seeds of 3 tree species were sown.', 
+      de: ', und 6 kg Samen von 3 Baumarten wurden ausgesät.' 
+    },
+    bottomText: { ru: 'С учётом немецкого опыта', uz: 'Nemis tajribasini hisobga olgan holda', en: 'Based on German experience', de: 'Unter Berücksichtigung deutscher Erfahrungen' }
   }
 ];
 
@@ -38,65 +51,37 @@ const HomePage: React.FC = () => {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Эффект для автоматического переключения слайдов
+  useEffect(() => {
+    const SLIDE_DURATION = 5000; // 5 секунд на слайд
+    const PROGRESS_UPDATE_INTERVAL = 50; // мс
+    const progressIncrement = (100 * PROGRESS_UPDATE_INTERVAL) / SLIDE_DURATION;
 
-  const startImageRotation = useCallback(() => {
-    // Очистка существующих интервалов
-    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-
-    setProgress(0);
-
-    const updateInterval = 50; // мс
-    const totalDuration = 5000; // мс
-    const increment = (100 * updateInterval) / totalDuration;
-
-    // Интервал для обновления прогресса (обновляем каждые 50мс для плавности)
+    // Интервал для прогресс-бара
     progressIntervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress = prev + increment;
-        if (newProgress >= 100) {
-          // Когда достигаем 100%, переключаем картинку и сбрасываем прогресс
-          setActiveImageIndex((prevIndex) => (prevIndex + 1) % aboutImages.length);
+      setProgress(prev => {
+        if (prev >= 100) {
           return 0;
         }
-        return newProgress;
+        return prev + progressIncrement;
       });
-    }, updateInterval);
-  }, []);
+    }, PROGRESS_UPDATE_INTERVAL);
 
-  const stopImageRotation = useCallback(() => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-  }, []);
-
-  // Intersection Observer для отслеживания видимости блока
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-        if (entry.isIntersecting) {
-          startImageRotation();
-        } else {
-          stopImageRotation();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    // Интервал для смены слайдов
+    slideIntervalRef.current = setInterval(() => {
+      setActiveImageIndex(prev => (prev + 1) % aboutImages.length);
+      setProgress(0);
+    }, SLIDE_DURATION);
 
     return () => {
-      observer.disconnect();
-      stopImageRotation();
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (slideIntervalRef.current) clearInterval(slideIntervalRef.current);
     };
-  }, [startImageRotation, stopImageRotation]);
+  }, []);
 
   return (
     <div className="bg-[#F5F1E6] text-[#2A241C]">
@@ -119,7 +104,7 @@ const HomePage: React.FC = () => {
           <div className="relative h-full max-w-[min(1440px,100vw)] mx-auto">
             <div className="absolute flex flex-col gap-[clamp(12px,1.39vw,20px)] items-start left-[clamp(20px,3.47vw,50px)] top-[clamp(40px,5.56vw,80px)] w-[clamp(300px,37.5vw,540px)] text-[#333333]">
             <h2 className="font-medium leading-[1] text-[clamp(32px,4.17vw,60px)] tracking-[-0.03em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              {t('home.about.title')}
+              {aboutContent[activeImageIndex].title[language]}
             </h2>
             <p className="font-normal leading-[1.25] text-[clamp(18px,2.22vw,32px)] tracking-[-0.03em]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               <span>{aboutContent[activeImageIndex].text1[language]}</span>
@@ -145,7 +130,7 @@ const HomePage: React.FC = () => {
 
           {/* Bottom Text */}
           <p className="absolute font-medium leading-[1.75] left-[clamp(20px,3.47vw,50px)] text-[#333333] text-[clamp(14px,1.11vw,16px)] top-[clamp(450px,48.75vw,702px)] tracking-[-0.03em] w-[clamp(280px,34.93vw,503px)]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-           ДАЛЬВЕРЗИН         лесоохотничье хозяйство
+           {aboutContent[activeImageIndex].bottomText[language]}
           </p>
 
           {/* Pagination */}
@@ -180,7 +165,7 @@ const HomePage: React.FC = () => {
             {/* Content First */}
             <div className="px-6 py-12 text-[#333333]">
               <h2 className="font-medium leading-[1.2] text-[32px] tracking-[-0.96px] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {t('home.about.title')}
+                {aboutContent[activeImageIndex].title[language]}
               </h2>
               <p className="font-normal leading-[1.4] text-[18px] tracking-[-0.54px] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <span>{aboutContent[activeImageIndex].text1[language]}</span>
@@ -204,7 +189,7 @@ const HomePage: React.FC = () => {
               </div>
 
               <p className="font-medium leading-[1.75] text-[#333333] text-[14px] tracking-[-0.42px] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {t('home.about.bottomText')}
+                {aboutContent[activeImageIndex].bottomText[language]}
               </p>
 
               {/* Pagination on mobile */}
@@ -332,13 +317,11 @@ const HomePage: React.FC = () => {
                     <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
 
                     {/* Бейдж категории */}
-                    {(tour.type || tour.badge) && (
-                      <div className="absolute bottom-[clamp(16px,2.22vw,32px)] right-[clamp(16px,2.22vw,32px)] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
-                        <p className="font-medium leading-[16px] text-[clamp(14px,1.11vw,16px)] tracking-[-0.02em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          {tour.type || tour.badge}
-                        </p>
-                      </div>
-                    )}
+                    <div className="absolute bottom-[clamp(16px,2.22vw,32px)] right-[clamp(16px,2.22vw,32px)] bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                      <p className="font-medium leading-[16px] text-[clamp(14px,1.11vw,16px)] tracking-[-0.02em] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.category?.name || 'Экотуризм'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Кнопка-стрелка */}
@@ -362,13 +345,11 @@ const HomePage: React.FC = () => {
                     <div className="absolute inset-0 bg-black opacity-20 pointer-events-none"></div>
 
                     {/* Бейдж категории */}
-                    {(tour.type || tour.badge) && (
-                      <div className="absolute bottom-4 right-4 bg-white rounded-[16px] px-[6px] py-[2px] z-10">
-                        <p className="font-medium leading-[16px] text-[14px] tracking-[-0.28px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          {tour.type || tour.badge}
-                        </p>
-                      </div>
-                    )}
+                    <div className="absolute bottom-4 right-4 bg-white rounded-[16px] px-[6px] py-[2px] z-10">
+                      <p className="font-medium leading-[16px] text-[14px] tracking-[-0.28px] text-[#333333]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {tour.category?.name || 'Экотуризм'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Content below */}

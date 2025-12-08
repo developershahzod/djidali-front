@@ -89,7 +89,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onSelect }) => {
           />
 
           <div className="absolute bottom-10 right-10 px-5 py-2 rounded-full text-sm font-light bg-white/95 backdrop-blur-sm text-gray-900">
-            {tour.category?.name || tour.badge || 'Экотуризм'}
+            {tour.category?.name || 'Экотуризм'}
           </div>
 
           <button className="absolute top-1/2 left-0 -translate-y-1/2 w-14 h-14 bg-white/95 bg-white rounded-full flex items-center justify-center transition-all opacity-0 opacity-100 shadow-xl backdrop-blur-sm">

@@ -1,42 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
-import apiService from "../services/api";
 
 const NewAboutPage: React.FC = () => {
   const { t, translate } = useLanguage();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllTeam, setShowAllTeam] = useState(false);
-  const [stats, setStats] = useState({
-    yearsOfExperience: 10,
-    tourPackages: 30,
-    happyTravelers: 180,
-    regularClients: 341
+  const [stats] = useState({
+    yearsOfExperience: 5,
+    tourPackages: 100,
+    happyTravelers: 250,
+    regularClients: 100
   });
 
-  // Fetch statistics from API
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await apiService.getStatistics();
-        // Map API data to display values
-        // API returns: total_tours (2), total_bookings (63), total_users
-        setStats({
-          yearsOfExperience: 10, // Static value - years of experience
-          tourPackages: data.total_tours || 30, // "64+ Туристические пакеты"
-          happyTravelers: data.total_bookings || 1, // "180 тыс Счастливые путешественники" (in thousands)
-          regularClients: Math.floor((data.total_users || 100) / 100) // "10 тыс Наши постоянные клиенты" (in thousands)
-        });
-      } catch (error) {
-        console.error('Failed to fetch statistics:', error);
-        // Keep default values on error
-      }
-    };
-
-    fetchStats();
-  }, []);
+  // Statistics are now static values, no need to fetch from API
+  // Values: 100+ постоянных клиентов, 5+ лет опыта, 250+ счастливых посетителей
 
   const whyUsFeatures = [
     {
@@ -250,7 +230,7 @@ const NewAboutPage: React.FC = () => {
               {/* Title */}
               <div className="flex-1 md:max-w-[69.3%]">
                 <h1
-                  className="text-[clamp(48px,6.25vw,90px)] font-medium leading-[1.11] text-white tracking-[-0.03em]"
+                  className="text-[clamp(40px,5.56vw,80px)] font-medium leading-[1.2] text-white tracking-[-0.03em]"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
                   {t("aboutPage.hero.title")}
@@ -279,8 +259,7 @@ const NewAboutPage: React.FC = () => {
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     <span className="text-[clamp(36px,3.47vw,50px)]">{stats.regularClients}</span>
-                    <span className="text-[clamp(36px,3.47vw,50px)]"> </span>
-                   
+                    <span className="text-[clamp(28px,2.78vw,40px)] font-extralight">+</span>
                   </p>
                   <p
                     className="font-light text-[clamp(16px,1.39vw,20px)] leading-[1.4] tracking-[-0.02em] whitespace-nowrap"
@@ -310,13 +289,13 @@ const NewAboutPage: React.FC = () => {
           <div className="flex-1 py-[clamp(50px,5.56vw,80px)] px-[clamp(30px,3.47vw,50px)] md:max-w-[min(720px,50vw)]">
             <div className="flex flex-col gap-[clamp(16px,1.39vw,20px)] mb-[clamp(30px,2.78vw,40px)] text-[#333333]">
               <h2
-                className="text-[clamp(40px,4.17vw,60px)] font-medium leading-[1] tracking-[-0.03em]"
+                className="text-[clamp(24px,2.78vw,40px)] font-medium leading-[1.2] tracking-[-0.03em]"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 {t("aboutPage.help.title")}
               </h2>
               <p
-                className="text-[clamp(20px,2.22vw,32px)] font-normal leading-[1.25] tracking-[-0.03em]"
+                className="text-[clamp(16px,1.39vw,20px)] font-normal leading-[1.5] tracking-[-0.02em]"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 {t("aboutPage.help.description")}
@@ -515,7 +494,7 @@ const NewAboutPage: React.FC = () => {
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
                   <span className="text-[clamp(36px,3.47vw,50px)]">{stats.happyTravelers} </span>
-                 
+                  <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">+</span>
                 </p>
                 <p
                   className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] tracking-[-0.02em]"
