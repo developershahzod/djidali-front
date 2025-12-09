@@ -1,24 +1,24 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
 
 const AboutPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-white">
       <div
         className="relative h-[400px] bg-cover bg-center"
         style={{
-          backgroundImage: `url('https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=1920')`
+          backgroundImage: `url('https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=1920')`,
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Мы — там, где природа<br />говорит первой
+            Мы — там, где природа
+            <br />
+            говорит первой
           </h1>
           <p className="text-xl text-white/90 max-w-2xl">
-            DJIDALI объединяет природу, комфорт и опыт — создаём путешествия, которые запоминаются
+            DJIDALI объединяет природу, комфорт и опыт — создаём путешествия,
+            которые запоминаются
           </p>
         </div>
       </div>
@@ -26,7 +26,9 @@ const AboutPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid md:grid-cols-3 gap-12 mb-20 text-center">
           <div>
-            <div className="text-6xl font-bold text-gray-900 mb-3">180<span className="text-4xl">тыс.</span></div>
+            <div className="text-6xl font-bold text-gray-900 mb-3">
+              180<span className="text-4xl">тыс.</span>
+            </div>
             <p className="text-gray-600 text-lg">Счастливых путешественников</p>
           </div>
           <div>
@@ -59,12 +61,14 @@ const AboutPage: React.FC = () => {
             Откройте для себя уникальные маршруты
           </h2>
           <p className="text-gray-700 leading-relaxed text-lg mb-8">
-            Наши маршруты созданы для тех, кто ищет соединение с природой без лишней суеты.
-            Каждый тур — это тщательно продуманное путешествие, где комфорт и экологический подход сочетаются с
-            возможностью увидеть дикую природу в её непревзойдённой красе.
+            Наши маршруты созданы для тех, кто ищет соединение с природой без
+            лишней суеты. Каждый тур — это тщательно продуманное путешествие,
+            где комфорт и экологический подход сочетаются с возможностью увидеть
+            дикую природу в её непревзойдённой красе.
           </p>
           <p className="text-gray-700 leading-relaxed text-lg">
-            Вы сможете пройти по тропам, по которым ходят местные егеря, и увидеть мир глазами тех, кто его действительно чувствует.
+            Вы сможете пройти по тропам, по которым ходят местные егеря, и
+            увидеть мир глазами тех, кто его действительно чувствует.
           </p>
         </div>
 
@@ -90,8 +94,8 @@ const AboutPage: React.FC = () => {
             DJIDALI — это не просто маршруты, а встречи с живой природой
           </h3>
           <p className="text-gray-700 leading-relaxed text-lg">
-            Каждое путешествие — возможность почувствовать ритм Узбекистана, вдохнуть свежий воздух и оставить в
-            сердце ощущение свободы
+            Каждое путешествие — возможность почувствовать ритм Узбекистана,
+            вдохнуть свежий воздух и оставить в сердце ощущение свободы
           </p>
         </div>
       </div>

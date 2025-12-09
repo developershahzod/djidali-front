@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { apiService, Review, PaginatedResponse } from '../services/api';
+import { useState, useEffect } from "react";
+import { apiService, Review } from "../services/api";
 
 interface UseReviewsParams {
   tour_id?: number;
@@ -43,9 +43,10 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<UseReviewsReturn['pagination']>(null);
+  const [pagination, setPagination] =
+    useState<UseReviewsReturn["pagination"]>(null);
 
-  const { autoFetch = true, ...apiParams } = params;
+  const { autoFetch = true, ..._apiParams } = params;
 
   const fetchReviews = async () => {
     try {
@@ -62,9 +63,10 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
         to: 0,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch reviews';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch reviews";
       setError(errorMessage);
-      console.error('Error fetching reviews:', err);
+      console.error("Error fetching reviews:", err);
     } finally {
       setLoading(false);
     }
@@ -81,31 +83,36 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
     try {
       setError(null);
       const review = await apiService.createReview(reviewData);
-      
+
       // Refresh reviews list
       await fetchReviews();
-      
+
       return review;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create review';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create review";
       setError(errorMessage);
       throw err;
     }
   };
 
-  const updateReview = async (id: number, reviewData: Partial<Review>): Promise<Review> => {
+  const updateReview = async (
+    id: number,
+    reviewData: Partial<Review>,
+  ): Promise<Review> => {
     try {
       setError(null);
       const review = await apiService.updateReview(id, reviewData);
-      
+
       // Update local state
-      setReviews(prev => 
-        prev.map(r => r.id === id ? { ...r, ...reviewData } : r)
+      setReviews((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, ...reviewData } : r)),
       );
-      
+
       return review;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update review';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update review";
       setError(errorMessage);
       throw err;
     }
@@ -115,11 +122,12 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
     try {
       setError(null);
       await apiService.deleteReview(id);
-      
+
       // Remove from local state
-      setReviews(prev => prev.filter(r => r.id !== id));
+      setReviews((prev) => prev.filter((r) => r.id !== id));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete review';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete review";
       setError(errorMessage);
       throw err;
     }
@@ -129,15 +137,16 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
     try {
       setError(null);
       const review = await apiService.approveReview(id);
-      
+
       // Update local state
-      setReviews(prev => 
-        prev.map(r => r.id === id ? { ...r, is_approved: true } : r)
+      setReviews((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, is_approved: true } : r)),
       );
-      
+
       return review;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to approve review';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to approve review";
       setError(errorMessage);
       throw err;
     }
@@ -147,15 +156,18 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
     try {
       setError(null);
       const review = await apiService.markReviewHelpful(id);
-      
+
       // Update local state
-      setReviews(prev => 
-        prev.map(r => r.id === id ? { ...r, helpful_count: (r.helpful_count || 0) + 1 } : r)
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === id ? { ...r, helpful_count: (r.helpful_count || 0) + 1 } : r,
+        ),
       );
-      
+
       return review;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to mark review as helpful';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to mark review as helpful";
       setError(errorMessage);
       throw err;
     }
@@ -172,7 +184,7 @@ export const useReviews = (params: UseReviewsParams = {}): UseReviewsReturn => {
     params.is_approved,
     params.page,
     params.per_page,
-    autoFetch
+    autoFetch,
   ]);
 
   return {
@@ -202,13 +214,14 @@ export const useReview = (id: number | null) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await apiService.getReview(id);
       setReview(response);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch review';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch review";
       setError(errorMessage);
-      console.error('Error fetching review:', err);
+      console.error("Error fetching review:", err);
     } finally {
       setLoading(false);
     }

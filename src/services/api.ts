@@ -125,7 +125,7 @@ export interface Payment {
   booking: Booking;
   amount: number;
   currency: string;
-  payment_method: "card" | "cash" | "bank_transfer" | "payme" | "click";
+  payment_method: "card" | "cash" | "bank_transfer" | "click";
   payment_status: "pending" | "completed" | "failed" | "refunded";
   transaction_id?: string;
   payment_date?: string;
@@ -1023,7 +1023,7 @@ class ApiService {
    */
   async initiateOrderPayment(data: {
     orderId: string;
-    method: "CLICK" | "PAYME";
+    method: "CLICK";
     amount?: number;
   }): Promise<{
     transactionId: string;

@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
-import { apiService, Statistics, User, PaginatedResponse } from '../services/api';
+import { useState } from "react";
+import {
+  apiService,
+  Statistics,
+  User,
+  PaginatedResponse,
+} from "../services/api";
 
 interface UseAdminReturn {
   statistics: Statistics | null;
@@ -33,19 +38,21 @@ export const useAdmin = (): UseAdminReturn => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [usersPagination, setUsersPagination] = useState<UseAdminReturn['usersPagination']>(null);
+  const [usersPagination, setUsersPagination] =
+    useState<UseAdminReturn["usersPagination"]>(null);
 
   const fetchStatistics = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const stats = await apiService.getStatistics();
       setStatistics(stats);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch statistics';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch statistics";
       setError(errorMessage);
-      console.error('Error fetching statistics:', err);
+      console.error("Error fetching statistics:", err);
     } finally {
       setLoading(false);
     }
@@ -61,9 +68,10 @@ export const useAdmin = (): UseAdminReturn => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response: PaginatedResponse<User> = await apiService.getUsers(params);
-      
+
+      const response: PaginatedResponse<User> =
+        await apiService.getUsers(params);
+
       setUsers(response.data);
       setUsersPagination({
         current_page: response.current_page,
@@ -74,27 +82,32 @@ export const useAdmin = (): UseAdminReturn => {
         to: response.to,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch users";
       setError(errorMessage);
-      console.error('Error fetching users:', err);
+      console.error("Error fetching users:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUser = async (id: number, userData: Partial<User>): Promise<User> => {
+  const updateUser = async (
+    id: number,
+    userData: Partial<User>,
+  ): Promise<User> => {
     try {
       setError(null);
       const user = await apiService.updateUser(id, userData);
-      
+
       // Update local state
-      setUsers(prev => 
-        prev.map(u => u.id === id ? { ...u, ...userData } : u)
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, ...userData } : u)),
       );
-      
+
       return user;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update user';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update user";
       setError(errorMessage);
       throw err;
     }
@@ -104,11 +117,12 @@ export const useAdmin = (): UseAdminReturn => {
     try {
       setError(null);
       await apiService.deleteUser(id);
-      
+
       // Remove from local state
-      setUsers(prev => prev.filter(u => u.id !== id));
+      setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete user';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete user";
       setError(errorMessage);
       throw err;
     }
@@ -118,15 +132,16 @@ export const useAdmin = (): UseAdminReturn => {
     try {
       setError(null);
       const user = await apiService.activateUser(id);
-      
+
       // Update local state
-      setUsers(prev => 
-        prev.map(u => u.id === id ? { ...u, is_active: true } : u)
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, is_active: true } : u)),
       );
-      
+
       return user;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to activate user';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to activate user";
       setError(errorMessage);
       throw err;
     }
@@ -136,15 +151,16 @@ export const useAdmin = (): UseAdminReturn => {
     try {
       setError(null);
       const user = await apiService.deactivateUser(id);
-      
+
       // Update local state
-      setUsers(prev => 
-        prev.map(u => u.id === id ? { ...u, is_active: false } : u)
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, is_active: false } : u)),
       );
-      
+
       return user;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to deactivate user';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to deactivate user";
       setError(errorMessage);
       throw err;
     }

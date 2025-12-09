@@ -3,13 +3,11 @@ import {
   X,
   Heart,
   Share2,
-  Star,
   Users,
   Calendar,
   MapPin,
   Plus,
   Minus,
-  Play,
   Clock,
   Award,
   Shield,
@@ -27,12 +25,26 @@ interface TourDetailModalProps {
   onClose: () => void;
 }
 
+// Helper function to safely extract localized text from multilingual objects
+const getLocalizedText = (
+  value: string | { [key: string]: string } | undefined | null,
+  language: string,
+): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const langKey = language === "en" ? "eng" : language;
+    return value[langKey] || value.ru || value.eng || value.uz || "";
+  }
+  return "";
+};
+
 const TourDetailModal: React.FC<TourDetailModalProps> = ({
   tour,
   isOpen,
   onClose,
 }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
   const [selectedDate, setSelectedDate] = useState("1 – 5 Noyabr 2025");
   const [participants, setParticipants] = useState(1);
   const [showRegistration, setShowRegistration] = useState(false);
@@ -98,13 +110,15 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({
             <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between z-10 rounded-t-2xl">
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-2">
-                  {tour.title}
+                  {getLocalizedText(tour.title, language)}
                 </h1>
                 <div className="flex items-center gap-4 text-gray-600">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
                     <span className="text-sm">
-                      {tour.destination || tour.location || "Unknown"}
+                      {getLocalizedText(tour.destination, language) ||
+                        tour.location ||
+                        "Unknown"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -225,7 +239,7 @@ const TourDetailModal: React.FC<TourDetailModalProps> = ({
                   </h2>
                   <div className="prose prose-gray max-w-none">
                     <p className="text-gray-700 leading-relaxed">
-                      {tour.description}
+                      {getLocalizedText(tour.description, language)}
                     </p>
                   </div>
                 </div>

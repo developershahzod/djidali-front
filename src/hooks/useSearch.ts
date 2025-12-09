@@ -1,19 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
-import { apiService, Tour } from '../services/api';
-import { debounce } from 'lodash';
+import { useState, useCallback } from "react";
+import { apiService, Tour } from "../services/api";
+import { debounce } from "lodash";
 
 interface UseSearchReturn {
   results: Tour[];
   suggestions: string[];
   loading: boolean;
   error: string | null;
-  searchTours: (query: string, filters?: {
-    category_id?: number;
-    min_price?: number;
-    max_price?: number;
-    duration?: number;
-    location?: string;
-  }) => Promise<void>;
+  searchTours: (
+    query: string,
+    filters?: {
+      category_id?: number;
+      min_price?: number;
+      max_price?: number;
+      duration?: number;
+      location?: string;
+    },
+  ) => Promise<void>;
   getSuggestions: (query: string) => Promise<void>;
   clearResults: () => void;
 }
@@ -24,13 +27,16 @@ export const useSearch = (): UseSearchReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchTours = async (query: string, filters?: {
-    category_id?: number;
-    min_price?: number;
-    max_price?: number;
-    duration?: number;
-    location?: string;
-  }) => {
+  const searchTours = async (
+    query: string,
+    filters?: {
+      category_id?: number;
+      min_price?: number;
+      max_price?: number;
+      duration?: number;
+      location?: string;
+    },
+  ) => {
     if (!query.trim()) {
       setResults([]);
       return;
@@ -39,13 +45,13 @@ export const useSearch = (): UseSearchReturn => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const tours = await apiService.searchTours(query, filters);
       setResults(tours);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Search failed';
+      const errorMessage = err instanceof Error ? err.message : "Search failed";
       setError(errorMessage);
-      console.error('Search error:', err);
+      console.error("Search error:", err);
     } finally {
       setLoading(false);
     }
@@ -61,7 +67,7 @@ export const useSearch = (): UseSearchReturn => {
       const suggestions = await apiService.getSearchSuggestions(query);
       setSuggestions(suggestions);
     } catch (err) {
-      console.error('Suggestions error:', err);
+      console.error("Suggestions error:", err);
       setSuggestions([]);
     }
   };
@@ -69,7 +75,7 @@ export const useSearch = (): UseSearchReturn => {
   // Debounced version of getSuggestions
   const debouncedGetSuggestions = useCallback(
     debounce((query: string) => getSuggestions(query), 300),
-    []
+    [],
   );
 
   const clearResults = () => {

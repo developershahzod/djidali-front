@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Minus, Plus, ChevronDown } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { Popover } from './Popover';
-import { useLanguage } from '../../contexts/LanguageContext';
+import React, { useState } from "react";
+import { Users, Minus, Plus, ChevronDown } from "lucide-react";
+import { cn } from "../../lib/utils";
+import { Popover } from "./Popover";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface GuestSelectorProps {
   adults: number;
@@ -78,25 +78,35 @@ export function GuestSelector({
     const parts = [];
 
     if (adults > 0) {
-      const adultLabel = adults === 1
-        ? translate({ ru: 'взрослый', uz: 'katta', en: 'adult', de: 'Erwachsener' })
-        : translate({ ru: 'взр.', uz: 'katta', en: 'adults', de: 'Erw.' });
+      const adultLabel =
+        adults === 1
+          ? translate({
+              ru: "взрослый",
+              uz: "katta",
+              en: "adult",
+              de: "Erwachsener",
+            })
+          : translate({ ru: "взр.", uz: "katta", en: "adults", de: "Erw." });
       parts.push(`${adults} ${adultLabel}`);
     }
 
     if (childrenAges.length > 0) {
-      const childLabel = childrenAges.length === 1
-        ? translate({ ru: 'ребёнок', uz: 'bola', en: 'child', de: 'Kind' })
-        : translate({ ru: 'дет.', uz: 'bola', en: 'children', de: 'Kind.' });
+      const childLabel =
+        childrenAges.length === 1
+          ? translate({ ru: "ребёнок", uz: "bola", en: "child", de: "Kind" })
+          : translate({ ru: "дет.", uz: "bola", en: "children", de: "Kind." });
       parts.push(`${childrenAges.length} ${childLabel}`);
     }
 
-    return parts.join(' — ') || translate({
-      ru: 'Выберите',
-      uz: 'Tanlang',
-      en: 'Select',
-      de: 'Wählen'
-    });
+    return (
+      parts.join(" — ") ||
+      translate({
+        ru: "Выберите",
+        uz: "Tanlang",
+        en: "Select",
+        de: "Wählen",
+      })
+    );
   };
 
   // Age options for children (0-17)
@@ -109,7 +119,7 @@ export function GuestSelector({
       align="start"
       className="guest-selector-popover p-0 min-w-[320px]"
       trigger={
-        <div className={cn('bg-white rounded-xl cursor-pointer', className)}>
+        <div className={cn("bg-white rounded-xl cursor-pointer", className)}>
           {label && (
             <label className="block text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
               {label}
@@ -122,10 +132,12 @@ export function GuestSelector({
                 {getSummaryText()}
               </span>
             </div>
-            <ChevronDown className={cn(
-              'w-4 h-4 text-gray-400 transition-transform duration-200',
-              isOpen && 'rotate-180'
-            )} />
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 text-gray-400 transition-transform duration-200",
+                isOpen && "rotate-180",
+              )}
+            />
           </div>
         </div>
       }
@@ -135,10 +147,10 @@ export function GuestSelector({
         <div className="mb-4 pb-3 border-b border-gray-100">
           <p className="text-sm font-semibold text-gray-800">
             {translate({
-              ru: 'Количество гостей',
-              uz: 'Mehmonlar soni',
-              en: 'Number of guests',
-              de: 'Anzahl der Gäste'
+              ru: "Количество гостей",
+              uz: "Mehmonlar soni",
+              en: "Number of guests",
+              de: "Anzahl der Gäste",
             })}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
@@ -146,7 +158,7 @@ export function GuestSelector({
               ru: `Максимум ${maxGuests} гостей`,
               uz: `Maksimum ${maxGuests} mehmon`,
               en: `Maximum ${maxGuests} guests`,
-              de: `Maximal ${maxGuests} Gäste`
+              de: `Maximal ${maxGuests} Gäste`,
             })}
           </p>
         </div>
@@ -155,10 +167,20 @@ export function GuestSelector({
         <div className="flex items-center justify-between py-3">
           <div>
             <span className="text-[15px] font-medium text-gray-800">
-              {translate({ ru: 'Взрослые', uz: 'Kattalar', en: 'Adults', de: 'Erwachsene' })}
+              {translate({
+                ru: "Взрослые",
+                uz: "Kattalar",
+                en: "Adults",
+                de: "Erwachsene",
+              })}
             </span>
             <p className="text-xs text-gray-500">
-              {translate({ ru: '18+ лет', uz: '18+ yosh', en: '18+ years', de: '18+ Jahre' })}
+              {translate({
+                ru: "18+ лет",
+                uz: "18+ yosh",
+                en: "18+ years",
+                de: "18+ Jahre",
+              })}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -166,11 +188,11 @@ export function GuestSelector({
               onClick={() => handleAdultChange(-1)}
               disabled={!canRemoveAdult}
               className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200',
-                'border border-gray-200',
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200",
+                "border border-gray-200",
                 canRemoveAdult
-                  ? 'bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                  ? "bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700"
+                  : "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50",
               )}
               aria-label="Decrease adults"
             >
@@ -183,11 +205,11 @@ export function GuestSelector({
               onClick={() => handleAdultChange(1)}
               disabled={!canAddAdult}
               className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200',
-                'border border-gray-200',
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200",
+                "border border-gray-200",
                 canAddAdult
-                  ? 'bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                  ? "bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700"
+                  : "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50",
               )}
               aria-label="Increase adults"
             >
@@ -200,10 +222,20 @@ export function GuestSelector({
         <div className="flex items-center justify-between py-3 border-t border-gray-100">
           <div>
             <span className="text-[15px] font-medium text-gray-800">
-              {translate({ ru: 'Дети', uz: 'Bolalar', en: 'Children', de: 'Kinder' })}
+              {translate({
+                ru: "Дети",
+                uz: "Bolalar",
+                en: "Children",
+                de: "Kinder",
+              })}
             </span>
             <p className="text-xs text-gray-500">
-              {translate({ ru: '0–17 лет', uz: '0–17 yosh', en: '0–17 years', de: '0–17 Jahre' })}
+              {translate({
+                ru: "0–17 лет",
+                uz: "0–17 yosh",
+                en: "0–17 years",
+                de: "0–17 Jahre",
+              })}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -211,11 +243,11 @@ export function GuestSelector({
               onClick={() => handleChildCountChange(-1)}
               disabled={!canRemoveChild}
               className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200',
-                'border border-gray-200',
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200",
+                "border border-gray-200",
                 canRemoveChild
-                  ? 'bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                  ? "bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700"
+                  : "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50",
               )}
               aria-label="Decrease children"
             >
@@ -228,11 +260,11 @@ export function GuestSelector({
               onClick={() => handleChildCountChange(1)}
               disabled={!canAddChild}
               className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200',
-                'border border-gray-200',
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200",
+                "border border-gray-200",
                 canAddChild
-                  ? 'bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                  ? "bg-gray-50 hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] text-gray-700"
+                  : "bg-gray-50 text-gray-300 cursor-not-allowed opacity-50",
               )}
               aria-label="Increase children"
             >
@@ -246,10 +278,10 @@ export function GuestSelector({
           <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
             <p className="text-xs font-medium text-gray-600 uppercase tracking-wide">
               {translate({
-                ru: 'Возраст детей',
-                uz: 'Bolalar yoshi',
+                ru: "Возраст детей",
+                uz: "Bolalar yoshi",
                 en: "Children's ages",
-                de: 'Alter der Kinder'
+                de: "Alter der Kinder",
               })}
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -260,33 +292,39 @@ export function GuestSelector({
                       ru: `Ребёнок ${index + 1}`,
                       uz: `Bola ${index + 1}`,
                       en: `Child ${index + 1}`,
-                      de: `Kind ${index + 1}`
+                      de: `Kind ${index + 1}`,
                     })}
                   </label>
                   <select
                     value={age}
-                    onChange={(e) => handleChildAgeChange(index, parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleChildAgeChange(index, parseInt(e.target.value))
+                    }
                     className={cn(
-                      'w-full px-3 py-2 rounded-lg border border-gray-200',
-                      'text-sm font-medium text-gray-800',
-                      'bg-white hover:border-[#8B7355] focus:border-[#8B7355] focus:ring-1 focus:ring-[#8B7355]',
-                      'outline-none transition-all duration-200',
-                      'appearance-none cursor-pointer'
+                      "w-full px-3 py-2 rounded-lg border border-gray-200",
+                      "text-sm font-medium text-gray-800",
+                      "bg-white hover:border-[#8B7355] focus:border-[#8B7355] focus:ring-1 focus:ring-[#8B7355]",
+                      "outline-none transition-all duration-200",
+                      "appearance-none cursor-pointer",
                     )}
                     style={{
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 8px center',
-                      backgroundSize: '16px',
-                      paddingRight: '32px'
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "right 8px center",
+                      backgroundSize: "16px",
+                      paddingRight: "32px",
                     }}
                   >
                     {ageOptions.map((ageOption) => (
                       <option key={ageOption} value={ageOption}>
                         {ageOption === 0
-                          ? translate({ ru: 'До 1 года', uz: '1 yoshgacha', en: 'Under 1', de: 'Unter 1' })
-                          : `${ageOption} ${translate({ ru: 'лет', uz: 'yosh', en: 'years', de: 'Jahre' })}`
-                        }
+                          ? translate({
+                              ru: "До 1 года",
+                              uz: "1 yoshgacha",
+                              en: "Under 1",
+                              de: "Unter 1",
+                            })
+                          : `${ageOption} ${translate({ ru: "лет", uz: "yosh", en: "years", de: "Jahre" })}`}
                       </option>
                     ))}
                   </select>
@@ -299,7 +337,12 @@ export function GuestSelector({
         {/* Total summary */}
         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
           <span className="text-sm text-gray-600">
-            {translate({ ru: 'Всего гостей:', uz: 'Jami mehmonlar:', en: 'Total guests:', de: 'Gesamtgäste:' })}
+            {translate({
+              ru: "Всего гостей:",
+              uz: "Jami mehmonlar:",
+              en: "Total guests:",
+              de: "Gesamtgäste:",
+            })}
           </span>
           <span className="text-lg font-bold text-[#8B7355]">
             {totalGuests}
@@ -311,7 +354,7 @@ export function GuestSelector({
           onClick={() => setIsOpen(false)}
           className="w-full mt-4 py-2.5 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium rounded-lg transition-colors duration-200"
         >
-          {translate({ ru: 'Готово', uz: 'Tayyor', en: 'Done', de: 'Fertig' })}
+          {translate({ ru: "Готово", uz: "Tayyor", en: "Done", de: "Fertig" })}
         </button>
       </div>
     </Popover>

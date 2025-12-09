@@ -1,350 +1,569 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Heart, User, Calendar, MapPin, CreditCard, RefreshCw } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useLanguage } from '../contexts/LanguageContext';
-import { djidaliApi, ApiOrder } from '../services/djidaliApi';
-import { clickPaymentService } from '../services/clickPayment';
-import { getImageUrl } from '../utils/imageUtils';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  MapPin,
+  Clock,
+  ChevronRight,
+  RefreshCw,
+  CreditCard,
+  Users,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
+import { djidaliApi, ApiOrder } from "../services/djidaliApi";
+import { clickPaymentService } from "../services/legacyClickPayment";
+import { getImageUrl } from "../utils/imageUtils";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import StatsGrid from "../components/dashboard/StatsGrid";
+import EmptyStateRecommendations from "../components/dashboard/EmptyStateRecommendations";
 
 const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const { t } = useLanguage();
+  const { language, translate } = useLanguage();
   const [orders, setOrders] = useState<ApiOrder[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [paymentStatuses, setPaymentStatuses] = useState<Record<string, 'waiting' | 'confirmed' | 'rejected'>>({});
-  const [checkingPayment, setCheckingPayment] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [paymentStatuses, setPaymentStatuses] = useState<
+    Record<string, "waiting" | "confirmed" | "rejected" | "error">
+  >({});
+  const [checkingPayment, setCheckingPayment] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     if (user?.id) {
       fetchOrders();
+      fetchWishlistCount();
     }
   }, [user?.id]);
 
   const fetchOrders = async () => {
-    if (!user?.id) {
-      console.log('No user ID, skipping fetch');
-      return;
-    }
-
     try {
       setLoading(true);
-      console.log('Fetching orders for user:', user.id);
       const response = await djidaliApi.getOrders({ limit: 50 });
-      console.log('Orders response:', response);
-
       if (Array.isArray(response)) {
         setOrders(response);
       } else if (response && Array.isArray(response.data)) {
         setOrders(response.data);
       } else {
-        console.warn('Unexpected response format:', response);
         setOrders([]);
       }
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+      console.error("Failed to fetch orders:", error);
       setOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'FULLY_PAID':
-        return 'bg-green-100 text-green-800';
-      case 'CONFIRMED':
-        return 'bg-blue-100 text-blue-800';
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'FULLY_PAID':
-        return t('userDashboard.status.fullyPaid');
-      case 'CONFIRMED':
-        return t('userDashboard.status.confirmed');
-      case 'PENDING':
-        return t('userDashboard.status.pending');
-      case 'CANCELLED':
-        return t('userDashboard.status.cancelled');
-      default:
-        return status;
+  const fetchWishlistCount = async () => {
+    try {
+      // Try to get wishlist from API if available
+      const wishlist = await djidaliApi.getWishlist?.();
+      if (Array.isArray(wishlist)) {
+        setWishlistCount(wishlist.length);
+      } else if (wishlist?.data && Array.isArray(wishlist.data)) {
+        setWishlistCount(wishlist.data.length);
+      }
+    } catch {
+      // Wishlist API might not exist, keep count at 0
+      setWishlistCount(0);
     }
   };
 
   const checkPaymentStatus = async (orderId: string) => {
-    setCheckingPayment(prev => ({ ...prev, [orderId]: true }));
+    setCheckingPayment((prev) => ({ ...prev, [orderId]: true }));
     try {
       const status = await clickPaymentService.getPaymentStatus(orderId);
-      setPaymentStatuses(prev => ({ ...prev, [orderId]: status }));
+      setPaymentStatuses((prev) => ({ ...prev, [orderId]: status }));
     } catch (error) {
-      console.error('Payment status check failed:', error);
+      console.error("Payment status check failed:", error);
+      setPaymentStatuses((prev) => ({ ...prev, [orderId]: "error" }));
     } finally {
-      setCheckingPayment(prev => ({ ...prev, [orderId]: false }));
+      setCheckingPayment((prev) => ({ ...prev, [orderId]: false }));
     }
   };
 
-  const getPaymentStatusColor = (status: 'waiting' | 'confirmed' | 'rejected') => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 border-green-300';
-      case 'waiting':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'rejected':
-        return 'bg-red-100 text-red-800 border-red-300';
-    }
+  const getStatusConfig = (status: string) => {
+    const configs: Record<
+      string,
+      {
+        color: string;
+        bg: string;
+        labelKey: { ru: string; uz: string; en: string; de: string };
+      }
+    > = {
+      FULLY_PAID: {
+        color: "text-emerald-700",
+        bg: "bg-emerald-50 border-emerald-200",
+        labelKey: {
+          ru: "Оплачено",
+          uz: "To'langan",
+          en: "Paid",
+          de: "Bezahlt",
+        },
+      },
+      CONFIRMED: {
+        color: "text-blue-700",
+        bg: "bg-blue-50 border-blue-200",
+        labelKey: {
+          ru: "Подтверждено",
+          uz: "Tasdiqlangan",
+          en: "Confirmed",
+          de: "Bestätigt",
+        },
+      },
+      PENDING: {
+        color: "text-amber-700",
+        bg: "bg-amber-50 border-amber-200",
+        labelKey: {
+          ru: "Ожидает",
+          uz: "Kutilmoqda",
+          en: "Pending",
+          de: "Ausstehend",
+        },
+      },
+      CANCELLED: {
+        color: "text-red-700",
+        bg: "bg-red-50 border-red-200",
+        labelKey: {
+          ru: "Отменено",
+          uz: "Bekor qilingan",
+          en: "Cancelled",
+          de: "Storniert",
+        },
+      },
+    };
+    const config = configs[status] || {
+      color: "text-gray-700",
+      bg: "bg-gray-50 border-gray-200",
+      labelKey: { ru: status, uz: status, en: status, de: status },
+    };
+    return {
+      ...config,
+      label: translate(config.labelKey),
+    };
   };
 
-  const getPaymentStatusText = (status: 'waiting' | 'confirmed' | 'rejected') => {
-    switch (status) {
-      case 'confirmed':
-        return t('userDashboard.payment.paid');
-      case 'waiting':
-        return t('userDashboard.payment.waiting');
-      case 'rejected':
-        return t('userDashboard.payment.rejected');
-    }
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("uz-UZ").format(price);
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const localeMap: Record<string, string> = {
+      ru: "ru-RU",
+      uz: "uz-UZ",
+      en: "en-US",
+      de: "de-DE",
+    };
+    return date.toLocaleDateString(localeMap[language] || "en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  const getTourTitle = (tour: any) => {
+    if (!tour)
+      return translate({ ru: "Тур", uz: "Tur", en: "Tour", de: "Tour" });
+    if (language === "ru" && tour.titleRu) return tour.titleRu;
+    if (language === "uz" && tour.titleUz) return tour.titleUz;
+    if ((language === "en" || language === "eng") && tour.titleEng)
+      return tour.titleEng;
+
+    if (tour.title && typeof tour.title === "object") {
+      const langKey = language === "en" ? "eng" : language;
+      return (
+        tour.title[langKey] ||
+        tour.title.ru ||
+        tour.title.uz ||
+        tour.title.eng ||
+        translate({ ru: "Тур", uz: "Tur", en: "Tour", de: "Tour" })
+      );
+    }
+
+    return (
+      tour.title ||
+      tour.titleRu ||
+      tour.titleUz ||
+      tour.titleEng ||
+      translate({ ru: "Тур", uz: "Tur", en: "Tour", de: "Tour" })
+    );
+  };
+
+  const getTourImage = (tour: any) => {
+    if (!tour) return "/placeholder-tour.jpg";
+    if (tour.images && tour.images.length > 0) {
+      const img = tour.images[0];
+      return typeof img === "string"
+        ? img
+        : img.url || img.imageUrl || "/placeholder-tour.jpg";
+    }
+    return "/placeholder-tour.jpg";
+  };
+
+  const getLocalizedText = (
+    value: string | { [key: string]: string } | undefined | null,
+  ): string => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    if (typeof value === "object") {
+      const langKey = language === "en" ? "eng" : language;
+      return value[langKey] || value.ru || value.eng || value.uz || "";
+    }
+    return "";
+  };
+
+  const activeOrders = orders.filter(
+    (o) => o.status === "CONFIRMED" || o.status === "FULLY_PAID",
+  );
+
+  const getLoyaltyLevel = (): "bronze" | "silver" | "gold" => {
+    if (orders.length > 5) return "gold";
+    if (orders.length > 2) return "silver";
+    return "bronze";
+  };
+
+  if (!isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen bg-[#f4f2ed]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#8f7b49] to-[#a08957] shadow-lg">
-        <div className="max-w-[1340px] mx-auto px-[50px] py-[40px]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <button
-                onClick={() => navigate('/')}
-                className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors group"
-              >
-                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[16px] font-medium">{t('userDashboard.header.backToHome')}</span>
-              </button>
-              <div className="h-8 w-px bg-white/30"></div>
-              <h1 className="text-[40px] font-bold text-white leading-none tracking-tight">
-                {t('userDashboard.header.title')}
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-[12px] text-white/70 uppercase tracking-wide">{t('userDashboard.header.welcome')}</p>
-                <p className="text-[18px] font-semibold text-white">{user?.firstName} {user?.lastName}</p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30">
-                <User className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </div>
+    <DashboardLayout>
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#8f7b49] border-t-transparent" />
+          <p className="text-gray-500 mt-4">
+            {translate({
+              ru: "Загрузка ваших поездок...",
+              uz: "Sayohatlaringiz yuklanmoqda...",
+              en: "Loading your trips...",
+              de: "Ihre Reisen werden geladen...",
+            })}
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className="space-y-8">
+          {/* Stats Grid */}
+          <StatsGrid
+            ordersCount={orders.length}
+            activeToursCount={activeOrders.length}
+            wishlistCount={wishlistCount}
+            loyaltyLevel={getLoyaltyLevel()}
+          />
 
-      {/* Stats Cards */}
-      <div className="max-w-[1340px] mx-auto px-[50px] py-[60px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[30px] mb-[60px]">
-          {/* Orders Card */}
-          <div className="bg-white rounded-[20px] shadow-lg border-2 border-[#e8e4db] p-[40px] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div className="flex items-center justify-between mb-[20px]">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-[15px] flex items-center justify-center shadow-md">
-                <Package className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.myOrders')}</p>
-                <p className="text-[48px] font-bold text-[#333] leading-none">{orders.length}</p>
-              </div>
-            </div>
-            <div className="h-1 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full"></div>
-          </div>
-
-          {/* Active Tours Card */}
-          <div className="bg-white rounded-[20px] shadow-lg border-2 border-[#e8e4db] p-[40px] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div className="flex items-center justify-between mb-[20px]">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-sky-600 rounded-[15px] flex items-center justify-center shadow-md">
-                <Calendar className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.activeTours')}</p>
-                <p className="text-[48px] font-bold text-[#333] leading-none">
-                  {orders.filter(o => o.status === 'CONFIRMED' || o.status === 'FULLY_PAID').length}
-                </p>
-              </div>
-            </div>
-            <div className="h-1 bg-gradient-to-r from-blue-500 to-sky-600 rounded-full"></div>
-          </div>
-
-          {/* Wishlist Card */}
-          <div className="bg-white rounded-[20px] shadow-lg border-2 border-[#e8e4db] p-[40px] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-               onClick={() => navigate('/wishlist')}>
-            <div className="flex items-center justify-between mb-[20px]">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-[15px] flex items-center justify-center shadow-md">
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-[14px] text-[#666] font-medium uppercase tracking-wide mb-1">{t('userDashboard.stats.saved')}</p>
-                <p className="text-[24px] font-bold text-amber-600 underline hover:text-amber-700 leading-none">
-                  {t('userDashboard.stats.view')} →
-                </p>
-              </div>
-            </div>
-            <div className="h-1 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full"></div>
-          </div>
-        </div>
-
-        {/* Orders List */}
-        <div className="bg-white rounded-[20px] shadow-lg border-2 border-[#e8e4db] overflow-hidden">
-          <div className="bg-gradient-to-r from-[#8f7b49] to-[#a08957] px-[40px] py-[30px]">
-            <h2 className="text-[32px] font-bold text-white tracking-tight">{t('userDashboard.orders.title')}</h2>
-          </div>
-
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-[80px]">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8f7b49] border-t-transparent"></div>
-              <p className="text-[18px] text-[#666] mt-6">{t('userDashboard.orders.loading')}</p>
-            </div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-[80px] px-[40px]">
-              <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <Package className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-[28px] font-bold text-[#333] mb-3">{t('userDashboard.orders.empty')}</h3>
-              <p className="text-[18px] text-[#666] mb-8 max-w-md mx-auto">
-                {t('userDashboard.orders.emptyDesc')}
-              </p>
-              <button
-                onClick={() => navigate('/tours')}
-                className="bg-gradient-to-r from-[#8f7b49] to-[#a08957] text-white px-8 py-4 rounded-[12px] text-[18px] font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
-              >
-                {t('userDashboard.orders.viewTours')} →
-              </button>
-            </div>
+          {/* Content Based on Orders */}
+          {orders.length === 0 ? (
+            <EmptyStateRecommendations />
           ) : (
-            <div className="p-[20px] space-y-[20px]">
-              {orders.map((order) => (
-                <div key={order.id} className="bg-gradient-to-br from-white to-gray-50 rounded-[16px] border-2 border-[#e8e4db] p-[30px] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex items-start gap-[30px]">
-                    {/* Tour Image */}
-                    <div className="flex-shrink-0">
-                      {order.tour?.images?.[0] ? (
-                        <img
-                          src={getImageUrl(order.tour.images[0])}
-                          alt={order.tour.title}
-                          className="w-[180px] h-[180px] object-cover rounded-[12px] shadow-md"
-                        />
-                      ) : (
-                        <div className="w-[180px] h-[180px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-[12px] flex items-center justify-center">
-                          <Package className="w-16 h-16 text-gray-400" />
-                        </div>
-                      )}
-                    </div>
+            <>
+              {/* Active/Upcoming Trips */}
+              {activeOrders.length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {translate({
+                        ru: "Предстоящие поездки",
+                        uz: "Kelgusi sayohatlar",
+                        en: "Upcoming Trips",
+                        de: "Bevorstehende Reisen",
+                      })}
+                    </h2>
+                    <span className="text-sm text-gray-500">
+                      {activeOrders.length}{" "}
+                      {translate({
+                        ru: activeOrders.length === 1 ? "поездка" : "поездок",
+                        uz: "sayohat",
+                        en: activeOrders.length === 1 ? "trip" : "trips",
+                        de: activeOrders.length === 1 ? "Reise" : "Reisen",
+                      })}
+                    </span>
+                  </div>
+                  <div className="grid gap-4">
+                    {activeOrders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all"
+                      >
+                        <div className="flex flex-col md:flex-row">
+                          {/* Tour Image */}
+                          <div className="md:w-64 lg:w-72 h-48 md:h-auto relative overflow-hidden flex-shrink-0">
+                            <img
+                              src={getImageUrl(getTourImage(order.tour))}
+                              alt={getTourTitle(order.tour)}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
 
-                    {/* Order Details */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-[24px] font-bold text-[#333] leading-tight">
-                          {order.tour?.title || 'N/A'}
-                        </h3>
-                        <span className={`inline-flex px-4 py-2 text-[14px] font-bold rounded-full ${getStatusColor(order.status)} shadow-sm`}>
-                          {getStatusText(order.status)}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4 mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-blue-600" />
+                            {/* Status Badge on Image */}
+                            <span
+                              className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold border ${getStatusConfig(order.status).bg} ${getStatusConfig(order.status).color}`}
+                            >
+                              {getStatusConfig(order.status).label}
+                            </span>
                           </div>
-                          <div>
-                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.destination')}</p>
-                            <p className="text-[16px] font-semibold text-[#333]">{order.tour?.destination || 'N/A'}</p>
-                          </div>
-                        </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <User className="w-5 h-5 text-purple-600" />
-                          </div>
-                          <div>
-                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.participants')}</p>
-                            <p className="text-[16px] font-semibold text-[#333]">{order.participants} {t('userDashboard.orders.people')}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div>
-                            <p className="text-[12px] text-[#999] uppercase">{t('userDashboard.orders.price')}</p>
-                            <p className="text-[18px] font-bold text-emerald-600">
-                              {order.totalAmount.toLocaleString()} UZS
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t-2 border-[#e8e4db]">
-                        <div className="flex items-center gap-2 text-[14px] text-[#666]">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {new Date(order.createdAt).toLocaleDateString('uz-UZ', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            })}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <CreditCard className="w-5 h-5 text-[#999]" />
-                          <span className="text-[14px] font-medium text-[#666]">{t('userDashboard.orders.payment')}:</span>
-                          {paymentStatuses[order.id] ? (
-                            <div className="flex items-center gap-2">
-                              <span className={`inline-flex px-3 py-1.5 text-[13px] font-bold rounded-full border-2 ${getPaymentStatusColor(paymentStatuses[order.id])}`}>
-                                {getPaymentStatusText(paymentStatuses[order.id])}
-                              </span>
-                              <button
-                                onClick={() => checkPaymentStatus(order.id)}
-                                disabled={checkingPayment[order.id]}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                title={t('userDashboard.orders.refresh')}
+                          {/* Order Details */}
+                          <div className="flex-1 p-6">
+                            <div className="mb-4">
+                              <h3
+                                className="text-xl font-semibold text-gray-900 mb-2 hover:text-[#8f7b49] transition-colors cursor-pointer"
+                                onClick={() =>
+                                  navigate(`/tour/${order.tourId}`)
+                                }
                               >
-                                <RefreshCw className={`w-4 h-4 text-[#666] ${checkingPayment[order.id] ? 'animate-spin' : ''}`} />
+                                {getTourTitle(order.tour)}
+                              </h3>
+                              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                                {order.tour?.destination && (
+                                  <span className="flex items-center gap-1.5">
+                                    <MapPin className="w-4 h-4 text-gray-400" />
+                                    {getLocalizedText(order.tour.destination)}
+                                  </span>
+                                )}
+                                {order.tour?.duration && (
+                                  <span className="flex items-center gap-1.5">
+                                    <Clock className="w-4 h-4 text-gray-400" />
+                                    {order.tour.duration}{" "}
+                                    {translate({
+                                      ru: "дн.",
+                                      uz: "kun",
+                                      en: "days",
+                                      de: "Tage",
+                                    })}
+                                  </span>
+                                )}
+                                <span className="flex items-center gap-1.5">
+                                  <Users className="w-4 h-4 text-gray-400" />
+                                  {order.participants}{" "}
+                                  {translate({
+                                    ru: "чел.",
+                                    uz: "kishi",
+                                    en: "travelers",
+                                    de: "Reisende",
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Booking Details Row */}
+                            <div className="flex flex-wrap items-center gap-6 text-sm py-4 border-t border-gray-100">
+                              <div>
+                                <p className="text-gray-400 text-xs uppercase tracking-wide">
+                                  {translate({
+                                    ru: "Забронировано",
+                                    uz: "Bron qilingan",
+                                    en: "Booked",
+                                    de: "Gebucht",
+                                  })}
+                                </p>
+                                <p className="font-medium text-gray-900 mt-0.5">
+                                  {formatDate(order.createdAt)}
+                                </p>
+                              </div>
+                              <div className="w-px h-8 bg-gray-200 hidden sm:block" />
+                              <div>
+                                <p className="text-gray-400 text-xs uppercase tracking-wide">
+                                  {translate({
+                                    ru: "Сумма",
+                                    uz: "Jami",
+                                    en: "Total",
+                                    de: "Gesamt",
+                                  })}
+                                </p>
+                                <p className="font-bold text-gray-900 mt-0.5">
+                                  {formatPrice(order.totalAmount)}{" "}
+                                  <span className="font-normal text-gray-500">
+                                    UZS
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Payment Status & Actions */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                              <div className="flex items-center gap-2">
+                                <CreditCard className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm text-gray-500">
+                                  {translate({
+                                    ru: "Оплата:",
+                                    uz: "To'lov:",
+                                    en: "Payment:",
+                                    de: "Zahlung:",
+                                  })}
+                                </span>
+                                {paymentStatuses[order.id] ? (
+                                  <span
+                                    className={`text-sm font-semibold ${
+                                      paymentStatuses[order.id] === "confirmed"
+                                        ? "text-emerald-600"
+                                        : paymentStatuses[order.id] ===
+                                            "rejected"
+                                          ? "text-red-600"
+                                          : paymentStatuses[order.id] ===
+                                              "error"
+                                            ? "text-orange-600"
+                                            : "text-amber-600"
+                                    }`}
+                                  >
+                                    {paymentStatuses[order.id] === "confirmed"
+                                      ? translate({
+                                          ru: "Оплачено",
+                                          uz: "To'langan",
+                                          en: "Paid",
+                                          de: "Bezahlt",
+                                        })
+                                      : paymentStatuses[order.id] === "rejected"
+                                        ? translate({
+                                            ru: "Отклонено",
+                                            uz: "Rad etilgan",
+                                            en: "Failed",
+                                            de: "Fehlgeschlagen",
+                                          })
+                                        : paymentStatuses[order.id] === "error"
+                                          ? translate({
+                                              ru: "Ошибка",
+                                              uz: "Xato",
+                                              en: "Error",
+                                              de: "Fehler",
+                                            })
+                                          : translate({
+                                              ru: "Ожидает",
+                                              uz: "Kutilmoqda",
+                                              en: "Pending",
+                                              de: "Ausstehend",
+                                            })}
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={() => checkPaymentStatus(order.id)}
+                                    disabled={checkingPayment[order.id]}
+                                    className="text-sm text-[#8f7b49] hover:text-[#7a6839] font-medium flex items-center gap-1 transition-colors"
+                                  >
+                                    {checkingPayment[order.id] ? (
+                                      <>
+                                        <RefreshCw className="w-3 h-3 animate-spin" />
+                                        {translate({
+                                          ru: "Проверка...",
+                                          uz: "Tekshirilmoqda...",
+                                          en: "Checking...",
+                                          de: "Prüfen...",
+                                        })}
+                                      </>
+                                    ) : (
+                                      translate({
+                                        ru: "Проверить статус",
+                                        uz: "Holatni tekshirish",
+                                        en: "Check Status",
+                                        de: "Status prüfen",
+                                      })
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                              <button
+                                onClick={() =>
+                                  navigate(`/tour/${order.tourId}`)
+                                }
+                                className="flex items-center gap-1 text-sm font-semibold text-[#8f7b49] hover:text-[#7a6839] transition-colors"
+                              >
+                                {translate({
+                                  ru: "Подробнее",
+                                  uz: "Batafsil",
+                                  en: "View Details",
+                                  de: "Details ansehen",
+                                })}
+                                <ChevronRight className="w-4 h-4" />
                               </button>
                             </div>
-                          ) : (
-                            <button
-                              onClick={() => checkPaymentStatus(order.id)}
-                              disabled={checkingPayment[order.id]}
-                              className="px-4 py-2 bg-blue-600 text-white text-[14px] font-semibold rounded-[8px] hover:bg-blue-700 transition-colors"
-                            >
-                              {checkingPayment[order.id] ? t('userDashboard.orders.checking') : t('userDashboard.orders.check')}
-                            </button>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
+                </section>
+              )}
+
+              {/* Past & Pending Trips */}
+              {orders.filter(
+                (o) => o.status !== "CONFIRMED" && o.status !== "FULLY_PAID",
+              ).length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {translate({
+                        ru: "Прошлые и ожидающие",
+                        uz: "O'tgan va kutilayotgan",
+                        en: "Past & Pending",
+                        de: "Vergangene & Ausstehende",
+                      })}
+                    </h2>
+                  </div>
+                  <div className="grid gap-3">
+                    {orders
+                      .filter(
+                        (o) =>
+                          o.status !== "CONFIRMED" && o.status !== "FULLY_PAID",
+                      )
+                      .map((order) => (
+                        <div
+                          key={order.id}
+                          onClick={() => navigate(`/tour/${order.tourId}`)}
+                          className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer"
+                        >
+                          <img
+                            src={getImageUrl(getTourImage(order.tour))}
+                            alt={getTourTitle(order.tour)}
+                            className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 truncate">
+                              {getTourTitle(order.tour)}
+                            </h4>
+                            <p className="text-sm text-gray-500 mt-0.5">
+                              {formatDate(order.createdAt)} •{" "}
+                              {order.participants}{" "}
+                              {translate({
+                                ru: "чел.",
+                                uz: "kishi",
+                                en: "travelers",
+                                de: "Reisende",
+                              })}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${getStatusConfig(order.status).bg} ${getStatusConfig(order.status).color}`}
+                          >
+                            {getStatusConfig(order.status).label}
+                          </span>
+                          <p className="font-bold text-gray-900 hidden sm:block whitespace-nowrap">
+                            {formatPrice(order.totalAmount)}{" "}
+                            <span className="font-normal text-gray-400 text-sm">
+                              UZS
+                            </span>
+                          </p>
+                          <ChevronRight className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                        </div>
+                      ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Recommendations Section for Users with Orders */}
+              <section className="pt-4">
+                <EmptyStateRecommendations showHero={false} />
+              </section>
+            </>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    </DashboardLayout>
   );
 };
 

@@ -8,7 +8,7 @@ const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [isOnLightBackground, setIsOnLightBackground] = useState(false);
+  const [_isOnLightBackground, _setIsOnLightBackground] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -148,147 +148,149 @@ const Header: React.FC = () => {
             />
           </div>
 
-        <nav className="hidden lg:flex items-center gap-[4px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <button
-            onClick={() => navigate("/about")}
-            className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
-          >
-            {translate({
-              ru: "О нас",
-              uz: "Biz haqimizda",
-              en: "About",
-              de: "Über uns",
-            })}
-          </button>
-          <button
-            onClick={() => navigate("/tourism-types")}
-            className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
-          >
-            {translate({
-              ru: "Виды туризма",
-              uz: "Turizm turlari",
-              en: "Tourism Types",
-              de: "Tourismusarten",
-            })}
-          </button>
-          <button
-            onClick={() => navigate("/tours")}
-            className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
-          >
-            {translate({
-              ru: "Наши туры",
-              uz: "Bizning turlarimiz",
-              en: "Our Tours",
-              de: "Unsere Touren",
-            })}
-          </button>
-          <button
-            onClick={() => navigate("/news")}
-            className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
-          >
-            {translate({
-              ru: "Новости",
-              uz: "Yangiliklar",
-              en: "News",
-              de: "Nachrichten",
-            })}
-          </button>
-          <button
-            onClick={() => navigate("/contact")}
-            className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
-          >
-            {translate({
-              ru: "Контакты",
-              uz: "Aloqa",
-              en: "Contact",
-              de: "Kontakt",
-            })}
-          </button>
-        </nav>
-
-        <div className="flex items-center gap-[16px] lg:gap-[32px] flex-shrink-0">
-          <div className="relative" ref={dropdownRef}>
+          <nav className="hidden lg:flex items-center gap-[4px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <button
-              onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-              className="flex items-center gap-[4px] text-white hover:text-white/80 transition-all"
-            >
-              <span className="text-[14px] font-medium uppercase leading-[16px]">
-                {languageOptions.find((opt) => opt.value === language)?.label}
-              </span>
-              <img
-                src="/language-dropdown-arrow.svg"
-                alt=""
-                className="w-[20px] h-[20px]"
-              />
-            </button>
-
-            {isLanguageDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-lg overflow-hidden min-w-[80px]">
-                {languageOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleLanguageChange(option.value)}
-                    className={`w-full px-4 py-2.5 text-left text-[14px] font-medium uppercase transition-all ${
-                      language === option.value
-                        ? "bg-white/20 text-white"
-                        : "text-white/80 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {isAuthenticated ? (
-            <div className="hidden lg:flex items-center gap-[8px]">
-              <Link
-                to={dashboardLink}
-                className="text-white bg-white/10 border border-white hover:bg-white/20 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
-              >
-                {user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
-                  ? translate({
-                      ru: "Панель админа",
-                      uz: "Admin paneli",
-                      en: "Admin Panel",
-                      de: "Admin-Panel",
-                    })
-                  : translate({
-                      ru: "Личный кабинет",
-                      uz: "Shaxsiy kabinet",
-                      en: "User Panel",
-                      de: "Benutzerpanel",
-                    })}
-              </Link>
-              <button
-                onClick={handleAuthAction}
-                className="text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
-              >
-                {translate({
-                  ru: "Выйти",
-                  uz: "Chiqish",
-                  en: "Logout",
-                  de: "Abmelden",
-                })}
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={handleAuthAction}
-              className="hidden lg:block text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
+              onClick={() => navigate("/about")}
+              className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
             >
               {translate({
-                ru: "Забронировать",
-                uz: "Bron qilish",
-                en: "Book",
-                de: "Buchen",
+                ru: "О нас",
+                uz: "Biz haqimizda",
+                en: "About",
+                de: "Über uns",
               })}
             </button>
-          )}
+            <button
+              onClick={() => navigate("/tourism-types")}
+              className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
+            >
+              {translate({
+                ru: "Виды туризма",
+                uz: "Turizm turlari",
+                en: "Tourism Types",
+                de: "Tourismusarten",
+              })}
+            </button>
+            <button
+              onClick={() => navigate("/tours")}
+              className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
+            >
+              {translate({
+                ru: "Наши туры",
+                uz: "Bizning turlarimiz",
+                en: "Our Tours",
+                de: "Unsere Touren",
+              })}
+            </button>
+            <button
+              onClick={() => navigate("/news")}
+              className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
+            >
+              {translate({
+                ru: "Новости",
+                uz: "Yangiliklar",
+                en: "News",
+                de: "Nachrichten",
+              })}
+            </button>
+            <button
+              onClick={() => navigate("/contact")}
+              className="text-white hover:text-white hover:bg-white/10 transition-all text-[14px] font-medium px-[16px] py-[12px] rounded-[100px] uppercase"
+            >
+              {translate({
+                ru: "Контакты",
+                uz: "Aloqa",
+                en: "Contact",
+                de: "Kontakt",
+              })}
+            </button>
+          </nav>
+
+          <div className="flex items-center gap-[16px] lg:gap-[32px] flex-shrink-0">
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() =>
+                  setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+                }
+                className="flex items-center gap-[4px] text-white hover:text-white/80 transition-all"
+              >
+                <span className="text-[14px] font-medium uppercase leading-[16px]">
+                  {languageOptions.find((opt) => opt.value === language)?.label}
+                </span>
+                <img
+                  src="/language-dropdown-arrow.svg"
+                  alt=""
+                  className="w-[20px] h-[20px]"
+                />
+              </button>
+
+              {isLanguageDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-lg overflow-hidden min-w-[80px]">
+                  {languageOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleLanguageChange(option.value)}
+                      className={`w-full px-4 py-2.5 text-left text-[14px] font-medium uppercase transition-all ${
+                        language === option.value
+                          ? "bg-white/20 text-white"
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {isAuthenticated ? (
+              <div className="hidden lg:flex items-center gap-[8px]">
+                <Link
+                  to={dashboardLink}
+                  className="text-white bg-white/10 border border-white hover:bg-white/20 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
+                >
+                  {user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
+                    ? translate({
+                        ru: "Панель админа",
+                        uz: "Admin paneli",
+                        en: "Admin Panel",
+                        de: "Admin-Panel",
+                      })
+                    : translate({
+                        ru: "Личный кабинет",
+                        uz: "Shaxsiy kabinet",
+                        en: "User Panel",
+                        de: "Benutzerpanel",
+                      })}
+                </Link>
+                <button
+                  onClick={handleAuthAction}
+                  className="text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
+                >
+                  {translate({
+                    ru: "Выйти",
+                    uz: "Chiqish",
+                    en: "Logout",
+                    de: "Abmelden",
+                  })}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleAuthAction}
+                className="hidden lg:block text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
+              >
+                {translate({
+                  ru: "Забронировать",
+                  uz: "Bron qilish",
+                  en: "Book",
+                  de: "Buchen",
+                })}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
@@ -312,11 +314,16 @@ const Header: React.FC = () => {
               {/* Language selector */}
               <div className="relative">
                 <button
-                  onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                  onClick={() =>
+                    setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+                  }
                   className="flex items-center gap-[4px] text-white"
                 >
                   <span className="text-[14px] font-medium uppercase leading-[16px]">
-                    {languageOptions.find((opt) => opt.value === language)?.label}
+                    {
+                      languageOptions.find((opt) => opt.value === language)
+                        ?.label
+                    }
                   </span>
                   <img
                     src="/language-dropdown-arrow.svg"

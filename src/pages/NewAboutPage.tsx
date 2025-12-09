@@ -4,7 +4,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
 const NewAboutPage: React.FC = () => {
-  const { t, translate } = useLanguage();
+  const { translate, t } = useLanguage();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllTeam, setShowAllTeam] = useState(false);
@@ -12,7 +12,7 @@ const NewAboutPage: React.FC = () => {
     yearsOfExperience: 5,
     tourPackages: 100,
     happyTravelers: 250,
-    regularClients: 100
+    regularClients: 100,
   });
 
   // Statistics are now static values, no need to fetch from API
@@ -24,117 +24,117 @@ const NewAboutPage: React.FC = () => {
         ru: "Первозданная красота природы",
         uz: "Tabiatning dastlabki go'zalligi",
         en: "Pristine Natural Beauty",
-        de: "Unberührte natürliche Schönheit"
+        de: "Unberührte natürliche Schönheit",
       }),
       description: [
         translate({
           ru: "Здесь вы познакомитесь с природой в её настоящем, нетронутом виде.",
           uz: "Bu yerda siz tabiatni haqiqiy, tegilmagan ko'rinishida tanib olasiz.",
           en: "Here you will discover nature in its true, untouched form.",
-          de: "Hier entdecken Sie die Natur in ihrer wahren, unberührten Form."
+          de: "Hier entdecken Sie die Natur in ihrer wahren, unberührten Form.",
         }),
         translate({
           ru: "На территории нет искусственно созданных пейзажей или перегруженной инфраструктуры — только тишина, чистый воздух и живая экосистема, сохранённая в своей первозданной красоте.",
           uz: "Hududda sun'iy yaratilgan manzaralar yoki haddan tashqari infratuzilma yo'q - faqat sukunat, toza havo va o'zining dastlabki go'zalligida saqlanib qolgan tirik ekotizim.",
           en: "There are no artificially created landscapes or overloaded infrastructure - only silence, clean air, and a living ecosystem preserved in its pristine beauty.",
-          de: "Es gibt keine künstlich geschaffenen Landschaften oder überlastete Infrastruktur - nur Stille, saubere Luft und ein lebendiges Ökosystem in seiner ursprünglichen Schönheit."
-        })
+          de: "Es gibt keine künstlich geschaffenen Landschaften oder überlastete Infrastruktur - nur Stille, saubere Luft und ein lebendiges Ökosystem in seiner ursprünglichen Schönheit.",
+        }),
       ],
       image: "/why-us-comfort.webp",
       highlight: translate({
         ru: "Знакомство с первозданной природой",
         uz: "Dastlabki tabiat bilan tanishuv",
         en: "Discovering Pristine Nature",
-        de: "Entdeckung unberührter Natur"
-      })
+        de: "Entdeckung unberührter Natur",
+      }),
     },
     {
       title: translate({
         ru: "Команда специалистов",
         uz: "Mutaxassislar jamoasi",
         en: "Team of Specialists",
-        de: "Team von Spezialisten"
+        de: "Team von Spezialisten",
       }),
       description: [
         translate({
           ru: "Наши гиды и инструкторы — профессионалы своего дела, знающие каждый уголок местности.",
           uz: "Bizning gidlarimiz va instruktorlarimiz - o'z ishining professionallar, joyning har bir burchagini biladigan.",
           en: "Our guides and instructors are professionals who know every corner of the area.",
-          de: "Unsere Guides und Instruktoren sind Profis, die jeden Winkel der Gegend kennen."
+          de: "Unsere Guides und Instruktoren sind Profis, die jeden Winkel der Gegend kennen.",
         }),
         translate({
           ru: "Они не только обеспечат безопасность, но и расскажут захватывающие истории о природе, животных и традициях региона.",
           uz: "Ular nafaqat xavfsizlikni ta'minlaydi, balki tabiat, hayvonlar va mintaqa an'analari haqida qiziqarli hikoyalarni aytib berishadi.",
           en: "They will not only ensure safety but also share captivating stories about nature, animals, and regional traditions.",
-          de: "Sie sorgen nicht nur für Sicherheit, sondern erzählen auch faszinierende Geschichten über Natur, Tiere und regionale Traditionen."
-        })
+          de: "Sie sorgen nicht nur für Sicherheit, sondern erzählen auch faszinierende Geschichten über Natur, Tiere und regionale Traditionen.",
+        }),
       ],
       image: "/why-us-team.webp",
       highlight: translate({
         ru: "Профессиональное сопровождение",
         uz: "Professional hamrohlik",
         en: "Professional Guidance",
-        de: "Professionelle Begleitung"
-      })
+        de: "Professionelle Begleitung",
+      }),
     },
     {
       title: translate({
         ru: "Комфортные условия",
         uz: "Qulay sharoitlar",
         en: "Comfortable Conditions",
-        de: "Komfortable Bedingungen"
+        de: "Komfortable Bedingungen",
       }),
       description: [
         translate({
           ru: "Мы создали все условия для вашего комфортного отдыха среди природы.",
           uz: "Biz tabiatda qulay dam olishingiz uchun barcha sharoitlarni yaratdik.",
           en: "We have created all conditions for your comfortable rest in nature.",
-          de: "Wir haben alle Bedingungen für Ihre komfortable Erholung in der Natur geschaffen."
+          de: "Wir haben alle Bedingungen für Ihre komfortable Erholung in der Natur geschaffen.",
         }),
         translate({
           ru: "Уютные домики, современные удобства и продуманная инфраструктура позволят вам насладиться природой без ущерба для комфорта.",
           uz: "Shinam uylar, zamonaviy qulayliklar va puxta o'ylangan infratuzilma sizga qulaylik uchun zarar yetkazmasdan tabiatdan bahramand bo'lishga imkon beradi.",
           en: "Cozy cabins, modern amenities, and well-designed infrastructure allow you to enjoy nature without sacrificing comfort.",
-          de: "Gemütliche Hütten, moderne Annehmlichkeiten und durchdachte Infrastruktur ermöglichen es Ihnen, die Natur zu genießen, ohne auf Komfort zu verzichten."
-        })
+          de: "Gemütliche Hütten, moderne Annehmlichkeiten und durchdachte Infrastruktur ermöglichen es Ihnen, die Natur zu genießen, ohne auf Komfort zu verzichten.",
+        }),
       ],
       image: "/why-us-comfort.webp",
       highlight: translate({
         ru: "Комфорт в гармонии с природой",
         uz: "Tabiat bilan uyg'unlikdagi qulaylik",
         en: "Comfort in Harmony with Nature",
-        de: "Komfort im Einklang mit der Natur"
-      })
+        de: "Komfort im Einklang mit der Natur",
+      }),
     },
     {
       title: translate({
         ru: "Уникальные маршруты",
         uz: "Noyob marshrutlar",
         en: "Unique Routes",
-        de: "Einzigartige Routen"
+        de: "Einzigartige Routen",
       }),
       description: [
         translate({
           ru: "Исследуйте эксклюзивные тропы и маршруты, недоступные для массового туризма.",
           uz: "Ommaviy turizm uchun mavjud bo'lmagan eksklyuziv yo'llar va marshrutlarni o'rganing.",
           en: "Explore exclusive trails and routes unavailable to mass tourism.",
-          de: "Erkunden Sie exklusive Pfade und Routen, die dem Massentourismus nicht zugänglich sind."
+          de: "Erkunden Sie exklusive Pfade und Routen, die dem Massentourismus nicht zugänglich sind.",
         }),
         translate({
           ru: "От лёгких прогулок до экстремальных походов — каждый найдёт маршрут по душе и возможностям.",
           uz: "Engil sayrlardan ekstremal sayohatlargacha - har bir kishi o'z qiziqishi va imkoniyatlariga mos marshrutni topadi.",
           en: "From easy walks to extreme hikes - everyone will find a route to their liking and abilities.",
-          de: "Von leichten Spaziergängen bis zu extremen Wanderungen - jeder findet eine Route nach seinem Geschmack und seinen Fähigkeiten."
-        })
+          de: "Von leichten Spaziergängen bis zu extremen Wanderungen - jeder findet eine Route nach seinem Geschmack und seinen Fähigkeiten.",
+        }),
       ],
       image: "/why-us-routes.webp",
       highlight: translate({
         ru: "Эксклюзивные маршруты",
         uz: "Eksklyuziv marshrutlar",
         en: "Exclusive Routes",
-        de: "Exklusive Routen"
-      })
-    }
+        de: "Exklusive Routen",
+      }),
+    },
   ];
 
   const currentFeature = whyUsFeatures[currentSlide];
@@ -207,7 +207,9 @@ const NewAboutPage: React.FC = () => {
     },
   ];
 
-  const displayedTeamMembers = showAllTeam ? teamMembers : teamMembers.slice(0, 6);
+  const displayedTeamMembers = showAllTeam
+    ? teamMembers
+    : teamMembers.slice(0, 6);
 
   return (
     <div className="bg-[#f4f2ed]">
@@ -258,8 +260,12 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.regularClients}</span>
-                    <span className="text-[clamp(28px,2.78vw,40px)] font-extralight">+</span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">
+                      {stats.regularClients}
+                    </span>
+                    <span className="text-[clamp(28px,2.78vw,40px)] font-extralight">
+                      +
+                    </span>
                   </p>
                   <p
                     className="font-light text-[clamp(16px,1.39vw,20px)] leading-[1.4] tracking-[-0.02em] whitespace-nowrap"
@@ -379,14 +385,18 @@ const NewAboutPage: React.FC = () => {
       </section>
 
       {/* Why Us Section */}
-  
 
       {/* Video Section */}
       <section className="bg-[#f4f2ed] py-[clamp(30px,3.47vw,50px)]">
         <div className="max-w-[min(1440px,90vw)] mx-auto px-[clamp(30px,3.47vw,50px)]">
-          <div 
+          <div
             className="relative aspect-[2.06/1] rounded-[clamp(12px,1.39vw,20px)] overflow-hidden cursor-pointer group"
-            onClick={() => window.open('https://www.youtube.com/watch?v=YOUR_VIDEO_ID', '_blank')}
+            onClick={() =>
+              window.open(
+                "https://www.youtube.com/watch?v=YOUR_VIDEO_ID",
+                "_blank",
+              )
+            }
           >
             <img
               alt=""
@@ -394,13 +404,13 @@ const NewAboutPage: React.FC = () => {
               src="/dc3d98eef0e770b0733e6c1cac8c4f9c3f97c42e.png"
             />
             <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] group-hover:bg-[rgba(0,0,0,0.3)] transition-colors duration-300" />
-            
+
             {/* Play Icon */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-[clamp(60px,6.94vw,100px)] h-[clamp(60px,6.94vw,100px)] bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:bg-opacity-100 group-hover:scale-110 transition-all duration-300 shadow-2xl">
-                <svg 
-                  className="w-[clamp(24px,2.78vw,40px)] h-[clamp(24px,2.78vw,40px)] ml-1" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className="w-[clamp(24px,2.78vw,40px)] h-[clamp(24px,2.78vw,40px)] ml-1"
+                  viewBox="0 0 24 24"
                   fill="currentColor"
                 >
                   <path d="M8 5v14l11-7z" fill="#333333" />
@@ -460,7 +470,9 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.yearsOfExperience} </span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">
+                      {stats.yearsOfExperience}{" "}
+                    </span>
                     <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">
                       +
                     </span>
@@ -477,14 +489,16 @@ const NewAboutPage: React.FC = () => {
                     className="font-normal leading-[1] tracking-[-1px]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    <span className="text-[clamp(36px,3.47vw,50px)]">{stats.tourPackages} </span>
+                    <span className="text-[clamp(36px,3.47vw,50px)]">
+                      {stats.regularClients}{" "}
+                    </span>
                     <span className="text-[clamp(28px,2.78vw,40px)]">+</span>
                   </p>
                   <p
                     className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] tracking-[-0.02em]"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    {t("aboutPage.professionals.statsPackages")}
+                    {t("aboutPage.professionals.statsCustomers")}
                   </p>
                 </div>
               </div>
@@ -493,8 +507,12 @@ const NewAboutPage: React.FC = () => {
                   className="font-normal leading-[1] tracking-[-1px]"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
-                  <span className="text-[clamp(36px,3.47vw,50px)]">{stats.happyTravelers} </span>
-                  <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">+</span>
+                  <span className="text-[clamp(36px,3.47vw,50px)]">
+                    {stats.happyTravelers}{" "}
+                  </span>
+                  <span className="font-extralight text-[clamp(28px,2.78vw,40px)]">
+                    +
+                  </span>
                 </p>
                 <p
                   className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] tracking-[-0.02em]"
@@ -528,7 +546,7 @@ const NewAboutPage: React.FC = () => {
         </div>
       </section>
 
-          <section className="bg-white py-[clamp(60px,6.25vw,90px)]">
+      <section className="bg-white py-[clamp(60px,6.25vw,90px)]">
         <div className="max-w-[min(1440px,90vw)] mx-auto px-[clamp(30px,3.47vw,50px)]">
           <h2
             className="text-[clamp(40px,4.17vw,60px)] font-medium leading-[1] text-[#333333] tracking-[-0.03em] mb-[clamp(16px,1.39vw,20px)]"
@@ -538,7 +556,7 @@ const NewAboutPage: React.FC = () => {
               ru: "Мы - не просто локация на карте",
               uz: "Biz - xaritadagi oddiy joy emas",
               en: "We're Not Just a Location on the Map",
-              de: "Wir sind nicht nur ein Ort auf der Karte"
+              de: "Wir sind nicht nur ein Ort auf der Karte",
             })}
           </h2>
           <p
@@ -549,10 +567,10 @@ const NewAboutPage: React.FC = () => {
               ru: "Мы - пространство, где природа оживает, отдых наполняется смыслом, а впечатления остаются в сердце навсегда!",
               uz: "Biz - tabiat jonlanadigan, dam olish ma'noga to'lib, taassurotlar qalbda abadiy qoladigan makonmiz!",
               en: "We're a space where nature comes alive, vacation fills with meaning, and impressions stay in the heart forever!",
-              de: "Wir sind ein Raum, in dem die Natur lebendig wird, der Urlaub mit Bedeutung gefüllt wird und Eindrücke für immer im Herzen bleiben!"
+              de: "Wir sind ein Raum, in dem die Natur lebendig wird, der Urlaub mit Bedeutung gefüllt wird und Eindrücke für immer im Herzen bleiben!",
             })}
           </p>
-          
+
           <div className="flex flex-col lg:flex-row gap-[clamp(30px,3.47vw,50px)]">
             {/* Why Us Container - Left Side */}
             <div className="flex-1 bg-[#E8E4D9] rounded-[20px] transition-all duration-500 overflow-hidden">
@@ -570,7 +588,12 @@ const NewAboutPage: React.FC = () => {
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     {currentFeature.description.map((paragraph, index) => (
-                      <p key={index} className={index === 0 ? "mb-[clamp(10px,0.83vw,12px)]" : ""}>
+                      <p
+                        key={index}
+                        className={
+                          index === 0 ? "mb-[clamp(10px,0.83vw,12px)]" : ""
+                        }
+                      >
                         {paragraph}
                       </p>
                     ))}
@@ -579,10 +602,10 @@ const NewAboutPage: React.FC = () => {
 
                 {/* Image on the right - 50% width without padding */}
                 <div className="w-full md:w-1/2 min-h-[clamp(280px,23.61vw,340px)]">
-                  <img 
-                    alt={currentFeature.title} 
-                    className="w-full h-full object-cover transition-opacity duration-500" 
-                    src={currentFeature.image} 
+                  <img
+                    alt={currentFeature.title}
+                    className="w-full h-full object-cover transition-opacity duration-500"
+                    src={currentFeature.image}
                   />
                 </div>
               </div>
@@ -592,11 +615,11 @@ const NewAboutPage: React.FC = () => {
             <div className="flex-1 flex flex-col gap-[clamp(20px,1.67vw,24px)]">
               <div className="flex flex-col gap-[clamp(8px,0.69vw,10px)] items-end">
                 <div className="h-[3px] w-full bg-[silver] rounded-[8px] relative overflow-hidden">
-                  <div 
+                  <div
                     className="absolute bg-[#333333] h-[3px] rounded-[8px] transition-all duration-300"
                     style={{
-                      left: `${(currentSlide * 25)}%`,
-                      width: "25%"
+                      left: `${currentSlide * 25}%`,
+                      width: "25%",
                     }}
                   />
                 </div>
@@ -604,10 +627,10 @@ const NewAboutPage: React.FC = () => {
                   className="text-[clamp(14px,1.11vw,16px)] font-medium leading-[1] text-[#333333] tracking-[-0.02em]"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
-                  {String(currentSlide + 1).padStart(2, '0')}/04
+                  {String(currentSlide + 1).padStart(2, "0")}/04
                 </p>
               </div>
-              
+
               <div className="flex flex-col gap-[clamp(16px,1.39vw,20px)]">
                 {/* All features list */}
                 {whyUsFeatures.map((feature, index) => (
@@ -653,12 +676,11 @@ const NewAboutPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 w-full">
           {displayedTeamMembers.map((member, index) => (
             <div key={index} className="flex flex-col h-full">
-              <div className="w-full aspect-[480/540] overflow-hidden">
+              <div className="w-full aspect-[3/4] overflow-hidden">
                 <img
                   alt={member.name}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-top"
                   src={member.image}
-                  style={{ objectFit: 'cover' }}
                 />
               </div>
               <div className="bg-white border-2 border-[silver] px-[clamp(30px,3.47vw,50px)] py-[clamp(20px,1.94vw,28px)]">

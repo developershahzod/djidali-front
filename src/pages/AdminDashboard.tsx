@@ -13,15 +13,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useToast } from "../contexts/ToastContext";
+import { useConfirm } from "../contexts/ConfirmContext";
 import AdminLayout from "../layouts/AdminLayout";
-import {
-  djidaliApi,
-  ApiOrder,
-  ApiCategory,
-  ApiTour,
-} from "../services/djidaliApi";
+import { djidaliApi, ApiOrder, ApiCategory } from "../services/djidaliApi";
 import AdminStats from "../components/AdminStats";
-import TourEditModal from "../components/TourEditModal";
 import CategoryModal from "../components/CategoryModal";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { getImageUrl } from "../utils/imageUtils";
@@ -97,8 +93,8 @@ const AdminDashboard: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { t, language } = useLanguage();
-
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   // Check authentication and authorization
   useEffect(() => {
@@ -161,13 +157,13 @@ const AdminDashboard: React.FC = () => {
       setShowCategoryModal(false);
       resetCategoryForm();
       fetchCategories();
-      alert("Category created successfully");
+      toast.success("Category created successfully");
     } catch (error) {
       console.error("Error creating category:", error);
-      alert(
-        "Failed to create category: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
+      toast.error({
+        title: "Failed to create category",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -198,13 +194,13 @@ const AdminDashboard: React.FC = () => {
       setEditingCategory(null);
       resetCategoryForm();
       fetchCategories();
-      alert("Category updated successfully");
+      toast.success("Category updated successfully");
     } catch (error) {
       console.error("Error updating category:", error);
-      alert(
-        "Failed to update category: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
+      toast.error({
+        title: "Failed to update category",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -254,22 +250,31 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (
-      window.confirm(
+    const confirmed = await confirm({
+      title: "Delete Category",
+      message:
         "Are you sure you want to delete this category? This will also delete any subcategories.",
-      )
-    ) {
-      try {
-        console.log('Attempting to delete category:', id);
-        await djidaliApi.deleteCategory(id);
-        console.log('Delete successful, fetching categories...');
-        await fetchCategories();
-        alert("Category deleted successfully.");
-      } catch (error) {
-        console.error("Failed to delete category:", error);
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        alert(`Error deleting category: ${errorMessage}`);
-      }
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "danger",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      console.log("Attempting to delete category:", id);
+      await djidaliApi.deleteCategory(id);
+      console.log("Delete successful, fetching categories...");
+      await fetchCategories();
+      toast.success("Category deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      toast.error({
+        title: "Error deleting category",
+        message: errorMessage,
+      });
     }
   };
   const resetCategoryForm = () => {
@@ -327,7 +332,7 @@ const AdminDashboard: React.FC = () => {
     return text[language] || text.en || text.uz || text.ru || text.de || "";
   };
 
-  const extractPrice = (
+  const _extractPrice = (
     price: number | { amount: number; currency: string } | undefined,
   ): number => {
     if (typeof price === "object" && price?.amount) {
@@ -357,8 +362,6 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     setActiveTab(getTabFromPath(location.pathname));
   }, [location.pathname]);
-  const [showTourModal, setShowTourModal] = useState(false);
-  const [editingTour, setEditingTour] = useState<ExtendedApiTour | null>(null);
 
   useEffect(() => {
     if (
@@ -458,79 +461,26 @@ const AdminDashboard: React.FC = () => {
     }
   }, [activeTab, fetchTours, fetchCategories, fetchOrders]);
 
-  useEffect(() => {
-    return () => {
-      previewImages.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [previewImages]);
-
-  interface TourSaveData {
-    title: string;
-    titleUz?: string;
-    titleRu?: string;
-    titleEng?: string;
-    titleDe?: string;
-    description: string;
-    descriptionUz?: string;
-    descriptionRu?: string;
-    descriptionEng?: string;
-    descriptionDe?: string;
-    destination: string;
-    duration: number;
-    price: number;
-    currency?: string;
-    maxParticipants?: number;
-    startDate?: string;
-    endDate?: string;
-    images?: string[];
-    inclusions?: Array<{ uz: string; ru: string; eng: string; de: string }>;
-    exclusions?: Array<{ uz: string; ru: string; eng: string; de: string }>;
-    status?: string;
-    categoryId?: string;
-    itinerary?: Record<string, string>;
-    program?: Array<{
-      dayNumber: number;
-      titleUz: string;
-      titleRu: string;
-      titleEng: string;
-      titleDe: string;
-      descriptionUz: string;
-      descriptionRu: string;
-      descriptionEng: string;
-      descriptionDe: string;
-    }>;
-  }
-
-  const handleSaveTour = async (data: TourSaveData, tourId?: string) => {
-    try {
-      if (tourId) {
-        await djidaliApi.updateTour(tourId, data);
-        alert("Tour updated successfully");
-      } else {
-        await djidaliApi.createTour(data);
-        alert(t("admin.alerts.tourAdded"));
-      }
-      setShowTourModal(false);
-      fetchTours();
-    } catch (error) {
-      const action = tourId ? "updating" : "creating";
-      alert(
-        `Failed to ${action} tour: ` +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
-    }
-  };
-
   const handleDeleteTour = async (id: string) => {
-    if (!window.confirm(t("admin.alerts.confirmDelete"))) return;
+    const confirmed = await confirm({
+      title: t("admin.alerts.confirmDeleteTitle") || "Delete Tour",
+      message: t("admin.alerts.confirmDelete"),
+      confirmText: t("admin.form.delete") || "Delete",
+      cancelText: t("admin.form.cancel") || "Cancel",
+      variant: "danger",
+    });
+
+    if (!confirmed) return;
+
     try {
       await djidaliApi.deleteTour(id);
       fetchTours();
+      toast.success("Tour deleted successfully");
     } catch (error) {
-      alert(
-        "Failed to delete tour: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
+      toast.error({
+        title: "Failed to delete tour",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -547,222 +497,13 @@ const AdminDashboard: React.FC = () => {
           | "CANCELLED",
       });
       fetchOrders();
+      toast.success("Order status updated");
     } catch (error) {
-      alert(
-        "Failed to update order: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
-    }
-  };
-
-  interface MultilingualObject {
-    [key: string]:
-      | string
-      | Record<string, string>
-      | number
-      | boolean
-      | undefined
-      | null;
-  }
-
-  const getTranslatedField = (
-    obj: MultilingualObject | undefined | null,
-    fieldName: string,
-    lang: "uz" | "ru" | "eng" | "de",
-  ): string => {
-    if (!obj) return "";
-
-    const capitalizedLang = lang.charAt(0).toUpperCase() + lang.slice(1);
-    const directFieldKey = `${fieldName}${capitalizedLang}`;
-    const directValue = obj[directFieldKey];
-    if (
-      directValue !== undefined &&
-      directValue !== null &&
-      typeof directValue !== "object"
-    ) {
-      return String(directValue);
-    }
-
-    const fieldValue = obj[fieldName];
-    if (
-      typeof fieldValue === "object" &&
-      fieldValue !== null &&
-      !Array.isArray(fieldValue)
-    ) {
-      const langValue = fieldValue[lang];
-      if (langValue !== undefined && langValue !== null) {
-        return String(langValue);
-      }
-    }
-
-    if (
-      fieldName === "" &&
-      typeof obj === "object" &&
-      obj !== null &&
-      !Array.isArray(obj)
-    ) {
-      const langValue = obj[lang];
-      if (langValue !== undefined && langValue !== null) {
-        return String(langValue);
-      }
-    }
-
-    if (
-      (fieldName === "title" || fieldName === "description") &&
-      typeof fieldValue === "string"
-    ) {
-      return fieldValue;
-    }
-
-    return "";
-  };
-
-  const openEditModal = async (tourSummary: ExtendedApiTour) => {
-    setEditingTour(tourSummary);
-    setShowTourModal(true);
-
-    let tour: ApiTour;
-    try {
-      tour = await djidaliApi.getTour(tourSummary.id);
-    } catch (error) {
-      console.error("Failed to fetch full tour details for editing:", error);
-      alert("Could not load tour details for editing. Please try again.");
-      setShowTourModal(false);
-      return;
-    }
-
-    const formatDateForInput = (dateString?: string) => {
-      if (!dateString) return "";
-      try {
-        const date = new Date(dateString);
-        return date.toISOString().split("T")[0];
-      } catch {
-        return "";
-      }
-    };
-
-    interface ProgramItem {
-      dayNumber?: number;
-      title?: string | Record<string, string>;
-      description?: string | Record<string, string>;
-      titleRu?: string;
-      titleUz?: string;
-      titleEng?: string;
-      titleDe?: string;
-      descriptionRu?: string;
-      descriptionUz?: string;
-      descriptionEng?: string;
-      descriptionDe?: string;
-    }
-
-    const tourExtended = tour as ApiTour & {
-      program?: ProgramItem[];
-      programDays?: ProgramItem[];
-    };
-    const program: ProgramItem[] =
-      tourExtended.program || tourExtended.programDays || [];
-    const itinerarySteps: ItineraryStep[] = [];
-
-    if (Array.isArray(program) && program.length > 0) {
-      program.forEach((item: ProgramItem, index: number) => {
-        const stepTitleUz = getTranslatedField(item, "title", "uz");
-        const stepTitleRu = getTranslatedField(item, "title", "ru");
-        const stepTitleEng = getTranslatedField(item, "title", "eng");
-        const stepTitleDe = getTranslatedField(item, "title", "de");
-        const anyStepTitle =
-          stepTitleRu || stepTitleEng || stepTitleUz || stepTitleDe;
-
-        const stepDescUz = getTranslatedField(item, "description", "uz");
-        const stepDescRu = getTranslatedField(item, "description", "ru");
-        const stepDescEng = getTranslatedField(item, "description", "eng");
-        const stepDescDe = getTranslatedField(item, "description", "de");
-        const anyStepDesc =
-          stepDescRu || stepDescEng || stepDescUz || stepDescDe;
-
-        itinerarySteps.push({
-          dayNumber: item.dayNumber ?? index + 1,
-          titleUz: stepTitleUz || anyStepTitle,
-          titleRu: stepTitleRu || anyStepTitle,
-          titleEng: stepTitleEng || anyStepTitle,
-          titleDe: stepTitleDe || anyStepTitle,
-          descriptionUz: stepDescUz || anyStepDesc,
-          descriptionRu: stepDescRu || anyStepDesc,
-          descriptionEng: stepDescEng || anyStepDesc,
-          descriptionDe: stepDescDe || anyStepDesc,
-        });
+      toast.error({
+        title: "Failed to update order",
+        message: error instanceof Error ? error.message : "Unknown error",
       });
     }
-
-    interface MultilingualArrayItem {
-      uz?: string;
-      ru?: string;
-      eng?: string;
-      de?: string;
-      name_uz?: string;
-      name_ru?: string;
-      name_en?: string;
-      name_de?: string;
-      name?: string;
-    }
-
-    const parseMultilingualArray = (
-      arr: (string | MultilingualArrayItem)[] | undefined,
-    ) => {
-      if (!Array.isArray(arr) || arr.length === 0) {
-        return [{ uz: "", ru: "", eng: "", de: "" }];
-      }
-      return arr.map((item) => {
-        if (typeof item === "string")
-          return { uz: item, ru: item, eng: item, de: item };
-        return {
-          uz: item.uz || item.name_uz || "",
-          ru: item.ru || item.name_ru || item.name || "",
-          eng: item.eng || item.name_en || "",
-          de: item.de || item.name_de || "",
-        };
-      });
-    };
-
-    if (itinerarySteps.length === 0) {
-      itinerarySteps.push({
-        dayNumber: 1,
-        titleUz: "",
-        titleRu: "",
-        titleEng: "",
-        titleDe: "",
-        descriptionUz: "",
-        descriptionRu: "",
-        descriptionEng: "",
-        descriptionDe: "",
-      });
-    }
-
-    interface CategoryData {
-      id?: string;
-    }
-
-    const tourWithCategory = tour as ApiTour & {
-      category?: CategoryData;
-      categoryId?: string;
-      currency?: string;
-    };
-    const categoryData = tourWithCategory.category;
-
-    const titleUz = getTranslatedField(tour, "title", "uz");
-    const titleRu = getTranslatedField(tour, "title", "ru");
-    const titleEng = getTranslatedField(tour, "title", "eng");
-    const titleDe = getTranslatedField(tour, "title", "de");
-    const anyTitle = titleRu || titleEng || titleUz || titleDe;
-
-    const descriptionUz = getTranslatedField(tour, "description", "uz");
-    const descriptionRu = getTranslatedField(tour, "description", "ru");
-    const descriptionEng = getTranslatedField(tour, "description", "eng");
-    const descriptionDe = getTranslatedField(tour, "description", "de");
-    const anyDescription =
-      descriptionRu || descriptionEng || descriptionUz || descriptionDe;
-
-    // Tour data is now managed by TourEditModal component
-    setPreviewImages([]);
   };
 
   if (
@@ -809,10 +550,14 @@ const AdminDashboard: React.FC = () => {
           toursCount={tours.length}
           ordersCount={orders.length}
           categoriesCount={categories.length}
-          totalRevenue={orders.reduce(
-            (sum, order) => sum + order.totalAmount,
-            0,
-          )}
+          totalRevenue={orders
+            .filter(
+              (order) =>
+                order.status === "FULLY_PAID" ||
+                order.status === "CONFIRMED" ||
+                order.status === "COMPLETED",
+            )
+            .reduce((sum, order) => sum + order.totalAmount, 0)}
         />
 
         {activeTab !== "tours" && (
@@ -848,10 +593,7 @@ const AdminDashboard: React.FC = () => {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setEditingTour(null);
-                  setShowTourModal(true);
-                }}
+                onClick={() => navigate("/admin/tours/new")}
                 className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 <Plus className="h-4 w-4" />
@@ -933,7 +675,7 @@ const AdminDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-600">
-                          {tour.destination}
+                          {getTranslated(tour.destination)}
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-slate-900 tabular-nums">
                           {typeof tour.price === "object"
@@ -966,7 +708,9 @@ const AdminDashboard: React.FC = () => {
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-1">
                             <button
-                              onClick={() => openEditModal(tour)}
+                              onClick={() =>
+                                navigate(`/admin/tours/edit/${tour.id}`)
+                              }
                               className="rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100"
                               title={t("admin.table.edit")}
                             >
@@ -1264,18 +1008,6 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
       </div>
-
-      <TourEditModal
-        isOpen={showTourModal}
-        onClose={() => {
-          setShowTourModal(false);
-          setEditingTour(null);
-        }}
-        editingTour={editingTour}
-        categories={categories}
-        onSave={handleSaveTour}
-        t={t}
-      />
 
       <CategoryModal
         isOpen={showCategoryModal}

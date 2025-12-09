@@ -4,16 +4,13 @@ import {
   Plus,
   Search,
   Filter,
-  MoreHorizontal,
   Edit,
   Trash2,
   Eye,
   Calendar,
   MapPin,
-  Users,
   ChevronDown,
   ChevronUp,
-  ArrowUpDown,
 } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { djidaliApi } from "../../services/djidaliApi";
@@ -24,6 +21,21 @@ import {
   cn,
 } from "../../lib/utils";
 import { ApiTour } from "../../services/djidaliApi";
+import { useLanguage } from "../../contexts/LanguageContext";
+
+// Helper to extract localized string from multilingual object
+const getLocalizedText = (
+  value: string | { [key: string]: string } | undefined | null,
+  language: string,
+): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const langKey = language === "en" ? "eng" : language;
+    return value[langKey] || value.ru || value.eng || value.uz || "";
+  }
+  return "";
+};
 
 const statuses = [
   { name: "All", value: "all" },
@@ -44,6 +56,7 @@ const sortOptions = [
 ];
 
 const ToursPage = () => {
+  const { language } = useLanguage();
   const [tours, setTours] = useState<ApiTour[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,12 +121,22 @@ const ToursPage = () => {
     // Apply search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (tour) =>
-          tour.title.toLowerCase().includes(query) ||
-          tour.destination.toLowerCase().includes(query) ||
-          tour.description.toLowerCase().includes(query),
-      );
+      result = result.filter((tour) => {
+        const title = getLocalizedText(tour.title, language).toLowerCase();
+        const destination = getLocalizedText(
+          tour.destination,
+          language,
+        ).toLowerCase();
+        const description = getLocalizedText(
+          tour.description,
+          language,
+        ).toLowerCase();
+        return (
+          title.includes(query) ||
+          destination.includes(query) ||
+          description.includes(query)
+        );
+      });
     }
 
     // Apply status filter
@@ -355,12 +378,13 @@ const ToursPage = () => {
                                 tour.images?.[0] ||
                                 "https://via.placeholder.com/40"
                               }
-                              alt={tour.title}
+                              alt={getLocalizedText(tour.title, language)}
                             />
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {tour.title}
+                              {getLocalizedText(tour.title, language) ||
+                                "Untitled Tour"}
                             </div>
                             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                               <Calendar className="mr-1 h-3 w-3" />
@@ -376,7 +400,8 @@ const ToursPage = () => {
                         <div className="flex items-center">
                           <MapPin className="mr-1 h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-900 dark:text-gray-100">
-                            {tour.destination}
+                            {getLocalizedText(tour.destination, language) ||
+                              "—"}
                           </span>
                         </div>
                       </td>
@@ -400,13 +425,13 @@ const ToursPage = () => {
                           {tour._count?.orders || 0}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {Math.floor(Math.random() * 20)} this month
+                          total bookings
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-2">
                           <Link
-                            to={`/admin/tours/${tour.id}`}
+                            to={`/admin/tours/edit/${tour.id}`}
                             className="text-primary hover:text-primary/80"
                             onClick={(e) => e.stopPropagation()}
                           >

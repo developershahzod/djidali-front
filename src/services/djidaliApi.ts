@@ -295,62 +295,84 @@ class DjidaliApiService {
       headers["Authorization"] = `Bearer ${currentToken}`;
     }
 
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-      if (!response.ok) {
-        if (response.status === 401 && !endpoint.includes("/auth/refresh")) {
-          // Try to refresh token
-          try {
-            await this.refreshAccessToken();
+    if (!response.ok) {
+      if (response.status === 401 && !endpoint.includes("/auth/refresh")) {
+        // Try to refresh token
+        try {
+          await this.refreshAccessToken();
 
-            // Retry original request with new token
-            const retryHeaders: Record<string, string> = {
-              "Content-Type": "application/json",
-              ...(options.headers as Record<string, string>),
-            };
+          // Retry original request with new token
+          const retryHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+            ...(options.headers as Record<string, string>),
+          };
 
-            const newToken = this.getFreshToken();
-            if (newToken) {
-              retryHeaders["Authorization"] = `Bearer ${newToken}`;
-            }
-
-            const retryResponse = await fetch(url, {
-              ...options,
-              headers: retryHeaders,
-            });
-
-            if (!retryResponse.ok) {
-              throw new Error("Request failed after token refresh");
-            }
-
-            return await retryResponse.json();
-          } catch (refreshError) {
-            // Refresh failed, clear auth and throw
-            this.clearAuth();
-            throw new Error("Authentication required");
+          const newToken = this.getFreshToken();
+          if (newToken) {
+            retryHeaders["Authorization"] = `Bearer ${newToken}`;
           }
+
+          const retryResponse = await fetch(url, {
+            ...options,
+            headers: retryHeaders,
+          });
+
+          if (!retryResponse.ok) {
+            throw new Error("Request failed after token refresh");
+          }
+
+          // Handle empty responses for retry
+          const retryContentType = retryResponse.headers.get("content-type");
+          if (
+            retryResponse.status === 204 ||
+            !retryContentType?.includes("application/json")
+          ) {
+            return {} as T;
+          }
+          const retryText = await retryResponse.text();
+          return retryText ? JSON.parse(retryText) : ({} as T);
+        } catch (_refreshError) {
+          // Refresh failed, clear auth and throw
+          this.clearAuth();
+          throw new Error("Authentication required");
         }
-
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage =
-          errorData.message ||
-          (Array.isArray(errorData.errors)
-            ? errorData.errors
-                .map((e: any) => Object.values(e.constraints || {}).join(", "))
-                .join("; ")
-            : `HTTP error! status: ${response.status}`);
-
-        throw new Error(errorMessage);
       }
 
-      return await response.json();
-    } catch (error: any) {
-      throw error;
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.message ||
+        (Array.isArray(errorData.errors)
+          ? errorData.errors
+              .map((e: any) => Object.values(e.constraints || {}).join(", "))
+              .join("; ")
+          : `HTTP error! status: ${response.status}`);
+
+      throw new Error(errorMessage);
     }
+
+    // Handle empty responses (204 No Content, or empty body)
+    const contentType = response.headers.get("content-type");
+    const contentLength = response.headers.get("content-length");
+
+    if (
+      response.status === 204 ||
+      contentLength === "0" ||
+      !contentType?.includes("application/json")
+    ) {
+      return {} as T;
+    }
+
+    const text = await response.text();
+    if (!text || text.trim() === "") {
+      return {} as T;
+    }
+
+    return JSON.parse(text) as T;
   }
 
   async register(data: {
@@ -531,7 +553,8 @@ class DjidaliApiService {
   }
 
   async updateTour(id: string, tourData: Partial<ApiTour>): Promise<ApiTour> {
-    // Format data according to Swagger documentation
+    const tourDataWithProgram = tourData as any;
+
     const formattedData: any = {
       title: tourData.title,
       description: tourData.description,
@@ -546,7 +569,7 @@ class DjidaliApiService {
       destination: tourData.destination,
       duration: tourData.duration,
       price: tourData.price,
-      currency: tourData.currency || 'UZS',
+      currency: tourData.currency || "UZS",
       maxParticipants: tourData.maxParticipants,
       startDate: tourData.startDate,
       endDate: tourData.endDate,
@@ -555,51 +578,49 @@ class DjidaliApiService {
       categoryId: tourData.categoryId,
     };
 
-    // Format inclusions array
     if (tourData.inclusions && Array.isArray(tourData.inclusions)) {
       formattedData.inclusions = tourData.inclusions.map((item: any) => ({
-        uz: item.uz || item.titleUz || '',
-        ru: item.ru || item.titleRu || '',
-        eng: item.eng || item.titleEng || item.en || '',
-        de: item.de || item.titleDe || '',
+        uz: item.uz || "",
+        ru: item.ru || "",
+        eng: item.eng || item.en || "",
+        de: item.de || "",
       }));
     }
 
-    // Format exclusions array
     if (tourData.exclusions && Array.isArray(tourData.exclusions)) {
       formattedData.exclusions = tourData.exclusions.map((item: any) => ({
-        uz: item.uz || item.titleUz || '',
-        ru: item.ru || item.titleRu || '',
-        eng: item.eng || item.titleEng || item.en || '',
-        de: item.de || item.titleDe || '',
+        uz: item.uz || "",
+        ru: item.ru || "",
+        eng: item.eng || item.en || "",
+        de: item.de || "",
       }));
     }
 
-    // Format program array (days) according to Swagger
-    const tourDataWithProgram = tourData as any;
-    if (tourDataWithProgram.program && Array.isArray(tourDataWithProgram.program)) {
+    if (
+      tourDataWithProgram.program &&
+      Array.isArray(tourDataWithProgram.program)
+    ) {
       formattedData.program = tourDataWithProgram.program.map((day: any) => ({
-        dayNumber: Number(day.dayNumber || day.day_number || 1),
-        titleUz: day.titleUz || day.title_uz || '',
-        titleRu: day.titleRu || day.title_ru || '',
-        titleEng: day.titleEng || day.title_eng || '',
-        titleDe: day.titleDe || day.title_de || '',
-        descriptionUz: day.descriptionUz || day.description_uz || '',
-        descriptionRu: day.descriptionRu || day.description_ru || '',
-        descriptionEng: day.descriptionEng || day.description_eng || '',
-        descriptionDe: day.descriptionDe || day.description_de || '',
+        dayNumber: Number(day.dayNumber || 1),
+        titleUz: day.titleUz || "",
+        titleRu: day.titleRu || "",
+        titleEng: day.titleEng || "",
+        titleDe: day.titleDe || "",
+        descriptionUz: day.descriptionUz || "",
+        descriptionRu: day.descriptionRu || "",
+        descriptionEng: day.descriptionEng || "",
+        descriptionDe: day.descriptionDe || "",
       }));
     }
 
-    // Remove undefined values
-    Object.keys(formattedData).forEach(key => {
+    Object.keys(formattedData).forEach((key) => {
       if (formattedData[key] === undefined) {
         delete formattedData[key];
       }
     });
 
-    console.log('Sending tour update:', JSON.stringify(formattedData, null, 2));
-    
+    console.log("Sending tour update:", JSON.stringify(formattedData, null, 2));
+
     return this.request<ApiTour>(`/tours/${id}`, {
       method: "PUT",
       body: JSON.stringify(formattedData),
@@ -790,29 +811,29 @@ class DjidaliApiService {
   async deleteCategory(id: string): Promise<void> {
     const url = `${this.baseURL}/tour-categories/${id}`;
     const currentToken = this.getFreshToken();
-    
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    
+
     if (currentToken) {
       headers["Authorization"] = `Bearer ${currentToken}`;
     }
-    
+
     try {
       const response = await fetch(url, {
         method: "DELETE",
         headers,
       });
-      
-      console.log('Delete category response status:', response.status);
-      
+
+      console.log("Delete category response status:", response.status);
+
       if (!response.ok) {
         let errorMessage = `Failed to delete category: ${response.status}`;
-        
+
         try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
             const errorData = await response.json();
             errorMessage = errorData.message || errorData.error || errorMessage;
           } else {
@@ -822,18 +843,17 @@ class DjidaliApiService {
             }
           }
         } catch (parseError) {
-          console.error('Error parsing error response:', parseError);
+          console.error("Error parsing error response:", parseError);
         }
-        
+
         throw new Error(errorMessage);
       }
-      
+
       // Success - don't try to parse response body for DELETE
-      console.log('Category deleted successfully');
+      console.log("Category deleted successfully");
       return;
-      
     } catch (error) {
-      console.error('Delete category error:', error);
+      console.error("Delete category error:", error);
       throw error;
     }
   }
@@ -1045,6 +1065,89 @@ class DjidaliApiService {
       console.error("Error in uploadImages:", error);
       throw new Error(error.message || "Failed to upload images");
     }
+  }
+
+  // ============ Statistics Methods ============
+
+  async getDashboardStatistics(): Promise<{
+    totalOrders: number;
+    totalRevenue: number;
+    totalTours: number;
+    totalCustomers: number;
+    pendingOrders: number;
+    completedOrders: number;
+  }> {
+    return this.request("/statistics/dashboard");
+  }
+
+  async getSalesStatistics(params?: {
+    startDate?: string;
+    endDate?: string;
+    groupBy?: "day" | "week" | "month";
+  }): Promise<{
+    data: Array<{
+      date: string;
+      orders: number;
+      revenue: number;
+    }>;
+    total: {
+      orders: number;
+      revenue: number;
+    };
+  }> {
+    const queryParams = new URLSearchParams();
+    if (params?.startDate) queryParams.append("startDate", params.startDate);
+    if (params?.endDate) queryParams.append("endDate", params.endDate);
+    if (params?.groupBy) queryParams.append("groupBy", params.groupBy);
+
+    const endpoint = `/statistics/sales${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+    return this.request(endpoint);
+  }
+
+  async getTourStatistics(): Promise<{
+    totalTours: number;
+    activeTours: number;
+    inactiveTours: number;
+    toursByCategory: Array<{
+      categoryId: string;
+      categoryName: string;
+      count: number;
+    }>;
+    topTours: Array<{
+      id: string;
+      title: string;
+      bookings: number;
+      revenue: number;
+    }>;
+  }> {
+    return this.request("/statistics/tours");
+  }
+
+  async getRevenueStatistics(
+    period: "day" | "week" | "month" | "year" = "month",
+  ): Promise<{
+    currentPeriod: number;
+    previousPeriod: number;
+    change: number;
+    changePercent: number;
+    data: Array<{
+      label: string;
+      value: number;
+    }>;
+  }> {
+    return this.request(`/statistics/revenue?period=${period}`);
+  }
+
+  async getManagerStatistics(): Promise<{
+    managers: Array<{
+      id: string;
+      name: string;
+      ordersCount: number;
+      revenue: number;
+      averageOrderValue: number;
+    }>;
+  }> {
+    return this.request("/statistics/managers");
   }
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { djidaliApi, ApiTour } from "../services/djidaliApi";
+import { djidaliApi } from "../services/djidaliApi";
 import { Tour } from "../services/api";
 import { toIsoStringSafe } from "../utils/dateUtils";
 import { useLanguage } from "../contexts/LanguageContext";

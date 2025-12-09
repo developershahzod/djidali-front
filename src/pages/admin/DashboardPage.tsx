@@ -6,8 +6,8 @@ import {
   Plus,
   ShoppingBag,
   Users,
-  Tag,
   Star,
+  Tag,
   TrendingUp,
 } from "lucide-react";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -72,10 +72,25 @@ interface PopularTour {
   bookings: number;
   revenue: number;
   rating: number;
+  image?: string;
 }
 
+// Helper to extract localized string from multilingual object
+const getLocalizedText = (
+  value: string | { [key: string]: string } | undefined,
+  language: string,
+): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const langKey = language === "en" ? "eng" : language;
+    return value[langKey] || value.ru || value.eng || value.uz || "";
+  }
+  return "";
+};
+
 const DashboardPage = () => {
-  const { t } = useLanguage();
+  const { t, language, translate } = useLanguage();
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalBookings: 0,
@@ -100,7 +115,13 @@ const DashboardPage = () => {
         const orders = ordersResponse.data || [];
         const tours = toursResponse.data || [];
 
-        const totalRevenue = orders.reduce(
+        // Only count confirmed/completed orders for revenue
+        const confirmedOrders = orders.filter(
+          (order) =>
+            order.status?.toUpperCase() === "CONFIRMED" ||
+            order.status?.toUpperCase() === "COMPLETED",
+        );
+        const totalRevenue = confirmedOrders.reduce(
           (sum, order) => sum + (order.totalAmount || 0),
           0,
         );
@@ -122,10 +143,22 @@ const DashboardPage = () => {
         setRecentOrders(
           orders.slice(0, 5).map((order) => ({
             id: order.orderNumber || order.id,
-            tourName: order.tour?.title || "Unknown Tour",
+            tourName:
+              getLocalizedText(order.tour?.title, language) ||
+              translate({
+                ru: "Неизвестный тур",
+                uz: "Noma'lum tur",
+                en: "Unknown Tour",
+                de: "Unbekannte Tour",
+              }),
             customer: order.user?.firstName
               ? `${order.user.firstName} ${order.user.lastName || ""}`
-              : "Customer",
+              : translate({
+                  ru: "Клиент",
+                  uz: "Mijoz",
+                  en: "Customer",
+                  de: "Kunde",
+                }),
             date: order.createdAt,
             amount: order.totalAmount || 0,
             status: (order.status?.toLowerCase() || "pending") as
@@ -140,10 +173,18 @@ const DashboardPage = () => {
         setPopularTours(
           tours.slice(0, 5).map((tour) => ({
             id: tour.id,
-            name: tour.title || "Unnamed Tour",
+            name:
+              getLocalizedText(tour.title, language) ||
+              translate({
+                ru: "Без названия",
+                uz: "Nomsiz tur",
+                en: "Unnamed Tour",
+                de: "Unbenannte Tour",
+              }),
             bookings: tour._count?.orders || 0,
             revenue: (tour._count?.orders || 0) * (tour.price?.amount || 0),
-            rating: 4.5,
+            rating: tour.averageRating || tour.rating || 0,
+            image: tour.images?.[0] || tour.mainImage || undefined,
           })),
         );
       } catch (error) {
@@ -162,7 +203,7 @@ const DashboardPage = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [language]);
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
@@ -194,7 +235,12 @@ const DashboardPage = () => {
     return (
       <div className="min-h-screen bg-[#f4f2ed] flex items-center justify-center">
         <h2 className="text-lg font-medium text-gray-700 dark:text-gray-200">
-          Error loading dashboard
+          {translate({
+            ru: "Ошибка загрузки панели",
+            uz: "Panel yuklanmadi",
+            en: "Error loading dashboard",
+            de: "Fehler beim Laden des Dashboards",
+          })}
         </h2>
       </div>
     );
@@ -218,25 +264,27 @@ const DashboardPage = () => {
           title={t("admin.totalRevenue")}
           value={formatCurrency(stats.totalRevenue)}
           icon={<DollarSign className="h-6 w-6" />}
-          trend={12.5}
         />
         <StatsCard
           title={t("admin.totalBookings")}
           value={stats.totalBookings}
           icon={<ShoppingBag className="h-6 w-6" />}
-          trend={8.2}
         />
         <StatsCard
           title={t("admin.activeTours")}
           value={stats.activeTours}
           icon={<MapPin className="h-6 w-6" />}
-          trend={5.7}
         />
         <StatsCard
           title={t("admin.newCustomers")}
           value={stats.newCustomers}
           icon={<Users className="h-6 w-6" />}
-          trend={15.3}
+          description={translate({
+            ru: "За 30 дней",
+            uz: "Oxirgi 30 kun",
+            en: "Last 30 days",
+            de: "Letzte 30 Tage",
+          })}
         />
       </div>
 
@@ -357,7 +405,25 @@ const DashboardPage = () => {
                 className="flex items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50"
               >
                 <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
-                  {/* Tour image would go here */}
+                  {tour.image ? (
+                    <img
+                      src={
+                        tour.image.startsWith("http") ||
+                        tour.image.startsWith("/api")
+                          ? tour.image
+                          : `/api/uploads/${tour.image}`
+                      }
+                      alt={tour.name}
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                    </div>
+                  )}
                 </div>
                 <div className="ml-4 flex-1">
                   <div className="flex items-center justify-between">
@@ -370,7 +436,15 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <span>{tour.bookings} bookings</span>
+                    <span>
+                      {tour.bookings}{" "}
+                      {translate({
+                        ru: "бронирований",
+                        uz: "bron",
+                        en: "bookings",
+                        de: "Buchungen",
+                      })}
+                    </span>
                     <span className="mx-2">•</span>
                     <span>{formatCurrency(tour.revenue)}</span>
                   </div>
@@ -384,66 +458,124 @@ const DashboardPage = () => {
       <div className="mt-8 rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Quick Actions
+            {translate({
+              ru: "Быстрые действия",
+              uz: "Tezkor amallar",
+              en: "Quick Actions",
+              de: "Schnellaktionen",
+            })}
           </h3>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Actionable buttons first */}
           <Link
             to="/admin/tours/new"
-            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50"
+            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50 transition-colors"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Plus className="h-6 w-6" />
             </div>
             <h4 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
-              Add New Tour
+              {translate({
+                ru: "Добавить тур",
+                uz: "Tur qo'shish",
+                en: "Add New Tour",
+                de: "Neue Tour hinzufügen",
+              })}
             </h4>
             <p className="mt-1 text-xs text-gray-500">
-              Create a new tour package
-            </p>
-          </Link>
-          <Link
-            to="/admin/orders/new"
-            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50"
-          >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-              <ShoppingBag className="h-6 w-6" />
-            </div>
-            <h4 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
-              Create Booking
-            </h4>
-            <p className="mt-1 text-xs text-gray-500">
-              Manually create a new booking
+              {translate({
+                ru: "Создать новый тур",
+                uz: "Yangi tur yaratish",
+                en: "Create a new tour package",
+                de: "Neues Tourpaket erstellen",
+              })}
             </p>
           </Link>
           <Link
             to="/admin/categories/new"
-            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50"
+            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50 transition-colors"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
               <Tag className="h-6 w-6" />
             </div>
             <h4 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
-              Add Category
+              {translate({
+                ru: "Добавить категорию",
+                uz: "Kategoriya qo'shish",
+                en: "Add Category",
+                de: "Kategorie hinzufügen",
+              })}
             </h4>
             <p className="mt-1 text-xs text-gray-500">
-              Create a new tour category
+              {translate({
+                ru: "Создать новую категорию",
+                uz: "Yangi kategoriya yaratish",
+                en: "Create a new tour category",
+                de: "Neue Tourkategorie erstellen",
+              })}
             </p>
           </Link>
-          <Link
-            to="/admin/analytics"
-            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 text-center hover:border-primary hover:bg-primary/5 dark:border-gray-600 dark:hover:border-primary/50 dark:hover:bg-gray-700/50"
-          >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+
+          {/* Coming Soon buttons */}
+          <div className="relative flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50/50 p-6 text-center cursor-not-allowed dark:border-gray-700 dark:bg-gray-800/50">
+            <span className="absolute -top-2 right-3 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 bg-amber-100 rounded dark:text-amber-300 dark:bg-amber-900/50">
+              {translate({
+                ru: "Скоро",
+                uz: "Tez kunda",
+                en: "Coming Soon",
+                de: "Bald verfügbar",
+              })}
+            </span>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100/60 text-green-500 dark:bg-green-900/20 dark:text-green-500">
+              <ShoppingBag className="h-6 w-6" />
+            </div>
+            <h4 className="mt-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+              {translate({
+                ru: "Создать бронь",
+                uz: "Bron yaratish",
+                en: "Create Booking",
+                de: "Buchung erstellen",
+              })}
+            </h4>
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              {translate({
+                ru: "Создать бронь вручную",
+                uz: "Qo'lda bron yaratish",
+                en: "Manually create a new booking",
+                de: "Buchung manuell erstellen",
+              })}
+            </p>
+          </div>
+          <div className="relative flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50/50 p-6 text-center cursor-not-allowed dark:border-gray-700 dark:bg-gray-800/50">
+            <span className="absolute -top-2 right-3 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 bg-amber-100 rounded dark:text-amber-300 dark:bg-amber-900/50">
+              {translate({
+                ru: "Скоро",
+                uz: "Tez kunda",
+                en: "Coming Soon",
+                de: "Bald verfügbar",
+              })}
+            </span>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100/60 text-blue-500 dark:bg-blue-900/20 dark:text-blue-500">
               <TrendingUp className="h-6 w-6" />
             </div>
-            <h4 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
-              View Analytics
+            <h4 className="mt-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+              {translate({
+                ru: "Аналитика",
+                uz: "Tahlillar",
+                en: "View Analytics",
+                de: "Analytik anzeigen",
+              })}
             </h4>
-            <p className="mt-1 text-xs text-gray-500">
-              View booking and revenue reports
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              {translate({
+                ru: "Отчёты по бронированиям и доходам",
+                uz: "Bron va daromad hisobotlari",
+                en: "View booking and revenue reports",
+                de: "Buchungs- und Umsatzberichte anzeigen",
+              })}
             </p>
-          </Link>
+          </div>
         </div>
       </div>
     </AdminLayout>

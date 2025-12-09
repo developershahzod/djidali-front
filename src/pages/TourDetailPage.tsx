@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getImageUrl, getTourPrimaryImage } from "../utils/imageUtils";
 import { useTour } from "../hooks/useTours";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
-import { djidaliApi, ApiOrder } from "../services/djidaliApi";
-import PaymentModal from "../components/PaymentModal";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
 interface ItineraryItem {
@@ -14,20 +12,36 @@ interface ItineraryItem {
   description: string;
 }
 
+// Helper function to safely extract localized text from multilingual objects
+const getLocalizedText = (
+  value: string | { [key: string]: string } | undefined | null,
+  language: string,
+): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const langKey = language === "en" ? "eng" : language;
+    return value[langKey] || value.ru || value.eng || value.uz || "";
+  }
+  return "";
+};
+
 const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, translate } = useLanguage();
+  const { t, translate, language } = useLanguage();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { tour, loading, error } = useTour(id ?? null);
   const [activeDay, setActiveDay] = useState<number | null>(null);
-  const [participants, setParticipants] = useState(1);
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
+  const [showParticipantsDropdown, setShowParticipantsDropdown] =
+    useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [notes, setNotes] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
-  const [createdOrder, setCreatedOrder] = useState<ApiOrder | null>(null);
 
   const primaryImage = useMemo(
     () => (tour ? getTourPrimaryImage(tour) : ""),
@@ -94,55 +108,57 @@ const TourDetailPage: React.FC = () => {
     return [];
   }, [tour]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setBookingError("");
 
     if (!isAuthenticated) {
-      setBookingError("Buyurtma berish uchun tizimga kirish talab qilinadi");
+      setBookingError(t("tourDetail.booking.errorUnauthorized"));
       navigate("/login");
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      const tourId = tour?.id;
-      if (!tourId) {
-        throw new Error("Tur ma'lumotlari noto'g'ri");
-      }
-
-      const order = await djidaliApi.createOrder({
-        tourId: tourId.toString(),
-        participants: participants,
-        notes: notes || undefined,
-      });
-
-      setCreatedOrder(order);
-      setShowPayment(true);
-    } catch (error) {
-      console.error("Order creation failed:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Nomalum xatolik";
-      setBookingError(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+    if (!tour?.id) {
+      setBookingError(t("tourDetail.booking.errorTourNotFound"));
+      return;
     }
+
+    // Navigate to 2-step booking page with all necessary data
+    // Handle price as either number or object with amount
+    const pricePerPerson =
+      typeof tour.price === "number" ? tour.price : tour.price?.amount || 0;
+
+    const bookingData = {
+      tourId: tour.id.toString(),
+      tourTitle: getLocalizedText(tour.title, language),
+      tourLocation:
+        getLocalizedText(tour.location, language) ||
+        getLocalizedText(tour.destination, language) ||
+        "",
+      tourType: tour.category?.name
+        ? getLocalizedText(tour.category.name, language)
+        : "",
+      tourImage: primaryImage,
+      startDate: tour.startDate ? new Date(tour.startDate) : new Date(),
+      endDate: tour.endDate ? new Date(tour.endDate) : new Date(),
+      participants: { adults, children },
+      pricePerPerson,
+      duration: tour.duration || 1,
+      customerName,
+      customerPhone,
+      notes,
+    };
+
+    navigate(`/booking/${tour.id}`, { state: { bookingData } });
   };
 
-  const handlePaymentComplete = () => {
-    setBookingSuccess(true);
-    setShowPayment(false);
-    setParticipants(1);
-    setNotes("");
-    setTimeout(() => setBookingSuccess(false), 5000);
-  };
-
+  // Only set first day as active on initial load, not on every activeDay change
   useEffect(() => {
-    if (itineraryItems.length > 0 && activeDay === null) {
+    if (itineraryItems.length > 0) {
       setActiveDay(itineraryItems[0].dayNumber);
     }
-  }, [itineraryItems, activeDay]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itineraryItems.length]); // Only run when itinerary items are loaded
 
   if (loading) {
     return (
@@ -170,21 +186,11 @@ const TourDetailPage: React.FC = () => {
   const tourPrice =
     (typeof tour.price === "object" && (tour.price as any)?.amount) ||
     (typeof tour.price === "number" ? tour.price : 0);
-  const totalAmount = tourPrice * participants;
+  const _totalAmount = tourPrice * (adults + children);
+  const _totalParticipants = adults + children + infants;
 
   return (
     <>
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPayment}
-        onClose={() => setShowPayment(false)}
-        amount={totalAmount}
-        currency="UZS"
-        orderNumber={createdOrder?.orderNumber || createdOrder?.id}
-        orderId={createdOrder?.id || ""}
-        onPaymentComplete={handlePaymentComplete}
-      />
-
       <div
         className="min-h-screen bg-[#f4f2ed] text-[#333333]"
         style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -195,7 +201,7 @@ const TourDetailPage: React.FC = () => {
             {primaryImage && (
               <img
                 src={primaryImage}
-                alt={tour.title}
+                alt={getLocalizedText(tour.title, language)}
                 className="w-full h-full object-cover"
               />
             )}
@@ -210,7 +216,7 @@ const TourDetailPage: React.FC = () => {
                 className="text-white font-medium max-w-[1340px] text-[clamp(40px,6.25vw,90px)] leading-[1.11]"
                 style={{ letterSpacing: "-2.7px" }}
               >
-                {tour.title}
+                {getLocalizedText(tour.title, language)}
               </h1>
             </div>
 
@@ -218,15 +224,15 @@ const TourDetailPage: React.FC = () => {
             <div className="flex flex-col gap-[40px] mt-auto">
               {/* Location Link */}
               <div className="flex justify-end">
-                <Link
-                  to="#location"
+                <a
+                  href="#location"
                   className="text-white underline text-[20px]"
                   style={{ letterSpacing: "-0.4px" }}
                 >
-                  {tour.destination ||
+                  {getLocalizedText(tour.destination, language) ||
                     tour.location ||
                     t("tourDetail.location")}
-                </Link>
+                </a>
               </div>
 
               <div className="flex flex-wrap gap-[30px]">
@@ -302,7 +308,10 @@ const TourDetailPage: React.FC = () => {
         </section>
 
         {/* Container Section */}
-        <section className="relative bg-white md:h-[394px] px-[clamp(20px,3.47vw,50px)] py-[clamp(30px,4.17vw,60px)]">
+        <section
+          id="booking"
+          className="relative bg-white md:h-[394px] px-[clamp(20px,3.47vw,50px)] py-[clamp(30px,4.17vw,60px)]"
+        >
           {/* Tour Details */}
           <div className="md:absolute md:top-[80px] md:left-[50px] md:right-[50px] flex flex-col md:flex-row justify-between items-start md:items-center max-w-full gap-[20px]">
             <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
@@ -316,7 +325,8 @@ const TourDetailPage: React.FC = () => {
                 className="text-[32px] font-medium leading-[40px]"
                 style={{ letterSpacing: "-0.64px" }}
               >
-                {t("tourDetail.maxPrefix")} {(tour as any).max_participants ?? tour.maxParticipants ?? 10}
+                {t("tourDetail.maxPrefix")}{" "}
+                {(tour as any).max_participants ?? tour.maxParticipants ?? 10}
               </div>
             </div>
             <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
@@ -351,8 +361,6 @@ const TourDetailPage: React.FC = () => {
                 {(tour.category as any)?.name || t("tourDetail.ecotourism")}
               </div>
             </div>
-            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
-           
           </div>
 
           {/* Booking Form */}
@@ -360,14 +368,6 @@ const TourDetailPage: React.FC = () => {
             onSubmit={handleSubmit}
             className="md:absolute md:top-[234px] md:left-[50px] md:right-[50px] mt-[30px] md:mt-0"
           >
-            {bookingSuccess && (
-              <div
-                className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-[10px] text-[18px]"
-                style={{ fontFamily: "Montserrat, sans-serif" }}
-              >
-                ✓ {t("tourDetail.bookingSuccess")}
-              </div>
-            )}
             {bookingError && (
               <div
                 className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-[10px] text-[18px]"
@@ -377,70 +377,271 @@ const TourDetailPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex flex-col md:flex-row gap-[16px] md:gap-[20px] items-stretch md:items-end">
+            <div className="flex flex-col md:flex-row gap-[16px] md:gap-[20px] items-stretch md:items-end flex-wrap">
+              {/* Имя */}
+              <div className="flex-1 min-w-[200px]">
+                <label
+                  className="block text-[16px] font-medium text-[#333333] mb-2"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  {t("tourDetail.customerName")}
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  required
+                  className="w-full h-[60px] md:h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[18px] md:text-[22px] font-semibold"
+                  style={{
+                    letterSpacing: "-0.44px",
+                    fontFamily: "Montserrat, sans-serif",
+                  }}
+                  placeholder={t("tourDetail.enterName")}
+                />
+              </div>
+
+              {/* Телефон */}
+              <div className="flex-1 min-w-[200px]">
+                <label
+                  className="block text-[16px] font-medium text-[#333333] mb-2"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  {t("tourDetail.customerPhone")}
+                </label>
+                <input
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    if (value.length <= 12) {
+                      let formatted = "+998";
+                      if (value.length > 3) {
+                        formatted += " " + value.slice(3, 5);
+                      }
+                      if (value.length > 5) {
+                        formatted += " " + value.slice(5, 8);
+                      }
+                      if (value.length > 8) {
+                        formatted += "-" + value.slice(8, 10);
+                      }
+                      if (value.length > 10) {
+                        formatted += "-" + value.slice(10, 12);
+                      }
+                      setCustomerPhone(formatted);
+                    }
+                  }}
+                  required
+                  className="w-full h-[60px] md:h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[18px] md:text-[22px] font-semibold"
+                  style={{
+                    letterSpacing: "-0.44px",
+                    fontFamily: "Montserrat, sans-serif",
+                  }}
+                  placeholder="+998 XX XXX-XX-XX"
+                />
+              </div>
+
+              {/* Даты */}
+              <div className="flex-1 min-w-[180px]">
+                <label
+                  className="block text-[16px] font-medium text-[#333333] mb-2"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  {t("tourDetail.dates")}
+                </label>
+                <div
+                  className="w-full h-[60px] md:h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[18px] md:text-[22px] font-semibold flex items-center bg-white"
+                  style={{
+                    letterSpacing: "-0.44px",
+                    fontFamily: "Montserrat, sans-serif",
+                  }}
+                >
+                  {tour.startDate && tour.endDate ? (
+                    <>
+                      {new Date(tour.startDate).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                      {" – "}
+                      {new Date(tour.endDate).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
+                </div>
+              </div>
+
               {/* Участники */}
-              <div className="flex-1">
+              <div className="flex-1 min-w-[280px] relative">
                 <label
                   className="block text-[16px] font-medium text-[#333333] mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
                   {t("tourDetail.participantsCount")}
                 </label>
-                <select
-                  value={participants}
-                  onChange={(e) => setParticipants(Number(e.target.value))}
-                  required
-                  className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold cursor-pointer"
+                <div
+                  onClick={() =>
+                    setShowParticipantsDropdown(!showParticipantsDropdown)
+                  }
+                  className="w-full h-[60px] md:h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[18px] md:text-[22px] font-semibold flex items-center justify-between bg-white cursor-pointer"
                   style={{
                     letterSpacing: "-0.44px",
                     fontFamily: "Montserrat, sans-serif",
                   }}
                 >
-                  {Array.from({ length: (tour as any).max_participants ?? tour.maxParticipants ?? 10 }, (_, i) => i + 1).map(
-                    (num) => (
-                      <option key={num} value={num}>
-                        {num} {t("tourDetail.person")}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </div>
+                  <span>
+                    {adults} {t("tourDetail.adults")}
+                    {children > 0 &&
+                      ` — ${children} ${t("tourDetail.children")}`}
+                    {infants > 0 && ` — ${infants} ${t("tourDetail.infants")}`}
+                  </span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className={`transition-transform ${showParticipantsDropdown ? "rotate-180" : ""}`}
+                  >
+                    <path
+                      d="M6 9L12 15L18 9"
+                      stroke="#333"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
 
-              {/* Примечания */}
-              <div className="flex-1">
-                <label
-                  className="block text-[16px] font-medium text-[#333333] mb-2"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                >
-                  {t("tourDetail.additionalInfo")}
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold"
-                  style={{
-                    letterSpacing: "-0.44px",
-                    fontFamily: "Montserrat, sans-serif",
-                  }}
-                  placeholder={t("tourDetail.specialRequests")}
-                />
+                {/* Dropdown */}
+                {showParticipantsDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#333333] rounded-[10px] p-4 z-50 shadow-lg">
+                    {/* Adults */}
+                    <div className="flex items-center justify-between py-3 border-b border-gray-200">
+                      <div>
+                        <div className="font-semibold text-[16px]">
+                          {t("tourDetail.adultsLabel")}
+                        </div>
+                        <div className="text-[14px] text-gray-500">
+                          {t("tourDetail.adultsAge")}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setAdults(Math.max(1, adults - 1))}
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={adults <= 1}
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-semibold text-[18px]">
+                          {adults}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAdults(Math.min(10, adults + 1))}
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={adults >= 10}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Children */}
+                    <div className="flex items-center justify-between py-3 border-b border-gray-200">
+                      <div>
+                        <div className="font-semibold text-[16px]">
+                          {t("tourDetail.childrenLabel")}
+                        </div>
+                        <div className="text-[14px] text-gray-500">
+                          {t("tourDetail.childrenAge")}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setChildren(Math.max(0, children - 1))}
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={children <= 0}
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-semibold text-[18px]">
+                          {children}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setChildren(Math.min(10, children + 1))
+                          }
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={children >= 10}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Infants */}
+                    <div className="flex items-center justify-between py-3">
+                      <div>
+                        <div className="font-semibold text-[16px]">
+                          {t("tourDetail.infantsLabel")}
+                        </div>
+                        <div className="text-[14px] text-gray-500">
+                          {t("tourDetail.infantsAge")}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setInfants(Math.max(0, infants - 1))}
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={infants <= 0}
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-semibold text-[18px]">
+                          {infants}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setInfants(Math.min(5, infants + 1))}
+                          className="w-10 h-10 rounded-full border-2 border-[#333] flex items-center justify-center text-[20px] hover:bg-gray-100 disabled:opacity-30"
+                          disabled={infants >= 5}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Done button */}
+                    <button
+                      type="button"
+                      onClick={() => setShowParticipantsDropdown(false)}
+                      className="w-full mt-4 h-[50px] bg-[#8f7b49] text-white rounded-[10px] text-[16px] font-bold hover:bg-[#7a6839] transition-all"
+                    >
+                      {t("tourDetail.done")}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Кнопка */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full md:w-[250px] h-[60px] md:h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                disabled={!customerName || !customerPhone}
+                className="w-full md:w-[180px] h-[60px] md:h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[18px] md:text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex-shrink-0"
                 style={{
                   letterSpacing: "-0.4px",
                   lineHeight: "20px",
                   fontFamily: "Montserrat, sans-serif",
                 }}
               >
-                {isSubmitting
-                  ? t("tourDetail.submitting")
-                  : t("tourDetail.makeOrder")}
+                {t("tourDetail.book")}
               </button>
             </div>
           </form>
@@ -546,7 +747,7 @@ const TourDetailPage: React.FC = () => {
               <div className="w-full h-[clamp(240px,34.72vw,500px)] rounded-t-[20px] overflow-hidden">
                 <img
                   src={galleryImages[0]}
-                  alt={`${tour.title} - Lahza 1`}
+                  alt={`${getLocalizedText(tour.title, language)} - Lahza 1`}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -560,7 +761,7 @@ const TourDetailPage: React.FC = () => {
                     >
                       <img
                         src={image}
-                        alt={`${tour.title} - Lahza ${index + 2}`}
+                        alt={`${getLocalizedText(tour.title, language)} - Lahza ${index + 2}`}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -571,14 +772,14 @@ const TourDetailPage: React.FC = () => {
                     <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-bl-[20px]">
                       <img
                         src={galleryImages[0]}
-                        alt={`${tour.title} - Lahza 2`}
+                        alt={`${getLocalizedText(tour.title, language)} - Lahza 2`}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-br-[20px]">
                       <img
                         src={galleryImages[0]}
-                        alt={`${tour.title} - Lahza 3`}
+                        alt={`${getLocalizedText(tour.title, language)} - Lahza 3`}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -654,6 +855,117 @@ const TourDetailPage: React.FC = () => {
             </div>
           </section>
         )}
+
+        {/* Ready to Book CTA Section */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#2d2622] to-[#1a1a1a]">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-[#8f7b49] rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#8f7b49] rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
+          </div>
+
+          <div className="relative z-10 px-[clamp(20px,3.47vw,50px)] py-[clamp(60px,8.33vw,120px)] max-w-[1440px] mx-auto">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-[60px]">
+              {/* Left: Content */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#8f7b49]/20 rounded-full mb-6">
+                  <span className="w-2 h-2 bg-[#8f7b49] rounded-full animate-pulse" />
+                  <span className="text-[#8f7b49] text-sm font-medium tracking-wide uppercase">
+                    {t("tourDetail.cta.limitedSpots")}
+                  </span>
+                </div>
+
+                <h2
+                  className="text-white text-[clamp(36px,4.17vw,60px)] font-medium leading-[1.1] mb-6"
+                  style={{ letterSpacing: "-1.8px" }}
+                >
+                  {t("tourDetail.cta.readyTitle")}
+                </h2>
+
+                <p
+                  className="text-white/70 text-[clamp(16px,1.39vw,20px)] leading-[1.6] mb-8 max-w-[500px] mx-auto lg:mx-0"
+                  style={{ letterSpacing: "-0.4px" }}
+                >
+                  {t("tourDetail.cta.description")}
+                </p>
+              </div>
+
+              {/* Right: Price Card & CTA */}
+              <div className="w-full lg:w-auto">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[24px] p-8 min-w-[320px]">
+                  {/* Price */}
+                  <div className="text-center mb-6">
+                    <div className="text-white/50 text-sm uppercase tracking-wider mb-2">
+                      {t("tourDetail.cta.startingFrom")}
+                    </div>
+                    <div className="flex items-baseline justify-center gap-2">
+                      <span
+                        className="text-white text-[clamp(40px,3.47vw,50px)] font-semibold"
+                        style={{ letterSpacing: "-1px" }}
+                      >
+                        {Number(tourPrice).toLocaleString("ru-RU")}
+                      </span>
+                      <span className="text-white/70 text-[20px]">UZS</span>
+                    </div>
+                    <div className="text-white/50 text-sm mt-1">
+                      {t("tourDetail.cta.perPerson")}
+                    </div>
+                  </div>
+
+                  {/* Duration badge */}
+                  <div className="flex items-center justify-center gap-2 mb-6 text-white/70">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>
+                      {tour.duration} {t("tourDetail.days")}
+                    </span>
+                  </div>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => {
+                      const bookingSection = document.getElementById("booking");
+                      if (bookingSection) {
+                        bookingSection.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    className="w-full h-[60px] bg-[#8f7b49] hover:bg-[#a08b59] text-white rounded-[12px] text-[18px] font-bold transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-[#8f7b49]/30 flex items-center justify-center gap-3"
+                    style={{
+                      letterSpacing: "-0.36px",
+                      fontFamily: "Montserrat, sans-serif",
+                    }}
+                  >
+                    {t("tourDetail.cta.bookNow")}
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 10l7-7m0 0l7 7m-7-7v18"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Location Section */}
         <section

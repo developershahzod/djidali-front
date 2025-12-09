@@ -1,31 +1,31 @@
-import React from 'react';
-import { Download, Tag, Calendar, MapPin, Camera, ExternalLink } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import React from "react";
+import { Tag, Calendar, MapPin, Camera } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const FeatureCards: React.FC = () => {
   const { t } = useLanguage();
 
   const handleFeatureClick = (featureId: string) => {
     switch (featureId) {
-      case 'download':
+      case "download":
         // Open app store or download link
-        window.open('https://play.google.com/store', '_blank');
+        window.open("https://play.google.com/store", "_blank");
         break;
-      case 'discounts':
+      case "discounts":
         // Navigate to discounted tours
-        window.location.href = '/?discount=true';
+        window.location.href = "/?discount=true";
         break;
-      case 'newYear':
+      case "newYear":
         // Navigate to New Year tours
-        window.location.href = '/?category=new-year';
+        window.location.href = "/?category=new-year";
         break;
-      case 'monthly':
+      case "monthly":
         // Navigate to monthly tours
-        window.location.href = '/?featured=monthly';
+        window.location.href = "/?featured=monthly";
         break;
-      case 'november':
+      case "november":
         // Navigate to November tours
-        window.location.href = '/?month=november';
+        window.location.href = "/?month=november";
         break;
       default:
         break;
@@ -33,39 +33,38 @@ const FeatureCards: React.FC = () => {
   };
 
   const features = [
-    
     {
-      id: 'discounts',
+      id: "discounts",
       icon: Tag,
-      title: t('feature.discounts'),
-      bgColor: 'bg-red-500',
-      iconColor: 'text-white',
-      description: t('feature.upTo50')
+      title: t("feature.discounts"),
+      bgColor: "bg-red-500",
+      iconColor: "text-white",
+      description: t("feature.upTo50"),
     },
     {
-      id: 'newYear',
+      id: "newYear",
       icon: Calendar,
-      title: t('feature.newYear'),
-      bgColor: 'bg-blue-500',
-      iconColor: 'text-white',
-      description: t('feature.tours2026')
+      title: t("feature.newYear"),
+      bgColor: "bg-blue-500",
+      iconColor: "text-white",
+      description: t("feature.tours2026"),
     },
     {
-      id: 'monthly',
+      id: "monthly",
       icon: MapPin,
-      title: t('feature.monthlyTours'),
-      bgColor: 'bg-emerald-500',
-      iconColor: 'text-white',
-      description: t('feature.special')
+      title: t("feature.monthlyTours"),
+      bgColor: "bg-emerald-500",
+      iconColor: "text-white",
+      description: t("feature.special"),
     },
     {
-      id: 'november',
+      id: "november",
       icon: Camera,
-      title: t('feature.november'),
-      bgColor: 'bg-orange-500',
-      iconColor: 'text-white',
-      description: t('feature.autumn')
-    }
+      title: t("feature.november"),
+      bgColor: "bg-orange-500",
+      iconColor: "text-white",
+      description: t("feature.autumn"),
+    },
   ];
 
   return (

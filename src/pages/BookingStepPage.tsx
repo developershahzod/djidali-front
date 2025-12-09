@@ -2,47 +2,83 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link, useParams } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
-import { getImageUrl, getTourPrimaryImage } from "../utils/imageUtils";
 import { format } from "date-fns";
 import { ru, uz, de, enUS } from "date-fns/locale";
+import { djidaliApi } from "../services/djidaliApi";
 import apiService from "../services/api";
+
+// Back Arrow Icon
+const BackArrowIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M19 12H5M5 12L12 19M5 12L12 5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 // Icons as SVG components
 const CalendarIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <rect
-      x="2"
+      x="3"
       y="4"
-      width="20"
+      width="18"
       height="18"
       rx="2"
-      stroke="#CBC2AB"
+      stroke="#8F7B49"
       strokeWidth="2"
       fill="none"
     />
-    <path d="M2 10H22" stroke="#CBC2AB" strokeWidth="2" />
-    <path d="M7 2V6" stroke="#CBC2AB" strokeWidth="2" strokeLinecap="round" />
-    <path d="M17 2V6" stroke="#CBC2AB" strokeWidth="2" strokeLinecap="round" />
+    <path d="M3 10H21" stroke="#8F7B49" strokeWidth="2" />
+    <path d="M8 2V6" stroke="#8F7B49" strokeWidth="2" strokeLinecap="round" />
+    <path d="M16 2V6" stroke="#8F7B49" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
 const UserIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="7" r="4" stroke="#CBC2AB" strokeWidth="2" fill="none" />
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="7" r="4" stroke="#8F7B49" strokeWidth="2" fill="none" />
     <path
-      d="M4 23C4 18.5817 7.58172 15 12 15C16.4183 15 20 18.5817 20 23"
-      stroke="#CBC2AB"
+      d="M5.5 21C5.5 17.134 8.41 14 12 14C15.59 14 18.5 17.134 18.5 21"
+      stroke="#8F7B49"
       strokeWidth="2"
       strokeLinecap="round"
     />
   </svg>
 );
 
-const AirplaneIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+const PriceTagIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <path
-      d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"
-      fill="#CBC2AB"
+      d="M12 2L2 7L12 12L22 7L12 2Z"
+      stroke="#8F7B49"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2 17L12 22L22 17"
+      stroke="#8F7B49"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2 12L12 17L22 12"
+      stroke="#8F7B49"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -55,9 +91,9 @@ const CheckboxIcon = ({ checked }: { checked: boolean }) => (
       width="20"
       height="20"
       rx="4"
-      stroke="#333333"
+      stroke={checked ? "#8F7B49" : "#333333"}
       strokeWidth="2"
-      fill={checked ? "#333333" : "none"}
+      fill={checked ? "#8F7B49" : "none"}
     />
     {checked && (
       <path
@@ -77,8 +113,8 @@ interface BookingData {
   tourLocation: string;
   tourType: string;
   tourImage: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | null;
+  endDate: Date | null;
   participants: { adults: number; children: number };
   pricePerPerson: number;
   duration: number;
@@ -101,10 +137,7 @@ const BookingStepPage: React.FC = () => {
   const [agreeToPolicy, setAgreeToPolicy] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Form state - Step 2 (Payment)
-  const [paymentMethod, setPaymentMethod] = useState<"uzcard" | "click">(
-    "click",
-  );
+  // Form state - Step 2 (Payment) - Click only
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -113,31 +146,44 @@ const BookingStepPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [bookingReference, setBookingReference] = useState<string | null>(null);
   const [tour, setTour] = useState<any>(null);
   const [tourLoading, setTourLoading] = useState(true);
 
-  // Get booking data from location state or use defaults
-  const bookingData: BookingData = location.state?.bookingData || {
-    tourId: "1",
-    tourTitle: "Дальвер Экспедиция в Чаткальский заповедникзин",
-    tourLocation: "Ташкентская область, Бекабадский район, Дальверзин",
-    tourType: "Экотуризм",
-    tourImage: "/tour-placeholder.jpg",
-    startDate: new Date("2025-09-15"),
-    endDate: new Date("2025-09-20"),
-    participants: { adults: 2, children: 1 },
-    pricePerPerson: 350000,
-    duration: 3,
+  // Parse booking data from location state with proper null handling
+  const rawBookingData = location.state?.bookingData;
+
+  // Helper to safely parse date
+  const safeParseDate = (dateValue: any): Date | null => {
+    if (!dateValue) return null;
+    if (dateValue instanceof Date) return dateValue;
+    if (typeof dateValue === "string") {
+      const parsed = new Date(dateValue);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    return null;
   };
 
-  // Calculate prices
-  const totalParticipants =
-    bookingData.participants.adults + bookingData.participants.children;
-  const subtotal = bookingData.pricePerPerson * bookingData.duration;
-  const discount = Math.round(subtotal * 0.1); // 10% discount
-  const serviceFee = 200000;
-  const totalPrice = subtotal - discount + serviceFee;
+  const bookingData: BookingData = rawBookingData
+    ? {
+        ...rawBookingData,
+        startDate: safeParseDate(rawBookingData.startDate),
+        endDate: safeParseDate(rawBookingData.endDate),
+        participants: rawBookingData.participants || { adults: 1, children: 0 },
+        pricePerPerson: Number(rawBookingData.pricePerPerson) || 0,
+        duration: Number(rawBookingData.duration) || 1,
+      }
+    : {
+        tourId: tourId || "",
+        tourTitle: "",
+        tourLocation: "",
+        tourType: "",
+        tourImage: "/tour-placeholder.jpg",
+        startDate: null,
+        endDate: null,
+        participants: { adults: 1, children: 0 },
+        pricePerPerson: 0,
+        duration: 1,
+      };
 
   // Get locale for date formatting
   const getLocale = () => {
@@ -153,16 +199,17 @@ const BookingStepPage: React.FC = () => {
     }
   };
 
-  // Format date with locale
-  const formatDate = (date: Date) => {
+  // Format date safely
+  const formatDateSafe = (date: Date | null): string => {
+    if (!date) {
+      return translate({
+        ru: "Дата не указана",
+        uz: "Sana ko'rsatilmagan",
+        en: "Date not specified",
+        de: "Datum nicht angegeben",
+      });
+    }
     return format(date, "d MMM, yyyy", { locale: getLocale() });
-  };
-
-  // Format date range
-  const formatDateRange = () => {
-    const start = format(bookingData.startDate, "d", { locale: getLocale() });
-    const end = format(bookingData.endDate, "d MMM", { locale: getLocale() });
-    return `${start}–${end}`;
   };
 
   // Format participants text
@@ -181,14 +228,22 @@ const BookingStepPage: React.FC = () => {
         en: `${children} child`,
         de: `${children} Kind`,
       });
-      return `${adultsText} — ${childrenText}`;
+      return `${adultsText}, ${childrenText}`;
     }
     return adultsText;
   };
 
-  // Format price
+  // Format price with currency
   const formatPrice = (price: number) => {
-    return price.toLocaleString("ru-RU") + " UZS";
+    if (!price || price === 0) {
+      return translate({
+        ru: "Цена по запросу",
+        uz: "Narx so'rov bo'yicha",
+        en: "Price on request",
+        de: "Preis auf Anfrage",
+      });
+    }
+    return new Intl.NumberFormat("ru-RU").format(price) + " UZS";
   };
 
   // Redirect if not authenticated
@@ -198,9 +253,14 @@ const BookingStepPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate, location]);
 
-  // Fetch tour data from API
+  // Fetch tour data from API if not provided via location state
   useEffect(() => {
     const fetchTour = async () => {
+      if (location.state?.bookingData) {
+        setTourLoading(false);
+        return;
+      }
+
       if (!tourId) {
         setTourLoading(false);
         return;
@@ -208,7 +268,7 @@ const BookingStepPage: React.FC = () => {
 
       try {
         setTourLoading(true);
-        const tourData = await apiService.getTour(Number(tourId));
+        const tourData = await djidaliApi.getTour(tourId);
         setTour(tourData);
       } catch (err) {
         console.error("Failed to fetch tour:", err);
@@ -226,16 +286,75 @@ const BookingStepPage: React.FC = () => {
     };
 
     fetchTour();
-  }, [tourId]);
+  }, [tourId, location.state]);
 
-  // Pre-fill user email if authenticated
+  // Pre-fill form data from bookingData (TourDetailPage) or user profile
   useEffect(() => {
-    if (user && user.email && !email) {
-      setEmail(user.email);
+    // First try to use data from TourDetailPage form
+    if (rawBookingData?.customerName && !fullName) {
+      setFullName(rawBookingData.customerName);
     }
-  }, [user]);
+    if (rawBookingData?.customerPhone && !phone) {
+      setPhone(rawBookingData.customerPhone);
+    }
+    // Fallback to user profile data
+    if (user) {
+      if (user.email && !email) setEmail(user.email);
+      if (!fullName && user.firstName) {
+        setFullName(`${user.firstName} ${user.lastName || ""}`.trim());
+      }
+    }
+  }, [user, rawBookingData]);
 
-  const handleCancel = () => {
+  // Build display data from tour API or booking data
+  const displayData: BookingData = tour
+    ? {
+        tourId: tour.id?.toString() || tourId || "",
+        tourTitle:
+          tour.titleRu ||
+          tour.title ||
+          tour.name ||
+          bookingData.tourTitle ||
+          "Тур",
+        tourLocation:
+          tour.locationRu ||
+          tour.location ||
+          tour.destination ||
+          bookingData.tourLocation ||
+          "",
+        tourType:
+          tour.category?.name ||
+          tour.tourType?.name ||
+          bookingData.tourType ||
+          "",
+        tourImage:
+          tour.images?.[0]?.image_url ||
+          tour.images?.[0] ||
+          tour.coverImage ||
+          bookingData.tourImage,
+        startDate: safeParseDate(tour.startDate) || bookingData.startDate,
+        endDate: safeParseDate(tour.endDate) || bookingData.endDate,
+        participants: bookingData.participants,
+        pricePerPerson: (() => {
+          // Try multiple price formats
+          if (typeof tour.price === "number" && tour.price > 0)
+            return tour.price;
+          if (tour.price?.amount) return Number(tour.price.amount);
+          if (tour.price?.uzs) return Number(tour.price.uzs);
+          if (tour.price?.UZS) return Number(tour.price.UZS);
+          if (tour.pricePerPerson) return Number(tour.pricePerPerson);
+          return bookingData.pricePerPerson;
+        })(),
+        duration: tour.duration || bookingData.duration || 1,
+      }
+    : bookingData;
+
+  // Calculate totals - no hardcoded fees (backend will handle discounts/fees)
+  const totalParticipants =
+    displayData.participants.adults + displayData.participants.children;
+  const totalPrice = displayData.pricePerPerson * totalParticipants;
+
+  const handleBack = () => {
     if (currentStep === 2) {
       setCurrentStep(1);
     } else {
@@ -247,7 +366,6 @@ const BookingStepPage: React.FC = () => {
     setError(null);
 
     if (currentStep === 1) {
-      // Validate Step 1
       if (!agreeToPolicy) {
         setError(
           translate({
@@ -272,17 +390,15 @@ const BookingStepPage: React.FC = () => {
         return;
       }
 
-      // Create booking via API
       setIsLoading(true);
       try {
-        // Parse full name into firstName and lastName
         const nameParts = fullName.trim().split(" ");
         const firstName = nameParts[0] || "";
         const lastName = nameParts.slice(1).join(" ") || firstName;
 
         const response = await apiService.createPublicBooking({
-          tourId: tourId || displayBookingData.tourId,
-          participants: displayTotalParticipants,
+          tourId: tourId || displayData.tourId,
+          participants: totalParticipants,
           notes: specialRequests || undefined,
           clientInfo: {
             email: email,
@@ -292,11 +408,7 @@ const BookingStepPage: React.FC = () => {
           },
         });
 
-        // Store order info for payment step
         setOrderId(response.order.id);
-        setBookingReference(response.bookingReference);
-
-        // Move to Step 2
         setCurrentStep(2);
       } catch (err: any) {
         console.error("Failed to create booking:", err);
@@ -313,107 +425,55 @@ const BookingStepPage: React.FC = () => {
         setIsLoading(false);
       }
     } else {
-      // Step 2: Process payment
-      if (paymentMethod === "click") {
-        // Initiate Click payment
-        if (!orderId) {
-          setError(
-            translate({
-              ru: "Ошибка: ID заказа отсутствует",
-              uz: "Xato: Buyurtma ID topilmadi",
-              en: "Error: Order ID is missing",
-              de: "Fehler: Bestell-ID fehlt",
-            }),
-          );
-          return;
-        }
-
-        setIsLoading(true);
-        try {
-          const paymentResponse = await apiService.initiateOrderPayment({
-            orderId: orderId,
-            method: "CLICK",
-            amount: displayTotalPrice,
-          });
-
-          // Redirect to Click payment page
-          if (paymentResponse.paymentUrl) {
-            window.location.href = paymentResponse.paymentUrl;
-          } else {
-            throw new Error("Payment URL not received");
-          }
-        } catch (err: any) {
-          console.error("Failed to initiate payment:", err);
-          setError(
-            err.message ||
-              translate({
-                ru: "Не удалось инициировать оплату. Попробуйте еще раз.",
-                uz: "To'lovni boshlab bo'lmadi. Qaytadan urinib ko'ring.",
-                en: "Failed to initiate payment. Please try again.",
-                de: "Zahlung konnte nicht eingeleitet werden. Bitte versuchen Sie es erneut.",
-              }),
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        // For UZCARD/HUMO - not yet implemented, show message
+      // Step 2: Payment via Click
+      if (!orderId) {
         setError(
           translate({
-            ru: "UZCARD/HUMO оплата пока недоступна. Пожалуйста, используйте Click.",
-            uz: "UZCARD/HUMO to'lovi hali mavjud emas. Click dan foydalaning.",
-            en: "UZCARD/HUMO payment is not available yet. Please use Click.",
-            de: "UZCARD/HUMO-Zahlung ist noch nicht verfügbar. Bitte verwenden Sie Click.",
+            ru: "Ошибка: ID заказа отсутствует",
+            uz: "Xato: Buyurtma ID topilmadi",
+            en: "Error: Order ID is missing",
+            de: "Fehler: Bestell-ID fehlt",
           }),
         );
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const paymentResponse = await apiService.initiateOrderPayment({
+          orderId: orderId,
+          method: "CLICK",
+          amount: totalPrice,
+        });
+
+        if (paymentResponse.paymentUrl) {
+          window.location.href = paymentResponse.paymentUrl;
+        } else {
+          throw new Error("Payment URL not received");
+        }
+      } catch (err: any) {
+        console.error("Failed to initiate payment:", err);
+        setError(
+          err.message ||
+            translate({
+              ru: "Не удалось инициировать оплату.",
+              uz: "To'lovni boshlab bo'lmadi.",
+              en: "Failed to initiate payment.",
+              de: "Zahlung konnte nicht eingeleitet werden.",
+            }),
+        );
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
-  // Update bookingData with tour data from API if available
-  const displayBookingData: BookingData = tour
-    ? {
-        tourId: tour.id?.toString() || tourId || "1",
-        tourTitle:
-          tour.titleRu || tour.title || tour.name || bookingData.tourTitle,
-        tourLocation:
-          tour.locationRu || tour.location || bookingData.tourLocation,
-        tourType: tour.tourType?.name || tour.category?.name || "Туризм",
-        tourImage:
-          tour.images?.[0]?.imageUrl ||
-          tour.coverImage ||
-          bookingData.tourImage,
-        startDate:
-          location.state?.bookingData?.startDate || bookingData.startDate,
-        endDate: location.state?.bookingData?.endDate || bookingData.endDate,
-        participants:
-          location.state?.bookingData?.participants || bookingData.participants,
-        pricePerPerson:
-          typeof tour.price === "number"
-            ? tour.price
-            : bookingData.pricePerPerson,
-        duration: tour.duration || bookingData.duration,
-      }
-    : bookingData;
-
-  // Recalculate prices based on displayBookingData
-  const displayTotalParticipants =
-    displayBookingData.participants.adults +
-    displayBookingData.participants.children;
-  const displaySubtotal =
-    displayBookingData.pricePerPerson * displayBookingData.duration;
-  const displayDiscount = Math.round(displaySubtotal * 0.1); // 10% discount
-  const displayServiceFee = 200000;
-  const displayTotalPrice =
-    displaySubtotal - displayDiscount + displayServiceFee;
-
-  // Show loading state while fetching tour
   if (tourLoading) {
     return (
       <div className="min-h-screen bg-[#F4F2ED] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8F7B49] mx-auto mb-4"></div>
-          <p className="text-[#333333] text-lg">
+          <p className="text-[#333333] text-lg font-medium">
             {translate({
               ru: "Загрузка...",
               uz: "Yuklanmoqda...",
@@ -431,23 +491,53 @@ const BookingStepPage: React.FC = () => {
       className="min-h-screen bg-[#F4F2ED]"
       style={{ fontFamily: "Montserrat, sans-serif" }}
     >
+      {/* Simple Back Button Header */}
+      <header className="sticky top-0 z-50 bg-[#F4F2ED]/95 backdrop-blur-sm border-b border-[#E5E0D5]">
+        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-3 text-[#333333] hover:text-[#8F7B49] transition-colors group"
+          >
+            <span className="w-10 h-10 rounded-full bg-white border border-[#E5E0D5] flex items-center justify-center group-hover:border-[#8F7B49] transition-colors">
+              <BackArrowIcon />
+            </span>
+            <span className="text-base font-medium">
+              {translate({
+                ru: "Назад",
+                uz: "Orqaga",
+                en: "Back",
+                de: "Zurück",
+              })}
+            </span>
+          </button>
+
+          <Link to="/" className="flex items-center">
+            <img
+              src="/loho_white_png.png"
+              alt="DJIDALI"
+              className="h-10 invert opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </Link>
+        </div>
+      </header>
+
       {/* Main Content */}
-      <div className="pt-[178px] px-[50px] pb-[100px]">
+      <main className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center max-w-[1340px]">
-            <span>{error}</span>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex justify-between items-center">
+            <span className="text-sm">{error}</span>
             <button
               onClick={() => setError(null)}
-              className="text-red-700 hover:text-red-900 font-bold"
+              className="text-red-500 hover:text-red-700 font-bold text-xl leading-none"
             >
-              ×
+              &times;
             </button>
           </div>
         )}
 
         {/* Page Title */}
-        <h1 className="text-[90px] font-medium text-[#333333] leading-[100px] tracking-[-2.7px] mb-[60px]">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium text-[#333333] tracking-tight mb-8">
           {translate({
             ru: "Забронируйте тур",
             uz: "Turni bron qiling",
@@ -457,55 +547,36 @@ const BookingStepPage: React.FC = () => {
         </h1>
 
         {/* Step Indicator */}
-        <div className="flex gap-[40px] items-center mb-[62px]">
-          {/* Step 1 - Active when step 1, Brown (completed) when step 2 */}
+        <div className="flex gap-4 md:gap-8 mb-10">
           <div
-            className={`flex gap-[12px] items-center pb-[24px] w-[320px] border-b-2 ${
-              currentStep === 1 ? "border-[#333333]" : "border-[#8F7B49]"
-            }`}
+            className={`flex items-center gap-3 pb-4 border-b-2 ${currentStep === 1 ? "border-[#333333]" : "border-[#8F7B49]"}`}
           >
             <div
-              className={`w-[48px] h-[48px] rounded-full flex items-center justify-center ${
-                currentStep === 1 ? "bg-[#333333]" : "bg-[#8F7B49]"
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${currentStep === 1 ? "bg-[#333333]" : "bg-[#8F7B49]"}`}
             >
-              <span className="text-[24px] font-medium text-white leading-[30px] tracking-[-0.48px]">
-                1
-              </span>
+              1
             </div>
             <span
-              className={`text-[24px] font-medium leading-[32px] tracking-[-0.72px] ${
-                currentStep === 1 ? "text-[#333333]" : "text-[#8F7B49]"
-              }`}
+              className={`text-base md:text-lg font-medium ${currentStep === 1 ? "text-[#333333]" : "text-[#8F7B49]"}`}
             >
               {translate({
-                ru: "Выбор даты",
-                uz: "Sana tanlash",
-                en: "Select Date",
-                de: "Datum wählen",
+                ru: "Данные",
+                uz: "Ma'lumotlar",
+                en: "Details",
+                de: "Details",
               })}
             </span>
           </div>
-
-          {/* Step 2 - Grey when step 1, Active (dark) when step 2 */}
           <div
-            className={`flex gap-[12px] items-center pb-[24px] w-[320px] border-b-2 ${
-              currentStep === 2 ? "border-[#333333]" : "border-[#A1A1A1]"
-            }`}
+            className={`flex items-center gap-3 pb-4 border-b-2 ${currentStep === 2 ? "border-[#333333]" : "border-[#C4C4C4]"}`}
           >
             <div
-              className={`w-[48px] h-[48px] rounded-full flex items-center justify-center ${
-                currentStep === 2 ? "bg-[#333333]" : "bg-[#A1A1A1]"
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${currentStep === 2 ? "bg-[#333333]" : "bg-[#C4C4C4]"}`}
             >
-              <span className="text-[24px] font-medium text-white leading-[30px] tracking-[-0.48px]">
-                2
-              </span>
+              2
             </div>
             <span
-              className={`text-[24px] font-medium leading-[32px] tracking-[-0.72px] ${
-                currentStep === 2 ? "text-[#333333]" : "text-[#A1A1A1]"
-              }`}
+              className={`text-base md:text-lg font-medium ${currentStep === 2 ? "text-[#333333]" : "text-[#C4C4C4]"}`}
             >
               {translate({
                 ru: "Оплата",
@@ -517,188 +588,167 @@ const BookingStepPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content - Two Column Layout */}
-        <div className="flex gap-[30px] max-w-[1340px]">
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Left Column - Form */}
-          <div className="w-[655px] bg-white rounded-[20px] p-[20px]">
+          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm">
             {currentStep === 1 ? (
               <>
-                {/* STEP 1: Contact Information Form */}
-                {/* Price Info Header */}
-                <h2 className="text-[32px] font-medium text-[#333333] leading-[40px] tracking-[-0.64px] mb-[40px] px-[20px] pt-[20px]">
-                  {translate({
-                    ru: "Информация о цене",
-                    uz: "Narx haqida ma'lumot",
-                    en: "Price Information",
-                    de: "Preisinformation",
-                  })}
-                </h2>
-
-                {/* Date and Participants Row */}
-                <div className="flex gap-[15px] px-[0px] mb-[30px]">
-                  {/* Date Container */}
-                  <div className="flex-1 h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] py-[18px] flex flex-col justify-center">
-                    <span className="text-[14px] font-medium text-[#333333] opacity-50 leading-[20px] tracking-[-0.28px]">
-                      {translate({
-                        ru: "Дата тура",
-                        uz: "Tur sanasi",
-                        en: "Tour Date",
-                        de: "Tourdatum",
-                      })}
-                    </span>
-                    <span className="text-[22px] font-semibold text-[#333333] leading-[24px] tracking-[-0.44px]">
-                      {formatDateRange()}
-                    </span>
-                  </div>
-
-                  {/* Participants Container */}
-                  <div className="flex-1 h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] py-[18px] flex flex-col justify-center">
-                    <span className="text-[14px] font-medium text-[#333333] opacity-50 leading-[20px] tracking-[-0.28px]">
-                      {translate({
-                        ru: "Количество участников",
-                        uz: "Ishtirokchilar soni",
-                        en: "Number of Participants",
-                        de: "Anzahl der Teilnehmer",
-                      })}
-                    </span>
-                    <span className="text-[22px] font-semibold text-[#333333] leading-[24px] tracking-[-0.44px]">
-                      {formatParticipants()}
-                    </span>
+                {/* Tour Summary Card */}
+                <div className="bg-[#F9F8F5] rounded-xl p-4 mb-6 flex gap-4">
+                  <img
+                    src={displayData.tourImage}
+                    alt={displayData.tourTitle}
+                    className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.src = "/tour-placeholder.jpg";
+                    }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-[#333333] text-lg mb-1 truncate">
+                      {displayData.tourTitle || "Тур"}
+                    </h3>
+                    <p className="text-sm text-[#666666] mb-2">
+                      {displayData.tourLocation || "Узбекистан"}
+                    </p>
+                    <div className="flex flex-wrap gap-3 text-xs text-[#8F7B49]">
+                      <span className="flex items-center gap-1">
+                        <CalendarIcon />
+                        {displayData.duration}{" "}
+                        {translate({
+                          ru: "дн.",
+                          uz: "kun",
+                          en: "days",
+                          de: "Tage",
+                        })}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <UserIcon />
+                        {totalParticipants}{" "}
+                        {translate({
+                          ru: "чел.",
+                          uz: "kishi",
+                          en: "ppl",
+                          de: "Pers.",
+                        })}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Contact Information Section */}
-                <h3 className="text-[24px] font-medium text-[#333333] leading-[30px] tracking-[-0.48px] mb-[20px] px-[0px]">
+                {/* Contact Information */}
+                <h2 className="text-xl font-semibold text-[#333333] mb-4">
                   {translate({
-                    ru: "Контакная информация",
+                    ru: "Контактная информация",
                     uz: "Aloqa ma'lumotlari",
                     en: "Contact Information",
                     de: "Kontaktinformationen",
                   })}
-                </h3>
+                </h2>
 
-                {/* Full Name Input */}
-                <div className="mb-[15px]">
+                <div className="space-y-4 mb-6">
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder={translate({
-                      ru: "Имя и фамилия",
-                      uz: "Ism va familiya",
-                      en: "Full Name",
-                      de: "Vollständiger Name",
+                      ru: "Имя и фамилия *",
+                      uz: "Ism va familiya *",
+                      en: "Full Name *",
+                      de: "Vollständiger Name *",
                     })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
+                    className="w-full h-14 border-2 border-[#E5E0D5] rounded-xl px-4 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors"
                   />
-                </div>
-
-                {/* Phone Input */}
-                <div className="mb-[15px]">
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder={translate({
-                      ru: "Номер телефона",
-                      uz: "Telefon raqami",
-                      en: "Phone Number",
-                      de: "Telefonnummer",
+                      ru: "Телефон *",
+                      uz: "Telefon *",
+                      en: "Phone *",
+                      de: "Telefon *",
                     })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
+                    className="w-full h-14 border-2 border-[#E5E0D5] rounded-xl px-4 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors"
                   />
-                </div>
-
-                {/* Email Input */}
-                <div className="mb-[30px]">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={translate({
-                      ru: "Электронная почта",
-                      uz: "Elektron pochta",
-                      en: "Email Address",
-                      de: "E-Mail-Adresse",
+                      ru: "Email *",
+                      uz: "Email *",
+                      en: "Email *",
+                      de: "E-Mail *",
                     })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
+                    className="w-full h-14 border-2 border-[#E5E0D5] rounded-xl px-4 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors"
                   />
                 </div>
 
-                {/* Additional Information Section */}
-                <h3 className="text-[24px] font-medium text-[#333333] leading-[30px] tracking-[-0.48px] mb-[20px] px-[0px]">
+                {/* Additional Information */}
+                <h3 className="text-lg font-semibold text-[#333333] mb-4">
                   {translate({
-                    ru: "Дополнительная информация",
-                    uz: "Qo'shimcha ma'lumot",
-                    en: "Additional Information",
-                    de: "Zusätzliche Informationen",
+                    ru: "Дополнительно",
+                    uz: "Qo'shimcha",
+                    en: "Additional",
+                    de: "Zusätzlich",
                   })}
                 </h3>
 
-                {/* Emergency Contact Name */}
-                <div className="mb-[15px]">
+                <div className="space-y-4 mb-6">
                   <input
                     type="text"
                     value={emergencyName}
                     onChange={(e) => setEmergencyName(e.target.value)}
                     placeholder={translate({
-                      ru: "Контакт для экстренных случаев (Имя)",
-                      uz: "Favqulodda aloqa (Ism)",
-                      en: "Emergency Contact (Name)",
+                      ru: "Экстренный контакт (имя)",
+                      uz: "Favqulodda aloqa (ism)",
+                      en: "Emergency Contact (name)",
                       de: "Notfallkontakt (Name)",
                     })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
+                    className="w-full h-14 border-2 border-[#E5E0D5] rounded-xl px-4 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors"
                   />
-                </div>
-
-                {/* Emergency Contact Phone */}
-                <div className="mb-[15px]">
                   <input
                     type="tel"
                     value={emergencyPhone}
                     onChange={(e) => setEmergencyPhone(e.target.value)}
                     placeholder={translate({
-                      ru: "Контактный номер для экстренных случаев",
-                      uz: "Favqulodda aloqa raqami",
-                      en: "Emergency Contact Number",
-                      de: "Notfallkontaktnummer",
+                      ru: "Экстренный контакт (телефон)",
+                      uz: "Favqulodda aloqa (telefon)",
+                      en: "Emergency Contact (phone)",
+                      de: "Notfallkontakt (Telefon)",
                     })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
+                    className="w-full h-14 border-2 border-[#E5E0D5] rounded-xl px-4 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors"
                   />
-                </div>
-
-                {/* Special Requests Textarea */}
-                <div className="mb-[30px]">
                   <textarea
                     value={specialRequests}
                     onChange={(e) => setSpecialRequests(e.target.value)}
                     placeholder={translate({
-                      ru: "Специальные пожелания (например, аллергия, особые условия)",
-                      uz: "Maxsus istaklar (masalan, allergiya, maxsus shartlar)",
-                      en: "Special Requests (e.g., allergies, special conditions)",
-                      de: "Besondere Wünsche (z.B. Allergien, besondere Bedingungen)",
+                      ru: "Особые пожелания...",
+                      uz: "Maxsus istaklar...",
+                      en: "Special requests...",
+                      de: "Besondere Wünsche...",
                     })}
-                    className="w-full h-[200px] border-2 border-[#333333] rounded-[10px] px-[20px] py-[28px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors resize-none"
+                    rows={3}
+                    className="w-full border-2 border-[#E5E0D5] rounded-xl px-4 py-3 text-base text-[#333333] placeholder:text-[#999] focus:border-[#8F7B49] focus:outline-none transition-colors resize-none"
                   />
                 </div>
 
-                {/* Privacy Policy Checkbox */}
-                <div className="flex gap-[12px] items-center mb-[30px]">
-                  <button
-                    type="button"
-                    onClick={() => setAgreeToPolicy(!agreeToPolicy)}
-                    className="focus:outline-none"
-                  >
-                    <CheckboxIcon checked={agreeToPolicy} />
-                  </button>
-                  <span className="text-[20px] font-medium text-[#333333] tracking-[-0.4px]">
+                {/* Privacy Policy */}
+                <button
+                  type="button"
+                  onClick={() => setAgreeToPolicy(!agreeToPolicy)}
+                  className="flex items-center gap-3 mb-6 group"
+                >
+                  <CheckboxIcon checked={agreeToPolicy} />
+                  <span className="text-sm text-[#333333] group-hover:text-[#8F7B49] transition-colors">
                     {translate({
-                      ru: "Я соглашаюсь с ",
+                      ru: "Я согласен с ",
                       uz: "Men roziman ",
                       en: "I agree to the ",
                       de: "Ich stimme der ",
                     })}
-                    <Link to="/privacy-policy" className="underline">
+                    <Link to="/privacy" className="underline text-[#8F7B49]">
                       {translate({
                         ru: "Политикой Конфиденциальности",
                         uz: "Maxfiylik siyosati",
@@ -707,170 +757,55 @@ const BookingStepPage: React.FC = () => {
                       })}
                     </Link>
                   </span>
-                </div>
+                </button>
               </>
             ) : (
               <>
-                {/* STEP 2: Payment Form */}
-                {/* Payment Type Header */}
-                <h2 className="text-[32px] font-medium text-[#333333] leading-[40px] tracking-[-0.64px] mb-[40px] px-[0px] pt-[20px]">
+                {/* Payment Step */}
+                <h2 className="text-xl font-semibold text-[#333333] mb-6">
                   {translate({
-                    ru: "Тип оплаты",
-                    uz: "To'lov turi",
-                    en: "Payment Type",
-                    de: "Zahlungsart",
+                    ru: "Способ оплаты",
+                    uz: "To'lov usuli",
+                    en: "Payment Method",
+                    de: "Zahlungsmethode",
                   })}
                 </h2>
 
-                {/* UZCARD/HUMO Option (Selected) */}
-                <button
-                  onClick={() => setPaymentMethod("uzcard")}
-                  className={`w-full h-[80px] border-2 rounded-[10px] px-[20px] py-[18px] flex items-center gap-[10px] mb-[15px] transition-colors ${
-                    paymentMethod === "uzcard"
-                      ? "border-[#8F7B49]"
-                      : "border-[#333333]"
-                  }`}
-                >
-                  {/* Humo/Uzcard Logos */}
-                  <div className="flex items-center gap-[2px]">
-                    <img
-                      src="/humo-logo.png"
-                      alt="Humo"
-                      className="h-[46px] w-[44px] object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                    <img
-                      src="/uzcard-logo.png"
-                      alt="Uzcard"
-                      className="h-[46px] w-[46px] object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
+                {/* Click Payment - Only available option */}
+                <div className="mb-6">
+                  <div className="w-full h-16 border-2 border-[#8F7B49] bg-[#8F7B49]/5 rounded-xl px-4 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#00A3E0] rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">
+                        Click
+                      </span>
+                    </div>
+                    <span className="font-semibold text-[#8F7B49]">Click</span>
                   </div>
-                  <span
-                    className={`text-[22px] font-semibold leading-[24px] tracking-[-0.44px] ${
-                      paymentMethod === "uzcard"
-                        ? "text-[#8F7B49]"
-                        : "text-[#333333]"
-                    }`}
-                  >
-                    UZCARD, HUMO
-                  </span>
-                </button>
-
-                {/* Cardholder Name */}
-                <div className="mb-[15px]">
-                  <input
-                    type="text"
-                    value={cardholderName}
-                    onChange={(e) => setCardholderName(e.target.value)}
-                    placeholder={translate({
-                      ru: "Имя владельца",
-                      uz: "Karta egasining ismi",
-                      en: "Cardholder Name",
-                      de: "Karteninhaber",
-                    })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
-                  />
                 </div>
-
-                {/* Card Number */}
-                <div className="mb-[15px]">
-                  <input
-                    type="text"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    placeholder={translate({
-                      ru: "Номер карты",
-                      uz: "Karta raqami",
-                      en: "Card Number",
-                      de: "Kartennummer",
-                    })}
-                    className="w-full h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
-                  />
-                </div>
-
-                {/* Expiry Date */}
-                <div className="mb-[15px]">
-                  <input
-                    type="text"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    placeholder={translate({
-                      ru: "Срок действия",
-                      uz: "Amal qilish muddati",
-                      en: "Expiry Date",
-                      de: "Ablaufdatum",
-                    })}
-                    className="w-[300px] h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[22px] font-semibold text-[#333333] placeholder:opacity-50 leading-[24px] tracking-[-0.44px] outline-none focus:border-[#8F7B49] transition-colors"
-                  />
-                </div>
-
-                {/* Click Option */}
-                <button
-                  onClick={() => setPaymentMethod("click")}
-                  className={`w-full h-[80px] border-2 rounded-[10px] px-[20px] py-[18px] flex items-center gap-[10px] mb-[200px] transition-colors ${
-                    paymentMethod === "click"
-                      ? "border-[#8F7B49]"
-                      : "border-[#333333]"
-                  }`}
-                >
-                  {/* Click Logo */}
-                  <div className="w-[46px] h-[46px] bg-white rounded flex items-center justify-center">
-                    <img
-                      src="/click-logo.png"
-                      alt="Click"
-                      className="h-[46px] w-[46px] object-contain"
-                      onError={(e) => {
-                        e.currentTarget.parentElement!.innerHTML =
-                          '<span class="text-[24px] font-bold text-[#00A3E0]">Click</span>';
-                      }}
-                    />
-                  </div>
-                  <span
-                    className={`text-[22px] font-semibold leading-[24px] tracking-[-0.44px] ${
-                      paymentMethod === "click"
-                        ? "text-[#8F7B49]"
-                        : "text-[#333333]"
-                    }`}
-                  >
-                    Click
-                  </span>
-                </button>
               </>
             )}
 
-            {/* Action Buttons - Same for both steps */}
-            <div className="flex gap-[15px]">
-              {/* Cancel Button */}
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-4">
               <button
-                onClick={handleCancel}
-                className="flex-1 h-[80px] bg-[#333333] opacity-80 text-white rounded-[10px] text-[20px] font-bold leading-[20px] tracking-[-0.4px] hover:opacity-100 transition-opacity"
+                onClick={handleBack}
+                className="flex-1 h-14 bg-[#333333]/10 text-[#333333] rounded-xl font-semibold hover:bg-[#333333]/20 transition-colors"
               >
                 {translate({
-                  ru: "Отменить",
-                  uz: "Bekor qilish",
+                  ru: "Отмена",
+                  uz: "Bekor",
                   en: "Cancel",
                   de: "Abbrechen",
                 })}
               </button>
-
-              {/* Continue Button */}
               <button
                 onClick={handleContinue}
                 disabled={isLoading}
-                className={`flex-1 h-[80px] bg-[#8F7B49] text-white rounded-[10px] text-[20px] font-bold leading-[20px] tracking-[-0.4px] transition-colors ${
-                  isLoading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-[#7A6640]"
-                }`}
+                className={`flex-1 h-14 bg-[#8F7B49] text-white rounded-xl font-semibold transition-all ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#7A6A3E]"}`}
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     {translate({
                       ru: "Обработка...",
                       uz: "Jarayon...",
@@ -878,232 +813,154 @@ const BookingStepPage: React.FC = () => {
                       de: "Verarbeitung...",
                     })}
                   </span>
+                ) : currentStep === 2 ? (
+                  translate({
+                    ru: "Оплатить через Click",
+                    uz: "Click orqali to'lash",
+                    en: "Pay with Click",
+                    de: "Mit Click bezahlen",
+                  })
                 ) : (
                   translate({
-                    ru:
-                      currentStep === 2 && paymentMethod === "click"
-                        ? "Оплатить через Click"
-                        : "Продолжить",
-                    uz:
-                      currentStep === 2 && paymentMethod === "click"
-                        ? "Click orqali to'lash"
-                        : "Davom etish",
-                    en:
-                      currentStep === 2 && paymentMethod === "click"
-                        ? "Pay with Click"
-                        : "Continue",
-                    de:
-                      currentStep === 2 && paymentMethod === "click"
-                        ? "Mit Click bezahlen"
-                        : "Fortfahren",
+                    ru: "Продолжить",
+                    uz: "Davom etish",
+                    en: "Continue",
+                    de: "Fortfahren",
                   })
                 )}
               </button>
             </div>
           </div>
 
-          {/* Right Column - Tour Card */}
-          <div className="w-[655px] bg-white rounded-[20px] p-[20px]">
+          {/* Right Column - Order Summary */}
+          <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm h-fit lg:sticky lg:top-24">
             {/* Tour Image */}
-            <div className="relative h-[255px] rounded-[20px] overflow-hidden mb-[20px]">
+            <div className="relative rounded-xl overflow-hidden mb-6 aspect-[16/10]">
               <img
-                src={displayBookingData.tourImage}
-                alt={displayBookingData.tourTitle}
+                src={displayData.tourImage}
+                alt={displayData.tourTitle}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/tour-placeholder.jpg";
+                }}
               />
-              <div className="absolute inset-0 bg-black/20 rounded-[20px]" />
-              {/* Tour Type Badge */}
-              <div className="absolute bottom-[12px] right-[12px] bg-white rounded-[16px] px-[6px] py-[2px]">
-                <span className="text-[16px] font-medium text-[#333333] leading-[16px] tracking-[-0.32px]">
-                  {displayBookingData.tourType}
+              {displayData.tourType && (
+                <span className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-[#333333]">
+                  {displayData.tourType}
                 </span>
+              )}
+            </div>
+
+            {/* Tour Info */}
+            <h3 className="text-xl font-semibold text-[#333333] mb-2">
+              {displayData.tourTitle || "Тур"}
+            </h3>
+            <p className="text-[#666666] mb-6">
+              {displayData.tourLocation || "Узбекистан"}
+            </p>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-[#F9F8F5] rounded-xl p-4">
+                <div className="flex items-center gap-2 text-[#8F7B49] mb-1">
+                  <CalendarIcon />
+                  <span className="text-xs font-medium uppercase">
+                    {translate({
+                      ru: "Начало",
+                      uz: "Boshlanishi",
+                      en: "Start",
+                      de: "Start",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-[#333333]">
+                  {formatDateSafe(displayData.startDate)}
+                </p>
+              </div>
+              <div className="bg-[#F9F8F5] rounded-xl p-4">
+                <div className="flex items-center gap-2 text-[#8F7B49] mb-1">
+                  <CalendarIcon />
+                  <span className="text-xs font-medium uppercase">
+                    {translate({
+                      ru: "Конец",
+                      uz: "Tugashi",
+                      en: "End",
+                      de: "Ende",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-[#333333]">
+                  {formatDateSafe(displayData.endDate)}
+                </p>
+              </div>
+              <div className="bg-[#F9F8F5] rounded-xl p-4">
+                <div className="flex items-center gap-2 text-[#8F7B49] mb-1">
+                  <UserIcon />
+                  <span className="text-xs font-medium uppercase">
+                    {translate({
+                      ru: "Участники",
+                      uz: "Ishtirokchilar",
+                      en: "Guests",
+                      de: "Gäste",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-[#333333]">
+                  {formatParticipants()}
+                </p>
+              </div>
+              <div className="bg-[#F9F8F5] rounded-xl p-4">
+                <div className="flex items-center gap-2 text-[#8F7B49] mb-1">
+                  <PriceTagIcon />
+                  <span className="text-xs font-medium uppercase">
+                    {translate({
+                      ru: "За чел.",
+                      uz: "Kishiga",
+                      en: "Per person",
+                      de: "Pro Person",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-[#333333]">
+                  {formatPrice(displayData.pricePerPerson)}
+                </p>
               </div>
             </div>
 
-            {/* Tour Title and Location */}
-            <div className="px-[20px] mb-[24px]">
-              <h3 className="text-[32px] font-medium text-[#333333] leading-[40px] tracking-[-0.64px] mb-[20px]">
-                {displayBookingData.tourTitle}
-              </h3>
-              <p className="text-[20px] font-normal text-[#333333] leading-[24px] tracking-[-0.4px]">
-                {displayBookingData.tourLocation}
-              </p>
-            </div>
-
-            {/* Check-in Info Card */}
-            <div className="bg-[rgba(235,235,235,0.4)] rounded-[16px] py-[8px] px-[0px] mb-[24px]">
-              {/* First Row - Dates */}
-              <div className="flex items-center gap-[20px] px-[12px]">
-                {/* Start Date */}
-                <div className="flex-1 flex gap-[12px] items-start p-[12px]">
-                  <div className="p-[4px]">
-                    <CalendarIcon />
-                  </div>
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="text-[14px] font-medium text-[#767676] leading-[16px]">
-                      {translate({
-                        ru: "Дата начала",
-                        uz: "Boshlanish sanasi",
-                        en: "Start Date",
-                        de: "Startdatum",
-                      })}
-                    </span>
-                    <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatDate(displayBookingData.startDate)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="w-[1px] h-[40px] bg-[#DCD6C7]" />
-
-                {/* End Date */}
-                <div className="flex-1 flex gap-[12px] items-start p-[12px]">
-                  <div className="p-[4px]">
-                    <CalendarIcon />
-                  </div>
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="text-[14px] font-medium text-[#767676] leading-[16px]">
-                      {translate({
-                        ru: "Дата окончания",
-                        uz: "Tugash sanasi",
-                        en: "End Date",
-                        de: "Enddatum",
-                      })}
-                    </span>
-                    <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatDate(displayBookingData.endDate)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Second Row - Guests and Price */}
-              <div className="flex items-center gap-[20px] px-[12px]">
-                {/* Participants */}
-                <div className="flex-1 flex gap-[12px] items-start p-[12px]">
-                  <div className="p-[4px]">
-                    <UserIcon />
-                  </div>
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="text-[14px] font-medium text-[#767676] leading-[16px]">
-                      {translate({
-                        ru: "Участники",
-                        uz: "Ishtirokchilar",
-                        en: "Participants",
-                        de: "Teilnehmer",
-                      })}
-                    </span>
-                    <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {displayTotalParticipants}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="w-[1px] h-[40px] bg-[#DCD6C7]" />
-
-                {/* Price Per Person */}
-                <div className="flex-1 flex gap-[12px] items-start p-[12px]">
-                  <div className="p-[4px]">
-                    <AirplaneIcon />
-                  </div>
-                  <div className="flex flex-col gap-[6px]">
-                    <span className="text-[14px] font-medium text-[#767676] leading-[16px]">
-                      {translate({
-                        ru: "Цена на человека",
-                        uz: "Bir kishi uchun narx",
-                        en: "Price per person",
-                        de: "Preis pro Person",
-                      })}
-                    </span>
-                    <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                      {formatPrice(displayBookingData.pricePerPerson)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Cost Section */}
-            <div className="px-[20px]">
-              <h4 className="text-[24px] font-medium text-[#333333] leading-[30px] tracking-[-0.48px] mb-[20px]">
-                {translate({
-                  ru: "Стоимость тура",
-                  uz: "Tur narxi",
-                  en: "Tour Cost",
-                  de: "Tourkosten",
-                })}
-              </h4>
-
-              {/* Price Breakdown */}
-              <div className="flex flex-col gap-[16px] mb-[24px]">
-                {/* Subtotal */}
-                <div className="flex justify-between items-end">
-                  <span className="text-[16px] font-medium text-[#767676] leading-[16px] tracking-[-0.32px]">
-                    {formatPrice(displayBookingData.pricePerPerson)} x{" "}
-                    {displayBookingData.duration}{" "}
-                    {translate({
-                      ru: "ночи",
-                      uz: "tun",
-                      en: "nights",
-                      de: "Nächte",
-                    })}
-                  </span>
-                  <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(displaySubtotal)}
-                  </span>
-                </div>
-
-                {/* Discount */}
-                <div className="flex justify-between items-end">
-                  <span className="text-[16px] font-medium text-[#767676] leading-[16px] tracking-[-0.32px]">
-                    {translate({
-                      ru: "Скидка 10% по акции",
-                      uz: "Aksiya bo'yicha 10% chegirma",
-                      en: "10% Promotional Discount",
-                      de: "10% Aktionsrabatt",
-                    })}
-                  </span>
-                  <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(displayDiscount)}
-                  </span>
-                </div>
-
-                {/* Service Fee */}
-                <div className="flex justify-between items-end">
-                  <span className="text-[16px] font-medium text-[#767676] leading-[16px] tracking-[-0.32px]">
-                    {translate({
-                      ru: "Плата за обслуживание",
-                      uz: "Xizmat haqi",
-                      en: "Service Fee",
-                      de: "Servicegebühr",
-                    })}
-                  </span>
-                  <span className="text-[20px] font-medium text-[#333333] leading-normal tracking-[-0.4px]">
-                    {formatPrice(displayServiceFee)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Total */}
-              <div className="flex justify-between items-end pt-[16px] border-t border-[#EBEBEB]">
-                <span className="text-[20px] font-medium text-[#767676] leading-normal tracking-[-0.4px]">
+            {/* Price Summary */}
+            <div className="border-t border-[#E5E0D5] pt-6 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-[#666666]">
+                  {formatPrice(displayData.pricePerPerson)} ×{" "}
+                  {totalParticipants}{" "}
                   {translate({
-                    ru: "Итого к оплате",
-                    uz: "Jami to'lov",
-                    en: "Total Amount",
-                    de: "Gesamtbetrag",
+                    ru: "чел.",
+                    uz: "kishi",
+                    en: "guests",
+                    de: "Gäste",
                   })}
                 </span>
-                <span className="text-[28px] font-medium text-[#827042] leading-[38px] tracking-[-0.56px]">
-                  {formatPrice(displayTotalPrice)}
+                <span className="text-[#333333] font-medium">
+                  {formatPrice(totalPrice)}
+                </span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-[#E5E0D5]">
+                <span className="text-lg font-semibold text-[#333333]">
+                  {translate({
+                    ru: "Итого",
+                    uz: "Jami",
+                    en: "Total",
+                    de: "Gesamt",
+                  })}
+                </span>
+                <span className="text-xl font-bold text-[#8F7B49]">
+                  {formatPrice(totalPrice)}
                 </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

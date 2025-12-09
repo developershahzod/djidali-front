@@ -13,6 +13,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { cn } from "../lib/utils";
 
 interface NavItemProps {
@@ -57,34 +58,39 @@ const AdminLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const { logout, user } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
 
   const navItems = [
     {
       icon: <LayoutDashboard className="h-5 w-5" />,
-      label: "Дашборд",
+      label: t("admin.dashboard"),
       to: "/admin",
     },
-    { icon: <Map className="h-5 w-5" />, label: "Туры", to: "/admin/tours" },
+    {
+      icon: <Map className="h-5 w-5" />,
+      label: t("admin.tours"),
+      to: "/admin/tours",
+    },
     {
       icon: <ShoppingBag className="h-5 w-5" />,
-      label: "Заказы",
+      label: t("admin.orders"),
       to: "/admin/orders",
     },
     {
       icon: <FolderTree className="h-5 w-5" />,
-      label: "Категории",
+      label: t("admin.categories"),
       to: "/admin/categories",
     },
     {
       icon: <Newspaper className="h-5 w-5" />,
-      label: "Новости",
+      label: t("admin.news"),
       to: "/admin/news",
     },
     {
       icon: <Settings className="h-5 w-5" />,
-      label: "Настройки",
+      label: t("admin.settings"),
       to: "/admin/settings",
     },
   ];
@@ -173,7 +179,7 @@ const AdminLayout = ({
           {!collapsed && user && (
             <div className="mb-2 px-2 py-2 rounded bg-slate-800/50">
               <p className="text-xs text-slate-500 uppercase tracking-wide">
-                Аккаунт
+                {t("admin.account")}
               </p>
               <p className="text-sm font-medium text-white truncate">
                 {user.firstName} {user.lastName}
@@ -189,10 +195,10 @@ const AdminLayout = ({
               "flex w-full items-center gap-2 px-3 py-2 text-sm font-medium rounded text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors",
               collapsed && "justify-center px-2",
             )}
-            title={collapsed ? "Выйти" : undefined}
+            title={collapsed ? t("admin.logout") : undefined}
           >
             <LogOut className="h-4 w-4" />
-            {!collapsed && <span>Выйти</span>}
+            {!collapsed && <span>{t("admin.logout")}</span>}
           </button>
         </div>
       </aside>

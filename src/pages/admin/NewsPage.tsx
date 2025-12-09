@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus,
   Search,
@@ -9,11 +8,13 @@ import {
   Calendar,
   Globe,
   ImageIcon,
-} from 'lucide-react';
-import AdminLayout from '../../layouts/AdminLayout';
-import { djidaliApi } from '../../services/djidaliApi';
-import { cn } from '../../lib/utils';
-import { getImageUrl } from '../../utils/imageUtils';
+} from "lucide-react";
+import AdminLayout from "../../layouts/AdminLayout";
+import { djidaliApi } from "../../services/djidaliApi";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirm } from "../../contexts/ConfirmContext";
+import { cn } from "../../lib/utils";
+import { getImageUrl } from "../../utils/imageUtils";
 
 interface NewsArticle {
   id: string;
@@ -56,31 +57,35 @@ interface NewsFormData {
 }
 
 const initialFormData: NewsFormData = {
-  titleRu: '',
-  titleUz: '',
-  titleEn: '',
-  titleDe: '',
-  summaryRu: '',
-  summaryUz: '',
-  summaryEn: '',
-  summaryDe: '',
-  contentRu: '',
-  contentUz: '',
-  contentEn: '',
-  contentDe: '',
-  slug: '',
-  imageUrl: '',
+  titleRu: "",
+  titleUz: "",
+  titleEn: "",
+  titleDe: "",
+  summaryRu: "",
+  summaryUz: "",
+  summaryEn: "",
+  summaryDe: "",
+  contentRu: "",
+  contentUz: "",
+  contentEn: "",
+  contentDe: "",
+  slug: "",
+  imageUrl: "",
   isPublished: false,
 };
 
 const AdminNewsPage = () => {
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
+  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(
+    null,
+  );
   const [formData, setFormData] = useState<NewsFormData>(initialFormData);
-  const [activeTab, setActiveTab] = useState<'ru' | 'uz' | 'en' | 'de'>('ru');
+  const [activeTab, setActiveTab] = useState<"ru" | "uz" | "en" | "de">("ru");
   const [saving, setSaving] = useState(false);
 
   const fetchNews = useCallback(async () => {
@@ -89,7 +94,7 @@ const AdminNewsPage = () => {
       const response = await djidaliApi.getNews();
       setNews(response.data || []);
     } catch (error) {
-      console.error('Failed to fetch news:', error);
+      console.error("Failed to fetch news:", error);
     } finally {
       setLoading(false);
     }
@@ -100,21 +105,22 @@ const AdminNewsPage = () => {
   }, [fetchNews]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
-      .replace(/[^a-z0-9а-яё\s-]/gi, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
+      .replace(/[^a-z0-9а-яё\s-]/gi, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
       .trim();
   };
 
@@ -123,7 +129,7 @@ const AdminNewsPage = () => {
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
       // Auto-generate slug from Russian title if slug is empty
-      if (name === 'titleRu' && !prev.slug) {
+      if (name === "titleRu" && !prev.slug) {
         updated.slug = generateSlug(value);
       }
       return updated;
@@ -133,20 +139,20 @@ const AdminNewsPage = () => {
   const openEditModal = (article: NewsArticle) => {
     setEditingArticle(article);
     setFormData({
-      titleRu: article.titleRu || '',
-      titleUz: article.titleUz || '',
-      titleEn: article.titleEn || '',
-      titleDe: article.titleDe || '',
-      summaryRu: article.summaryRu || '',
-      summaryUz: article.summaryUz || '',
-      summaryEn: article.summaryEn || '',
-      summaryDe: article.summaryDe || '',
-      contentRu: article.contentRu || '',
-      contentUz: article.contentUz || '',
-      contentEn: article.contentEn || '',
-      contentDe: article.contentDe || '',
-      slug: article.slug || '',
-      imageUrl: article.imageUrl || '',
+      titleRu: article.titleRu || "",
+      titleUz: article.titleUz || "",
+      titleEn: article.titleEn || "",
+      titleDe: article.titleDe || "",
+      summaryRu: article.summaryRu || "",
+      summaryUz: article.summaryUz || "",
+      summaryEn: article.summaryEn || "",
+      summaryDe: article.summaryDe || "",
+      contentRu: article.contentRu || "",
+      contentUz: article.contentUz || "",
+      contentEn: article.contentEn || "",
+      contentDe: article.contentDe || "",
+      slug: article.slug || "",
+      imageUrl: article.imageUrl || "",
       isPublished: article.isPublished || false,
     });
     setShowModal(true);
@@ -170,35 +176,66 @@ const AdminNewsPage = () => {
       setEditingArticle(null);
       setFormData(initialFormData);
       fetchNews();
+      toast.success(editingArticle ? "Новость обновлена" : "Новость создана");
     } catch (error) {
-      console.error('Failed to save news:', error);
-      alert('Ошибка сохранения: ' + (error instanceof Error ? error.message : 'Неизвестная ошибка'));
+      console.error("Failed to save news:", error);
+      toast.error({
+        title: "Ошибка сохранения",
+        message: error instanceof Error ? error.message : "Неизвестная ошибка",
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Вы уверены, что хотите удалить эту новость?')) return;
+    const confirmed = await confirm({
+      title: "Удалить новость",
+      message: "Вы уверены, что хотите удалить эту новость?",
+      confirmText: "Удалить",
+      cancelText: "Отмена",
+      variant: "danger",
+    });
+
+    if (!confirmed) return;
+
     try {
       await djidaliApi.deleteNews(id);
-      fetchNews();
+      toast.success("Новость удалена");
     } catch (error) {
-      console.error('Failed to delete news:', error);
-      alert('Ошибка удаления');
+      console.error("Failed to delete news:", error);
+      // If 404, the item doesn't exist - still refresh to clean up stale data
+      const errorMessage = error instanceof Error ? error.message : "";
+      if (errorMessage.includes("not found") || errorMessage.includes("404")) {
+        toast.info("Новость уже была удалена");
+      } else {
+        toast.error("Ошибка удаления");
+      }
+    } finally {
+      // Always refresh to sync with backend
+      fetchNews();
     }
   };
 
-  const filteredNews = news.filter((article) =>
-    article.titleRu?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    article.titleEn?.toLowerCase().includes(searchQuery.toLowerCase())
+  // Safe date formatting
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return "—";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "—";
+    return date.toLocaleDateString("ru-RU");
+  };
+
+  const filteredNews = news.filter(
+    (article) =>
+      article.titleRu?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.titleEn?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const tabs = [
-    { key: 'ru' as const, label: 'Русский' },
-    { key: 'uz' as const, label: "O'zbek" },
-    { key: 'en' as const, label: 'English' },
-    { key: 'de' as const, label: 'Deutsch' },
+    { key: "ru" as const, label: "Русский" },
+    { key: "uz" as const, label: "O'zbek" },
+    { key: "en" as const, label: "English" },
+    { key: "de" as const, label: "Deutsch" },
   ];
 
   return (
@@ -237,8 +274,12 @@ const AdminNewsPage = () => {
       ) : filteredNews.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-[#BFA480]/50 bg-white/70 px-6 py-16 text-center">
           <ImageIcon className="mx-auto h-14 w-14 text-[#BFA480]" />
-          <h3 className="mt-6 text-xl font-semibold text-[#2F2A24]">Нет новостей</h3>
-          <p className="mt-2 text-sm text-[#6B5B4C]">Создайте первую новость для отображения на сайте</p>
+          <h3 className="mt-6 text-xl font-semibold text-[#2F2A24]">
+            Нет новостей
+          </h3>
+          <p className="mt-2 text-sm text-[#6B5B4C]">
+            Создайте первую новость для отображения на сайте
+          </p>
         </div>
       ) : (
         <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-lg">
@@ -276,7 +317,9 @@ const AdminNewsPage = () => {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium text-[#2F2A24]">{article.titleRu || 'Без названия'}</p>
+                        <p className="font-medium text-[#2F2A24]">
+                          {article.titleRu || "Без названия"}
+                        </p>
                         <p className="text-xs text-[#8E7A5E]">{article.slug}</p>
                       </div>
                     </div>
@@ -284,25 +327,25 @@ const AdminNewsPage = () => {
                   <td className="px-6 py-4">
                     <span
                       className={cn(
-                        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold',
+                        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
                         article.isPublished
-                          ? 'bg-[#E5F4EC] text-[#2F4A3A]'
-                          : 'bg-[#FEF3C7] text-[#92400E]'
+                          ? "bg-[#E5F4EC] text-[#2F4A3A]"
+                          : "bg-[#FEF3C7] text-[#92400E]",
                       )}
                     >
                       <span
                         className={cn(
-                          'h-1.5 w-1.5 rounded-full',
-                          article.isPublished ? 'bg-[#2F4A3A]' : 'bg-[#92400E]'
+                          "h-1.5 w-1.5 rounded-full",
+                          article.isPublished ? "bg-[#2F4A3A]" : "bg-[#92400E]",
                         )}
                       />
-                      {article.isPublished ? 'Опубликовано' : 'Черновик'}
+                      {article.isPublished ? "Опубликовано" : "Черновик"}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#6B5B4C]">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-4 w-4" />
-                      {new Date(article.createdAt).toLocaleDateString('ru-RU')}
+                      {formatDate(article.createdAt)}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -344,7 +387,7 @@ const AdminNewsPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl">
             <h2 className="mb-6 text-2xl font-semibold text-[#2F2A24]">
-              {editingArticle ? 'Редактировать новость' : 'Новая новость'}
+              {editingArticle ? "Редактировать новость" : "Новая новость"}
             </h2>
 
             {/* Language Tabs */}
@@ -354,10 +397,10 @@ const AdminNewsPage = () => {
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                    "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                     activeTab === tab.key
-                      ? 'bg-[#2F2A24] text-white'
-                      : 'bg-[#F7F1E6] text-[#6B5B4C] hover:bg-[#E2D5C1]'
+                      ? "bg-[#2F2A24] text-white"
+                      : "bg-[#F7F1E6] text-[#6B5B4C] hover:bg-[#E2D5C1]",
                   )}
                 >
                   <Globe className="h-4 w-4" />
@@ -376,8 +419,14 @@ const AdminNewsPage = () => {
                 <input
                   type="text"
                   name={`title${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
-                  value={formData[`title${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData] as string}
-                  onChange={activeTab === 'ru' ? handleTitleChange : handleInputChange}
+                  value={
+                    formData[
+                      `title${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData
+                    ] as string
+                  }
+                  onChange={
+                    activeTab === "ru" ? handleTitleChange : handleInputChange
+                  }
                   className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
                   placeholder="Введите заголовок..."
                 />
@@ -390,7 +439,11 @@ const AdminNewsPage = () => {
                 </label>
                 <textarea
                   name={`summary${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
-                  value={formData[`summary${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData] as string}
+                  value={
+                    formData[
+                      `summary${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData
+                    ] as string
+                  }
                   onChange={handleInputChange}
                   rows={2}
                   className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
@@ -405,7 +458,11 @@ const AdminNewsPage = () => {
                 </label>
                 <textarea
                   name={`content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
-                  value={formData[`content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData] as string}
+                  value={
+                    formData[
+                      `content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData
+                    ] as string
+                  }
                   onChange={handleInputChange}
                   rows={6}
                   className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
@@ -452,7 +509,9 @@ const AdminNewsPage = () => {
                   onChange={handleInputChange}
                   className="h-5 w-5 rounded border-[#BFA480] text-[#8F6E47] focus:ring-[#BFA480]"
                 />
-                <span className="text-sm font-medium text-[#2F2A24]">Опубликовать сразу</span>
+                <span className="text-sm font-medium text-[#2F2A24]">
+                  Опубликовать сразу
+                </span>
               </label>
             </div>
 
@@ -473,7 +532,11 @@ const AdminNewsPage = () => {
                 disabled={saving}
                 className="rounded-xl bg-gradient-to-r from-[#8F6E47] to-[#BFA480] px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 disabled:opacity-50"
               >
-                {saving ? 'Сохранение...' : editingArticle ? 'Сохранить' : 'Создать'}
+                {saving
+                  ? "Сохранение..."
+                  : editingArticle
+                    ? "Сохранить"
+                    : "Создать"}
               </button>
             </div>
           </div>

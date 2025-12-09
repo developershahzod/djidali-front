@@ -1,15 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { djidaliApi, ApiCategory } from '../services/djidaliApi';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { djidaliApi, ApiCategory } from "../services/djidaliApi";
 
 interface CategoryDropdownProps {
   onCategorySelect?: (categoryId: string, subcategoryId?: string) => void;
 }
 
-const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect }) => {
-  const { t } = useLanguage();
+// Helper function to safely extract localized text from multilingual objects
+const getLocalizedText = (
+  value: string | { [key: string]: string } | undefined | null,
+  language: string,
+): string => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const langKey = language === "en" ? "eng" : language;
+    return value[langKey] || value.ru || value.eng || value.uz || "";
+  }
+  return "";
+};
+
+const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
+  onCategorySelect,
+}) => {
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -19,14 +35,17 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setActiveCategory(null);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -36,7 +55,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
         const response = await djidaliApi.getCategoryTree();
         setCategories(response);
       } catch (error) {
-        console.error('Failed to fetch categories:', error);
+        console.error("Failed to fetch categories:", error);
       } finally {
         setLoading(false);
       }
@@ -47,7 +66,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
     }
   }, [isOpen]);
 
-  const handleCategoryClick = (category: ApiCategory, subcategory?: ApiCategory) => {
+  const handleCategoryClick = (
+    category: ApiCategory,
+    subcategory?: ApiCategory,
+  ) => {
     if (onCategorySelect) {
       onCategorySelect(category.id, subcategory?.id);
     } else {
@@ -64,8 +86,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-1 text-gray-700 hover:text-green-600 cursor-pointer font-medium transition-colors"
       >
-        <span>{t('nav.categories')}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <span>{t("nav.categories")}</span>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
@@ -78,10 +102,10 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
             ) : (
               <>
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate("/")}
                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
                 >
-                  {t('nav.allCategories')}
+                  {t("nav.allCategories")}
                 </button>
 
                 {categories.map((category) => (
@@ -89,7 +113,9 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
                     <button
                       onClick={() => {
                         if (category.children && category.children.length > 0) {
-                          setActiveCategory(activeCategory === category.id ? null : category.id);
+                          setActiveCategory(
+                            activeCategory === category.id ? null : category.id,
+                          );
                         } else {
                           handleCategoryClick(category);
                         }
@@ -98,33 +124,41 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ onCategorySelect })
                     >
                       <span className="flex items-center space-x-2">
                         {category.icon && <span>{category.icon}</span>}
-                        <span>{category.name}</span>
+                        <span>{getLocalizedText(category.name, language)}</span>
                       </span>
                       {category.children && category.children.length > 0 && (
-                        <ChevronRight className={`w-4 h-4 transition-transform ${activeCategory === category.id ? 'rotate-90' : ''}`} />
+                        <ChevronRight
+                          className={`w-4 h-4 transition-transform ${activeCategory === category.id ? "rotate-90" : ""}`}
+                        />
                       )}
                     </button>
 
-                    {category.children && category.children.length > 0 && activeCategory === category.id && (
-                      <div className="ml-4 mt-1 space-y-1 animate-fade-in">
-                        <button
-                          onClick={() => handleCategoryClick(category)}
-                          className="w-full text-left px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded-md"
-                        >
-                          {t('filters.allCategories')}
-                        </button>
-                        {category.children.map((subcategory) => (
+                    {category.children &&
+                      category.children.length > 0 &&
+                      activeCategory === category.id && (
+                        <div className="ml-4 mt-1 space-y-1 animate-fade-in">
                           <button
-                            key={subcategory.id}
-                            onClick={() => handleCategoryClick(category, subcategory)}
+                            onClick={() => handleCategoryClick(category)}
                             className="w-full text-left px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded-md"
                           >
-                            {subcategory.icon && <span className="mr-1">{subcategory.icon}</span>}
-                            {subcategory.name}
+                            {t("filters.allCategories")}
                           </button>
-                        ))}
-                      </div>
-                    )}
+                          {category.children.map((subcategory) => (
+                            <button
+                              key={subcategory.id}
+                              onClick={() =>
+                                handleCategoryClick(category, subcategory)
+                              }
+                              className="w-full text-left px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded-md"
+                            >
+                              {subcategory.icon && (
+                                <span className="mr-1">{subcategory.icon}</span>
+                              )}
+                              {getLocalizedText(subcategory.name, language)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 ))}
               </>

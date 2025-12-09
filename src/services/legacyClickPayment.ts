@@ -68,7 +68,7 @@ class ClickPaymentService {
     }
   }
 
-  async getPaymentStatus(orderId: string): Promise<'waiting' | 'confirmed' | 'rejected'> {
+  async getPaymentStatus(orderId: string): Promise<'waiting' | 'confirmed' | 'rejected' | 'error'> {
     try {
       const response = await axios.get<ClickPaymentStatus[]>(
         `${CLICK_API_BASE}/click_order/${orderId}/`,
@@ -101,7 +101,7 @@ class ClickPaymentService {
       }
     } catch (error) {
       console.error('Failed to get Click payment status:', error);
-      return 'waiting';
+      return 'error'; // Signal error to UI - don't silently return 'waiting'
     }
   }
 

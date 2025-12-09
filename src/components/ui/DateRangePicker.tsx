@@ -35,7 +35,7 @@ export function DateRangePicker({
   placeholder,
   label,
   className,
-  minDate = new Date(),
+  minDate: _minDate = new Date(),
   numberOfMonths = 2,
 }: DateRangePickerProps) {
   const { language, translate } = useLanguage();

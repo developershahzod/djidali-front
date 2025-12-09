@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format } from "date-fns";
 
 /**
  * Combines class names with Tailwind merge support
@@ -11,8 +12,12 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatCurrency(
   amount: number,
-  currency: string = "USD",
+  currency: string = "UZS",
 ): string {
+  // For UZS, use custom formatting with space separator
+  if (currency === "UZS") {
+    return `${Number(amount).toLocaleString("ru-RU")} UZS`;
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
@@ -22,10 +27,17 @@ export function formatCurrency(
 }
 
 export function formatDate(
-  date: string | Date,
+  date: string | Date | null | undefined,
   formatStr: string = "MMM d, yyyy",
 ): string {
-  // return format(new Date(date), formatStr);
+  if (!date) return "—";
+  try {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) return "—";
+    return format(parsedDate, formatStr);
+  } catch {
+    return "—";
+  }
 }
 
 export function truncate(str: string, length: number): string {
