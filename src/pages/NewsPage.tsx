@@ -6,7 +6,7 @@ import ScrollToTopButton from "../components/ScrollToTopButton";
 
 // Import images with local paths
 const heroImage = "/about-hero.webp";
-const largeCardBg2 = "/fcd4ea8bf176e4851a46f14de3020f62faed656d.jpg";
+const largeCardBg2 = "/fcd4ea8bf176e4851a46f14de3020f62faed656d.webp";
 
 // News data with multilingual support
 export const newsDataRaw = [
@@ -24,7 +24,7 @@ export const newsDataRaw = [
       en: "665 drought-resistant trees planted and seeds sown to strengthen the ecosystem",
       de: "665 trockenresistente Bäume gepflanzt und Samen gesät zur Stärkung des Ökosystems",
     },
-    image: "1d6fc91ee2e4eb2215b103735e2a6d41aa28cac8.png",
+    image: "1d6fc91ee2e4eb2215b103735e2a6d41aa28cac8.webp",
     category: {
       ru: "Экотуризм",
       uz: "Ekoturizm",
@@ -59,7 +59,7 @@ export const newsDataRaw = [
       en: "Specialists noted an increase in the number of birds and small animals",
       de: "Spezialisten stellten eine Zunahme der Vogel- und Kleintierzahlen fest",
     },
-    image: "b1b2b7d2c6b5a3943579cce117ca7fc48080d326 (1).jpg",
+    image: "b1b2b7d2c6b5a3943579cce117ca7fc48080d326 (1).webp",
     category: {
       ru: "Экотуризм",
       uz: "Ekoturizm",
@@ -94,7 +94,7 @@ export const newsDataRaw = [
       en: "Hiking routes updated and safe recreation areas equipped",
       de: "Wanderwege aktualisiert und sichere Erholungszonen ausgestattet",
     },
-    image: "a4e0ae5b9e8c8fa1e41fe28148d36e09e517dbda.jpg",
+    image: "a4e0ae5b9e8c8fa1e41fe28148d36e09e517dbda.webp",
     category: {
       ru: "Туризм",
       uz: "Turizm",
@@ -129,7 +129,7 @@ export const newsDataRaw = [
       en: "Water body banks reinforced and resilient natural species planted",
       de: "Uferbereiche von Gewässern verstärkt und widerstandsfähige natürliche Arten gepflanzt",
     },
-    image: "dec86947ffbad2b6e43613a1b55097df4e652225.jpg",
+    image: "dec86947ffbad2b6e43613a1b55097df4e652225.webp",
     category: {
       ru: "Экотуризм",
       uz: "Ekoturizm",
@@ -164,7 +164,7 @@ export const newsDataRaw = [
       en: "New structures installed to preserve rare bird species",
       de: "Neue Strukturen zur Erhaltung seltener Vogelarten installiert",
     },
-    image: "c306bdf680d1677e4c01bf1bbcc8d8cf985b20ca (1).jpg",
+    image: "c306bdf680d1677e4c01bf1bbcc8d8cf985b20ca (1).webp",
     category: {
       ru: "Экотуризм",
       uz: "Ekoturizm",
@@ -199,7 +199,7 @@ export const newsDataRaw = [
       en: "Additionally, 6 kg of seeds from three tree species sown, including black walnut",
       de: "Zusätzlich 6 kg Samen von drei Baumarten gesät, darunter Schwarznuss",
     },
-    image: "b51fa79df5f369fbf30a4b695611c726793f4337.jpg",
+    image: "b51fa79df5f369fbf30a4b695611c726793f4337.webp",
     category: {
       ru: "Экотуризм",
       uz: "Ekoturizm",

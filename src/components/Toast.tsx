@@ -48,7 +48,7 @@ export const Toast: React.FC<ToastProps> = ({
 }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [progress, setProgress] = useState(100);
-  const style = toastStyles[type];
+  const style = toastStyles[type] || toastStyles.info;
 
   useEffect(() => {
     const startTime = Date.now();

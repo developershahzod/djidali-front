@@ -4,10 +4,10 @@ import { svgPaths } from "../utils/svgPaths";
 import { useLanguage } from "../contexts/LanguageContext";
 
 // Import images
-const topImage = "/94eadad3f522e8bdfb19c56bb585ddeaf0e637a3.png";
-const bottomLeftImage = "/2b6a963dd74a6d1123449922b8611661d321728f.jpg";
-const bottomRightImage = "/8d906978fc716fe472c5b52bc4524b8e62b9bf38.png";
-const similarNewsImage = "/fcd4ea8bf176e4851a46f14de3020f62faed656d (1).jpg";
+const topImage = "/94eadad3f522e8bdfb19c56bb585ddeaf0e637a3.webp";
+const bottomLeftImage = "/2b6a963dd74a6d1123449922b8611661d321728f.webp";
+const bottomRightImage = "/8d906978fc716fe472c5b52bc4524b8e62b9bf38.webp";
+const similarNewsImage = "/fcd4ea8bf176e4851a46f14de3020f62faed656d (1).webp";
 
 // Navigation Components (reused from NewsPage)
 function Group() {

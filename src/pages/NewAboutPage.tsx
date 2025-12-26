@@ -143,67 +143,62 @@ const NewAboutPage: React.FC = () => {
     {
       name: t("aboutPage.team.member1.name"),
       role: t("aboutPage.team.member1.role"),
-      image: "/1.jpg",
+      image: "/1.webp",
     },
     {
       name: t("aboutPage.team.member2.name"),
       role: t("aboutPage.team.member2.role"),
-      image: "/2.jpg",
+      image: "/2.webp",
     },
     {
       name: t("aboutPage.team.member3.name"),
       role: t("aboutPage.team.member3.role"),
-      image: "/3.jpg",
+      image: "/3.webp",
     },
     {
       name: t("aboutPage.team.member4.name"),
       role: t("aboutPage.team.member4.role"),
-      image: "/4.jpg",
+      image: "/4.webp",
     },
     {
       name: t("aboutPage.team.member5.name"),
       role: t("aboutPage.team.member5.role"),
-      image: "/5.jpg",
+      image: "/5.webp",
     },
     {
       name: t("aboutPage.team.member6.name"),
       role: t("aboutPage.team.member6.role"),
-      image: "/6.jpg",
+      image: "/6.webp",
     },
     {
       name: t("aboutPage.team.member7.name"),
       role: t("aboutPage.team.member7.role"),
-      image: "/7.jpg",
+      image: "/7.webp",
     },
     {
       name: t("aboutPage.team.member8.name"),
       role: t("aboutPage.team.member8.role"),
-      image: "/8.jpg",
+      image: "/8.webp",
     },
     {
       name: t("aboutPage.team.member9.name"),
       role: t("aboutPage.team.member9.role"),
-      image: "/9.jpg",
+      image: "/9.webp",
     },
     {
       name: t("aboutPage.team.member10.name"),
       role: t("aboutPage.team.member10.role"),
-      image: "/10.jpg",
+      image: "/10.webp",
     },
     {
       name: t("aboutPage.team.member11.name"),
       role: t("aboutPage.team.member11.role"),
-      image: "/11.jpg",
+      image: "/11.webp",
     },
     {
       name: t("aboutPage.team.member12.name"),
       role: t("aboutPage.team.member12.role"),
-      image: "/12.jpg",
-    },
-    {
-      name: t("aboutPage.team.member13.name"),
-      role: t("aboutPage.team.member13.role"),
-      image: "/13.jpg",
+      image: "/12.webp",
     },
   ];
 
@@ -220,7 +215,7 @@ const NewAboutPage: React.FC = () => {
           <img
             alt=""
             className="w-full h-full object-cover"
-            src="/9f3c2fb5c6869a8e4518c822f8f17c270cf7775c.jpg"
+            src="/9f3c2fb5c6869a8e4518c822f8f17c270cf7775c.webp"
           />
           <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" />
         </div>
@@ -378,7 +373,7 @@ const NewAboutPage: React.FC = () => {
             <img
               alt=""
               className="w-full h-full object-cover"
-              src="/277314ef62dc41f8ef3db3163f88bc59e7fd0665.jpg"
+              src="/277314ef62dc41f8ef3db3163f88bc59e7fd0665.webp"
             />
           </div>
         </div>
@@ -401,7 +396,7 @@ const NewAboutPage: React.FC = () => {
             <img
               alt=""
               className="w-full h-full object-cover"
-              src="/dc3d98eef0e770b0733e6c1cac8c4f9c3f97c42e.png"
+              src="/dc3d98eef0e770b0733e6c1cac8c4f9c3f97c42e.webp"
             />
             <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] group-hover:bg-[rgba(0,0,0,0.3)] transition-colors duration-300" />
 
@@ -429,7 +424,7 @@ const NewAboutPage: React.FC = () => {
             <img
               alt=""
               className="w-full h-full object-cover"
-              src="/5387d8305f0288a181dcfb04206fd011f63fa6e1.jpg"
+              src="/5387d8305f0288a181dcfb04206fd011f63fa6e1.webp"
             />
           </div>
 

@@ -102,10 +102,10 @@ const Footer: React.FC = () => {
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 {translate({
-                  ru: "Интересное",
-                  uz: "Qiziqarli",
-                  en: "Interesting",
-                  de: "Interessant",
+                  ru: "Новости",
+                  uz: "Yangiliklar",
+                  en: "News",
+                  de: "Nachrichten",
                 })}
               </button>
               <button

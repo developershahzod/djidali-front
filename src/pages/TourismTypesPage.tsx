@@ -259,12 +259,12 @@ const TourismTypesPage: React.FC = () => {
           <img 
             alt="" 
             className="absolute inset-0 w-full h-full object-cover" 
-            src="/why-us-hero.png" 
+            src="/why-us-hero.webp" 
           />
           <img 
             alt="" 
             className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50" 
-            src="/e7c111a130051f0f0f7c2bd0a2b6ae7f7c164f8d.png" 
+            src="/e7c111a130051f0f0f7c2bd0a2b6ae7f7c164f8d.webp" 
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/20" />
         </div>
@@ -339,21 +339,21 @@ const TourismTypesPage: React.FC = () => {
               <img 
                 alt="" 
                 className="w-full h-full object-cover" 
-                src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.png" 
+                src="/ac5bf1e47e292f5b7f1042422f23e28abae08055.webp" 
               />
             </div>
             <div className="h-[clamp(350px,40.69vw,586px)]">
               <img 
                 alt="" 
                 className="w-full h-full object-cover" 
-                src="/94eadad3f522e8bdfb19c56bb585ddeaf0e637a3.png" 
+                src="/94eadad3f522e8bdfb19c56bb585ddeaf0e637a3.webp" 
               />
             </div>
             <div className="h-[clamp(350px,40.69vw,586px)]">
               <img 
                 alt="" 
                 className="w-full h-full object-cover" 
-                src="/why-us-hero.png" 
+                src="/why-us-hero.webp" 
               />
             </div>
           </div>
@@ -381,14 +381,14 @@ const TourismTypesPage: React.FC = () => {
             <img 
               alt="" 
               className="w-full h-full object-cover" 
-              src="/why-us-gallery-bottom-right.png" 
+              src="/why-us-gallery-bottom-right.webp" 
             />
           </div>
           <div className="h-[clamp(350px,40.69vw,586px)]">
             <img 
               alt="" 
               className="w-full h-full object-cover" 
-              src="/8d906978fc716fe472c5b52bc4524b8e62b9bf38.png" 
+              src="/8d906978fc716fe472c5b52bc4524b8e62b9bf38.webp" 
             />
           </div>
         </div>

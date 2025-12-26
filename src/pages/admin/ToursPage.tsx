@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { djidaliApi } from "../../services/djidaliApi";
+import { useConfirm } from "../../contexts/ConfirmContext";
+import { useToast } from "../../contexts/ToastContext";
 import {
   formatCurrency,
   formatDate,
@@ -57,8 +59,11 @@ const sortOptions = [
 
 const ToursPage = () => {
   const { language } = useLanguage();
+  const { confirm } = useConfirm();
+  const { showToast } = useToast();
   const [tours, setTours] = useState<ApiTour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
@@ -108,11 +113,45 @@ const ToursPage = () => {
     setSelectedTours(newSelected);
   };
 
-  const handleDeleteSelected = () => {
-    // In a real app, you would make an API call to delete the selected tours
-    console.log("Deleting tours:", Array.from(selectedTours));
-    setTours(tours.filter((tour) => !selectedTours.has(tour.id)));
-    setSelectedTours(new Set());
+  const handleDeleteSelected = async () => {
+    const tourCount = selectedTours.size;
+    const confirmed = await confirm({
+      title: tourCount === 1 ? "Delete Tour" : `Delete ${tourCount} Tours`,
+      message:
+        tourCount === 1
+          ? "Are you sure you want to delete this tour? This action cannot be undone."
+          : `Are you sure you want to delete ${tourCount} tours? This action cannot be undone.`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      variant: "danger",
+    });
+
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      // Delete all selected tours
+      const deletePromises = Array.from(selectedTours).map((id) =>
+        djidaliApi.deleteTour(id),
+      );
+      await Promise.all(deletePromises);
+
+      // Remove deleted tours from local state
+      setTours(tours.filter((tour) => !selectedTours.has(tour.id)));
+      setSelectedTours(new Set());
+
+      showToast(
+        "success",
+        tourCount === 1
+          ? "Tour deleted successfully"
+          : `${tourCount} tours deleted successfully`,
+      );
+    } catch (error) {
+      console.error("Error deleting tours:", error);
+      showToast("error", "Failed to delete tours. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filteredAndSortedTours = React.useMemo(() => {
@@ -192,10 +231,30 @@ const ToursPage = () => {
             <button
               type="button"
               onClick={handleDeleteSelected}
-              className="inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              disabled={deleting}
+              className="inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete ({selectedTours.size})
+              {deleting ? (
+                <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deleting ? "Deleting..." : `Delete (${selectedTours.size})`}
             </button>
           )}
           <Link

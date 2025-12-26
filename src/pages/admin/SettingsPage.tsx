@@ -50,7 +50,7 @@ const initialHeroSettings: HeroSettings = {
   subtitleUz: "Qadimiy Ipak yo'li bo'ylab unutilmas sayohatlar",
   subtitleEn: "Unforgettable journeys along the ancient Silk Road",
   subtitleDe: "Unvergessliche Reisen entlang der alten Seidenstraße",
-  backgroundImage: "/hero-bg.jpg",
+  backgroundImage: "/hero-bg.webp",
   overlayOpacity: 40,
   buttonText: "Найти тур",
   buttonLink: "/tours",

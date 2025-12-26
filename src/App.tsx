@@ -20,6 +20,7 @@ import DashboardWishlist from "./pages/DashboardWishlist";
 import Footer from "./components/Footer";
 // ScrollToTopButton removed - not currently used
 import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
+import { useDocumentTitle } from "./hooks/useDocumentTitle";
 import WhyUsPage from "./pages/WhyUsPage";
 import NewsPage from "./pages/NewsPage";
 import { NewsDetailPage } from "./pages/NewsDetailPage";
@@ -37,6 +38,11 @@ import AdminSettingsPage from "./pages/admin/SettingsPage";
 import TourWizardPage from "./pages/admin/TourWizardPage";
 import AdminCategoriesPage from "./pages/admin/CategoriesPage";
 import AdminAnalyticsPage from "./pages/admin/AnalyticsPage";
+
+function DocumentTitleUpdater() {
+  useDocumentTitle();
+  return null;
+}
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -59,6 +65,7 @@ function App() {
       <ToastProvider>
         <ConfirmProvider>
           <LanguageProvider>
+            <DocumentTitleUpdater />
             <div className="min-h-screen bg-[#F5F5F0]">
               <ScrollToTopOnRouteChange />
               {!isAdminPage &&

@@ -110,7 +110,7 @@ const TourListHero: React.FC<TourListHeroProps> = ({
       {/* Original TourListHero background */}
       <div className="absolute inset-0">
         <img
-          src="/4c9440e694c34a2077b88db951060112fbd0015d.jpg"
+          src="/4c9440e694c34a2077b88db951060112fbd0015d.webp"
           alt="Tour background"
           className="w-full h-full object-cover"
         />

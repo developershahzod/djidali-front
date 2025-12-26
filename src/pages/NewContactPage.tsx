@@ -57,7 +57,7 @@ const NewContactPage: React.FC = () => {
               className="text-[clamp(20px,2.43vw,35px)] font-medium leading-[100%] tracking-[-0.7px] text-[#333333]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
-              +998 90 123 45 67
+              +998(94)-470-88-44
             </p>
           </div>
         </div>
@@ -236,7 +236,7 @@ const NewContactPage: React.FC = () => {
         {/* Image Container - Right - 735x1256px */}
         <div className="relative w-full lg:w-[50%] h-[clamp(400px,87.22vw,1256px)] lg:h-[1256px] hidden lg:block">
           <img
-            src="/fcd4ea8bf176e4851a46f14de3020f62faed656d.jpg"
+            src="/fcd4ea8bf176e4851a46f14de3020f62faed656d.webp"
             alt={t("contactPage.image.title")}
             className="absolute inset-0 w-full h-full object-cover"
           />

@@ -2,8 +2,8 @@ import React from 'react';
 import { svgPaths } from '../utils/svgPaths';
 
 // Image imports (will be used in components)
-const imgImage = '/images/complete-order.jpg';
-const similarNewsImage = '/images/similar-news-bg.jpg';
+const imgImage = '/images/complete-order.webp';
+const similarNewsImage = '/images/similar-news-bg.webp';
 
 // Reused components from NewsPage
 function Group() {
