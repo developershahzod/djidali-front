@@ -34,9 +34,10 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden">
+      {/* Full-width background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 w-full bg-cover bg-center"
         style={{
           backgroundImage: `url('/banner.webp')`,
         }}
@@ -44,10 +45,10 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
       </div>
 
-      {/* Title at the top */}
-      <div className="absolute top-[clamp(80px,11.11vw,160px)] left-0 right-0 z-10">
-        <div className="max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)]">
-          <h1 className="mt-[170px] md:mt-100 text-[clamp(32px,5.5vw,88px)] leading-[1.12] font-light text-white tracking-tight">
+      {/* Title - responsive positioning */}
+      <div className="absolute top-[120px] sm:top-[140px] md:top-[160px] lg:top-[180px] left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
+        <div className="max-w-[1400px] mx-auto">
+          <h1 className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[1.15] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
             {translate({
               ru: "ДАЛЬВЕРЗИН - лесоохотничье хозяйство",
               uz: "DALVARZIN - o'rmon va ov xo'jaligi",
@@ -58,12 +59,13 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative z-10 max-w-[min(1400px,90vw)] mx-auto px-[clamp(20px,4vw,64px)] h-full flex flex-col justify-end pb-[clamp(30px,4.17vw,60px)] pt-30">
-        <div className="max-w-[min(1400px,100%)] w-full">
-          <div className="rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[clamp(12px,1.11vw,16px)]">
+      {/* Form container - full width on mobile/tablet */}
+      <div className="relative z-10 w-full h-full flex flex-col justify-end pb-6 sm:pb-8 md:pb-10 lg:pb-[60px] px-4 sm:px-6 md:px-8 lg:px-16">
+        <div className="max-w-[1400px] mx-auto w-full">
+          <div className="rounded-[16px] sm:rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {/* Куда (Destination) */}
-            <div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
-              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">
+            <div className="bg-white rounded-xl p-3 sm:p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
                 {translate({
                   ru: "Куда",
                   uz: "Qayerga",
@@ -74,7 +76,7 @@ const HeroSection: React.FC = () => {
               <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
               >
                 <option value="">
                   {translate({
@@ -128,8 +130,8 @@ const HeroSection: React.FC = () => {
             </div>
 
             {/* Тип тура (Tour Type) */}
-            <div className="bg-white rounded-xl p-[clamp(10px,0.83vw,12px)]">
-              <label className="block text-[clamp(10px,0.76vw,11px)] text-gray-500 mb-0 ml-1 font-normal uppercase tracking-wide">
+            <div className="bg-white rounded-xl p-3 sm:p-[clamp(10px,0.83vw,12px)]">
+              <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
                 {translate({
                   ru: "Тип тура",
                   uz: "Tur turi",
@@ -140,7 +142,7 @@ const HeroSection: React.FC = () => {
               <select
                 value={tourType}
                 onChange={(e) => setTourType(e.target.value)}
-                className="w-full bg-white text-gray-900 text-[clamp(13px,1.04vw,15px)] font-medium outline-none focus:border-[#8B7355] transition-colors"
+                className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
               >
                 <option value="individual">
                   {translate({
@@ -179,7 +181,7 @@ const HeroSection: React.FC = () => {
                 en: "Date",
                 de: "Datum",
               })}
-              className="p-[clamp(10px,0.83vw,12px)]"
+              className="p-3 sm:p-[clamp(10px,0.83vw,12px)]"
             />
 
             {/* Участники (Guests) - New GuestSelector */}
@@ -194,14 +196,14 @@ const HeroSection: React.FC = () => {
                 en: "Guests",
                 de: "Gäste",
               })}
-              className="p-[clamp(10px,0.83vw,12px)]"
+              className="p-3 sm:p-[clamp(10px,0.83vw,12px)]"
               maxGuests={9}
             />
 
-            {/* Search Button */}
+            {/* Search Button - spans full width on mobile, single col on tablet */}
             <button
               onClick={handleSearch}
-              className="bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-[clamp(20px,2.22vw,32px)] py-[clamp(12px,1.11vw,16px)] rounded-xl text-[clamp(13px,1.04vw,15px)] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center"
+              className="sm:col-span-2 md:col-span-1 lg:col-span-1 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-6 py-4 sm:py-3 rounded-xl text-[15px] sm:text-[14px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center"
             >
               {translate({
                 ru: "Найти туры",
