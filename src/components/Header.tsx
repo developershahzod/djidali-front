@@ -142,7 +142,7 @@ const Header: React.FC = () => {
 
           <div onClick={handleLogoClick} className="cursor-pointer">
             <img
-              src="/loho_white_png.png"
+              src="/loho_white_png.webp"
               alt="DJIDALI"
               className="h-[36px] w-auto md:h-[54px] md:w-auto cursor-pointer hover:opacity-90 transition-opacity"
             />
@@ -353,7 +353,7 @@ const Header: React.FC = () => {
 
               {/* Logo */}
               <img
-                src="/loho_white_png.png"
+                src="/loho_white_png.webp"
                 alt="DJIDALI"
                 className="h-[36px] w-auto mx-[5px]"
               />

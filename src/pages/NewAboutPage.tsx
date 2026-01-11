@@ -8,6 +8,7 @@ const NewAboutPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllTeam, setShowAllTeam] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [stats] = useState({
     yearsOfExperience: 5,
     tourPackages: 100,
@@ -215,7 +216,7 @@ const NewAboutPage: React.FC = () => {
           <img
             alt=""
             className="w-full h-full object-cover"
-            src="/9f3c2fb5c6869a8e4518c822f8f17c270cf7775c.webp"
+            src="/about-banner.webp"
           />
           <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" />
         </div>
@@ -373,7 +374,7 @@ const NewAboutPage: React.FC = () => {
             <img
               alt=""
               className="w-full h-full object-cover"
-              src="/277314ef62dc41f8ef3db3163f88bc59e7fd0665.webp"
+              src="/about-info-1.webp"
             />
           </div>
         </div>
@@ -384,34 +385,43 @@ const NewAboutPage: React.FC = () => {
       {/* Video Section */}
       <section className="bg-[#f4f2ed] py-[clamp(30px,3.47vw,50px)]">
         <div className="max-w-[min(1440px,90vw)] mx-auto px-[clamp(30px,3.47vw,50px)]">
-          <div
-            className="relative aspect-[2.06/1] rounded-[clamp(12px,1.39vw,20px)] overflow-hidden cursor-pointer group"
-            onClick={() =>
-              window.open(
-                "https://www.youtube.com/watch?v=YOUR_VIDEO_ID",
-                "_blank",
-              )
-            }
-          >
-            <img
-              alt=""
-              className="w-full h-full object-cover"
-              src="/dc3d98eef0e770b0733e6c1cac8c4f9c3f97c42e.webp"
-            />
-            <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] group-hover:bg-[rgba(0,0,0,0.3)] transition-colors duration-300" />
+          <div className="relative aspect-[2.06/1] rounded-[clamp(12px,1.39vw,20px)] overflow-hidden">
+            {isVideoPlaying ? (
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/ihmbZn81aX0?autoplay=1"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="absolute inset-0"
+              />
+            ) : (
+              <div
+                className="relative w-full h-full cursor-pointer group"
+                onClick={() => setIsVideoPlaying(true)}
+              >
+                <img
+                  alt=""
+                  className="w-full h-full object-cover"
+                  src="/dc3d98eef0e770b0733e6c1cac8c4f9c3f97c42e.webp"
+                />
+                <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] group-hover:bg-[rgba(0,0,0,0.3)] transition-colors duration-300" />
 
-            {/* Play Icon */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[clamp(60px,6.94vw,100px)] h-[clamp(60px,6.94vw,100px)] bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:bg-opacity-100 group-hover:scale-110 transition-all duration-300 shadow-2xl">
-                <svg
-                  className="w-[clamp(24px,2.78vw,40px)] h-[clamp(24px,2.78vw,40px)] ml-1"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M8 5v14l11-7z" fill="#333333" />
-                </svg>
+                {/* Play Icon */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[clamp(60px,6.94vw,100px)] h-[clamp(60px,6.94vw,100px)] bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:bg-opacity-100 group-hover:scale-110 transition-all duration-300 shadow-2xl">
+                    <svg
+                      className="w-[clamp(24px,2.78vw,40px)] h-[clamp(24px,2.78vw,40px)] ml-1"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8 5v14l11-7z" fill="#333333" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -424,7 +434,7 @@ const NewAboutPage: React.FC = () => {
             <img
               alt=""
               className="w-full h-full object-cover"
-              src="/5387d8305f0288a181dcfb04206fd011f63fa6e1.webp"
+              src="/about-info-2.webp"
             />
           </div>
 
@@ -741,7 +751,7 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/gallery-dalverzin.webp"
+                src="/about-gallery-1.webp"
               />
             </div>
           </div>
@@ -752,7 +762,7 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/gallery-kyzylkum.webp"
+                src="/about-gallery-2.webp"
               />
             </div>
           </div>
@@ -815,7 +825,7 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/gallery-charvak.webp"
+                src="/about-gallery-3.webp"
               />
             </div>
           </div>

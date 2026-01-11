@@ -175,6 +175,14 @@ const TourListHero: React.FC<TourListHeroProps> = ({
                     de: "Chiwa",
                   })}
                 </option>
+                <option value="dalverzin">
+                  {translate({
+                    ru: "Дальверзин",
+                    uz: "Dalverzin",
+                    en: "Dalverzin",
+                    de: "Dalverzin",
+                  })}
+                </option>
               </select>
             </div>
 

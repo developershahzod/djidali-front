@@ -513,7 +513,7 @@ const BookingStepPage: React.FC = () => {
 
           <Link to="/" className="flex items-center">
             <img
-              src="/loho_white_png.png"
+              src="/loho_white_png.webp"
               alt="DJIDALI"
               className="h-10 invert opacity-80 hover:opacity-100 transition-opacity"
             />

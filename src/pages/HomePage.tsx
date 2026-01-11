@@ -6,7 +6,7 @@ import { getTourPrimaryImage } from "../utils/imageUtils";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
-const aboutImages = ["/about-background.webp", "/tree-planting.webp"];
+const aboutImages = ["/about-background.webp", "/news-1.webp"];
 
 const aboutContent = [
   {
@@ -674,7 +674,7 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/why-us#nature")}
             className="absolute left-0 top-[clamp(280px,31.25vw,450px)] w-[50%] h-[clamp(280px,31.25vw,450px)] overflow-hidden cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl"
             style={{
-              backgroundImage: "url(/why-us-nature.webp)",
+              backgroundImage: "url(/why-us-nature-new.webp)",
               backgroundSize: "cover",
               backgroundPosition: "center top",
             }}
@@ -701,7 +701,7 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/why-us#comfort")}
             className="absolute left-0 top-[clamp(560px,62.5vw,900px)] w-[48.96%] h-[clamp(440px,48.61vw,700px)] overflow-hidden cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl"
             style={{
-              backgroundImage: "url(/why-us-comfort.webp)",
+              backgroundImage: "url(/why-us-comfort-new.webp)",
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -728,7 +728,7 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/why-us#team")}
             className="absolute right-0 top-0 w-[51.04%] h-[clamp(560px,62.5vw,900px)] overflow-hidden cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl"
             style={{
-              backgroundImage: "url(/why-us-team.webp)",
+              backgroundImage: "url(/why-us-team-new.webp)",
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -755,7 +755,7 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/why-us#routes")}
             className="absolute right-0 top-[clamp(560px,62.5vw,900px)] w-[51.04%] h-[clamp(440px,48.61vw,700px)] overflow-hidden cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl"
             style={{
-              backgroundImage: "url(/why-us-routes.webp)",
+              backgroundImage: "url(/why-us-routes-new.webp)",
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -841,7 +841,7 @@ const HomePage: React.FC = () => {
             }}
           >
             <img
-              src="/why-us-nature.webp"
+              src="/why-us-nature-new.webp"
               alt={t("home.experience.nature")}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -867,7 +867,7 @@ const HomePage: React.FC = () => {
             }}
           >
             <img
-              src="/why-us-team.webp"
+              src="/why-us-team-new.webp"
               alt={t("home.experience.team")}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -893,7 +893,7 @@ const HomePage: React.FC = () => {
             }}
           >
             <img
-              src="/why-us-comfort.webp"
+              src="/why-us-comfort-new.webp"
               alt={t("home.experience.comfort")}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -919,7 +919,7 @@ const HomePage: React.FC = () => {
             }}
           >
             <img
-              src="/why-us-routes.webp"
+              src="/why-us-routes-new.webp"
               alt={t("home.experience.routes")}
               className="absolute inset-0 w-full h-full object-cover"
             />

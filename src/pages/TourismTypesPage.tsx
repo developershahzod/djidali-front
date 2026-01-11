@@ -47,13 +47,13 @@ const TourismTypesPage: React.FC = () => {
 
   const getTourismContent = () => ({
     ecotourism: {
-      bannerImage: "/ecotourism-banner.jpg",
+      bannerImage: "/ecotourism-banner.webp",
       images: {
-        top: "/ecotourism-1.jpg",
-        topLeft: "/ecotourism-2.jpg",
-        topRight: "/ecotourism-3.jpg",
-        bottomLeft: "/ecotourism-4.jpg",
-        bottomRight: "/ecotourism-5.jpg",
+        top: "/ecotourism-1.webp",
+        topLeft: "/ecotourism-2.webp",
+        topRight: "/ecotourism-3.webp",
+        bottomLeft: "/ecotourism-4.webp",
+        bottomRight: "/ecotourism-5.webp",
       },
       title: translate({
         ru: "Экотуризм",
@@ -105,13 +105,13 @@ const TourismTypesPage: React.FC = () => {
       }),
     },
     agrotourism: {
-      bannerImage: "/agrotourism-banner.jpg",
+      bannerImage: "/agrotourism-banner.webp",
       images: {
-        top: "/agrotourism-1.jpg",
-        topLeft: "/agrotourism-2.jpg",
-        topRight: "/agrotourism-3.jpg",
-        bottomLeft: "/agrotourism-4.jpg",
-        bottomRight: "/agrotourism-5.jpg",
+        top: "/agrotourism-1.webp",
+        topLeft: "/agrotourism-2.webp",
+        topRight: "/agrotourism-3.webp",
+        bottomLeft: "/agrotourism-4.webp",
+        bottomRight: "/agrotourism-5.webp",
       },
       title: translate({
         ru: "Агротуризм",
@@ -163,13 +163,13 @@ const TourismTypesPage: React.FC = () => {
       }),
     },
     teambuilding: {
-      bannerImage: "/teambuilding-banner.jpg",
+      bannerImage: "/teambuilding-banner.webp",
       images: {
-        top: "/teambuilding-1.jpg",
-        topLeft: "/teambuilding-2.jpg",
-        topRight: "/teambuilding-3.jpg",
-        bottomLeft: "/teambuilding-4.jpg",
-        bottomRight: "/teambuilding-5.jpg",
+        top: "/teambuilding-1.webp",
+        topLeft: "/teambuilding-2.webp",
+        topRight: "/teambuilding-3.webp",
+        bottomLeft: "/teambuilding-4.webp",
+        bottomRight: "/teambuilding-5.webp",
       },
       title: translate({
         ru: "Тимбилдинг",
@@ -221,13 +221,13 @@ const TourismTypesPage: React.FC = () => {
       }),
     },
     "sport-shooting": {
-      bannerImage: "/sport-shooting-banner.jpg",
+      bannerImage: "/sport-shooting-banner.webp",
       images: {
-        top: "/sport-shooting-1.jpg",
-        topLeft: "/sport-shooting-2.jpg",
-        topRight: "/sport-shooting-3.jpg",
-        bottomLeft: "/sport-shooting-4.jpg",
-        bottomRight: "/sport-shooting-5.jpg",
+        top: "/sport-shooting-1.webp",
+        topLeft: "/sport-shooting-2.webp",
+        topRight: "/sport-shooting-3.webp",
+        bottomLeft: "/sport-shooting-4.webp",
+        bottomRight: "/sport-shooting-5.webp",
       },
       title: translate({
         ru: "Спортивная стрельба",

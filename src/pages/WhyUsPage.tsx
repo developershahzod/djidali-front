@@ -129,7 +129,7 @@ const WhyUsPage: React.FC = () => {
             <section className="mb-[60px]">
               <div className="relative h-[500px] w-full rounded-t-[20px] overflow-hidden">
                 <img
-                  src="/why-us-gallery-top.webp"
+                  src="/whyus-routes.webp"
                   alt={t("whyUs.gallery.altForestPath")}
                   className="absolute w-full h-full object-cover"
                 />
@@ -137,14 +137,14 @@ const WhyUsPage: React.FC = () => {
               <div className="flex">
                 <div className="relative w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
                   <img
-                    src="/why-us-gallery-bottom-left.webp"
+                    src="/whyus-nature.webp"
                     alt={t("whyUs.gallery.altRiverValley")}
                     className="absolute w-full h-full object-cover"
                   />
                 </div>
                 <div className="relative w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
                   <img
-                    src="/why-us-gallery-bottom-right.webp"
+                    src="/whyus-comfort.webp"
                     alt={t("whyUs.gallery.altMountain")}
                     className="absolute w-full h-full object-cover"
                   />
@@ -205,21 +205,12 @@ const WhyUsPage: React.FC = () => {
             </section>
 
             <section className="mb-[60px]">
-              <div className="flex gap-0">
-                <div className="relative w-1/2 h-[586px] overflow-hidden rounded-l-[20px]">
-                  <img
-                    src="/why-us-gallery-bottom-left.webp"
-                    alt={t("whyUs.gallery.altRiverValley")}
-                    className="absolute w-full h-full object-cover"
-                  />
-                </div>
-                <div className="relative w-1/2 h-[586px] overflow-hidden rounded-r-[20px]">
-                  <img
-                    src="/why-us-gallery-bottom-right.webp"
-                    alt={t("whyUs.gallery.altMountain")}
-                    className="absolute w-full h-full object-cover"
-                  />
-                </div>
+              <div className="relative h-[500px] w-full rounded-[20px] overflow-hidden">
+                <img
+                  src="/whyus-nature.webp"
+                  alt={t("whyUs.gallery.altRiverValley")}
+                  className="absolute w-full h-full object-cover"
+                />
               </div>
             </section>
           </>
@@ -271,6 +262,16 @@ const WhyUsPage: React.FC = () => {
                   необходимости жертвовать привычным комфортом. Это идеальный
                   баланс между дикой средой и условиями, к которым вы привыкли.
                 </p>
+              </div>
+            </section>
+
+            <section className="mb-[60px]">
+              <div className="relative h-[500px] w-full rounded-[20px] overflow-hidden">
+                <img
+                  src="/whyus-comfort.webp"
+                  alt="Комфортное проживание"
+                  className="absolute w-full h-full object-cover"
+                />
               </div>
             </section>
           </>
@@ -327,11 +328,11 @@ const WhyUsPage: React.FC = () => {
             </section>
 
             <section className="mb-[60px]">
-              <div className="relative h-[400px] w-full rounded-[20px] overflow-hidden">
+              <div className="w-full rounded-[20px] overflow-hidden">
                 <img
-                  src="/why-us-team.webp"
+                  src="/whyus-team.webp"
                   alt="Команда специалистов DJIDALI"
-                  className="absolute w-full h-full object-cover object-center"
+                  className="w-full h-auto object-contain"
                 />
               </div>
             </section>
@@ -349,11 +350,12 @@ const WhyUsPage: React.FC = () => {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
-            src="/why-us-hero.webp"
+            src="/whyus-banner.webp"
             alt=""
             className="absolute w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/30" />
+          {/* Gradient overlay: darker at top and bottom for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
         </div>
 
         {/* Hero Content */}
@@ -366,15 +368,17 @@ const WhyUsPage: React.FC = () => {
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-2.7px",
+                  textShadow: "0 2px 20px rgba(0, 0, 0, 0.5)",
                 }}
               >
                 {t("whyUs.hero.title")}
               </h1>
               <p
-                className="text-[32px] font-normal leading-[40px] opacity-80 whitespace-pre-wrap text-white max-w-[1340px]"
+                className="text-[32px] font-normal leading-[40px] opacity-90 whitespace-pre-wrap text-white max-w-[1340px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.96px",
+                  textShadow: "0 2px 10px rgba(0, 0, 0, 0.4)",
                 }}
               >
                 {t("whyUs.hero.description")}
@@ -390,6 +394,7 @@ const WhyUsPage: React.FC = () => {
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-1px",
+                      textShadow: "0 2px 15px rgba(0, 0, 0, 0.5)",
                     }}
                   >
                     <span className="text-[80px] font-normal leading-[80px]">
@@ -405,6 +410,7 @@ const WhyUsPage: React.FC = () => {
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-0.4px",
+                      textShadow: "0 2px 10px rgba(0, 0, 0, 0.4)",
                     }}
                   >
                     {stat.label}
