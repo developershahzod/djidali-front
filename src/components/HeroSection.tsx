@@ -45,8 +45,8 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
       </div>
 
-      {/* Title - positioned at ~30% from top on mobile, higher on desktop */}
-      <div className="absolute top-[25%] sm:top-[22%] md:top-[20%] lg:top-[180px] left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
+      {/* Title - positioned at ~25% from top, consistent across devices */}
+      <div className="absolute top-[25%] sm:top-[25%] md:top-[25%] lg:top-[25%] left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-[1400px] mx-auto">
           <h1 className="text-[32px] sm:text-[38px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[1.1] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
             {translate({
