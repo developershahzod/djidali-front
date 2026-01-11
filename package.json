@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently --kill-others \"npx @react-grab/claude-code@latest\" \"vite\"",
+    "dev": "vite",
+    "react-grab": "npx @react-grab/claude-code@latest",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
