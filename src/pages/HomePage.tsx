@@ -6,7 +6,7 @@ import { getTourPrimaryImage } from "../utils/imageUtils";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
-const aboutImages = ["/about-background.webp", "/news-1.webp"];
+const aboutImages = ["/news-1.webp", "/news-2.webp"];
 
 const aboutContent = [
   {
