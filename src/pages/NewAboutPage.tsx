@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import RequestProgramModal from "../components/RequestProgramModal";
 
 const NewAboutPage: React.FC = () => {
   const { translate, t } = useLanguage();
@@ -9,8 +10,9 @@ const NewAboutPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAllTeam, setShowAllTeam] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [stats] = useState({
-    yearsOfExperience: 5,
+    yearsOfExperience: 6,
     tourPackages: 100,
     happyTravelers: 250,
     regularClients: 100,
@@ -58,16 +60,10 @@ const NewAboutPage: React.FC = () => {
       }),
       description: [
         translate({
-          ru: "Наши гиды и инструкторы — профессионалы своего дела, знающие каждый уголок местности.",
-          uz: "Bizning gidlarimiz va instruktorlarimiz - o'z ishining professionallar, joyning har bir burchagini biladigan.",
-          en: "Our guides and instructors are professionals who know every corner of the area.",
-          de: "Unsere Guides und Instruktoren sind Profis, die jeden Winkel der Gegend kennen.",
-        }),
-        translate({
-          ru: "Они не только обеспечат безопасность, но и расскажут захватывающие истории о природе, животных и традициях региона.",
-          uz: "Ular nafaqat xavfsizlikni ta'minlaydi, balki tabiat, hayvonlar va mintaqa an'analari haqida qiziqarli hikoyalarni aytib berishadi.",
-          en: "They will not only ensure safety but also share captivating stories about nature, animals, and regional traditions.",
-          de: "Sie sorgen nicht nur für Sicherheit, sondern erzählen auch faszinierende Geschichten über Natur, Tiere und regionale Traditionen.",
+          ru: "В Dalverzin вас сопровождает команда гидов и координаторов, для которых важны детали: тайминг, безопасность, комфорт и уважение к природе.",
+          uz: "Dalverzinda sizni gidlar va koordinatorlar jamoasi kuzatib boradi, ular uchun tafsilotlar muhim: vaqt, xavfsizlik, qulaylik va tabiatga hurmat.",
+          en: "At Dalverzin, you're accompanied by a team of guides and coordinators who care about the details: timing, safety, comfort, and respect for nature.",
+          de: "In Dalverzin begleitet Sie ein Team von Guides und Koordinatoren, denen Details wichtig sind: Timing, Sicherheit, Komfort und Respekt vor der Natur.",
         }),
       ],
       image: "/why-us-team.webp",
@@ -87,16 +83,10 @@ const NewAboutPage: React.FC = () => {
       }),
       description: [
         translate({
-          ru: "Мы создали все условия для вашего комфортного отдыха среди природы.",
-          uz: "Biz tabiatda qulay dam olishingiz uchun barcha sharoitlarni yaratdik.",
-          en: "We have created all conditions for your comfortable rest in nature.",
-          de: "Wir haben alle Bedingungen für Ihre komfortable Erholung in der Natur geschaffen.",
-        }),
-        translate({
-          ru: "Уютные домики, современные удобства и продуманная инфраструктура позволят вам насладиться природой без ущерба для комфорта.",
-          uz: "Shinam uylar, zamonaviy qulayliklar va puxta o'ylangan infratuzilma sizga qulaylik uchun zarar yetkazmasdan tabiatdan bahramand bo'lishga imkon beradi.",
-          en: "Cozy cabins, modern amenities, and well-designed infrastructure allow you to enjoy nature without sacrificing comfort.",
-          de: "Gemütliche Hütten, moderne Annehmlichkeiten und durchdachte Infrastruktur ermöglichen es Ihnen, die Natur zu genießen, ohne auf Komfort zu verzichten.",
+          ru: "Мы продумали индивидуальный комфорт на территории: зоны отдыха, питание по программе и понятный тайминг.",
+          uz: "Biz hududda individual qulaylikni o'ylab chiqdik: dam olish zonalari, dastur bo'yicha ovqatlanish va aniq vaqt jadvali.",
+          en: "We've designed individual comfort throughout the territory: relaxation zones, scheduled dining, and clear timing.",
+          de: "Wir haben individuellen Komfort auf dem Gelände durchdacht: Ruhezonen, Verpflegung nach Programm und klares Timing.",
         }),
       ],
       image: "/why-us-comfort.webp",
@@ -116,16 +106,16 @@ const NewAboutPage: React.FC = () => {
       }),
       description: [
         translate({
-          ru: "Исследуйте эксклюзивные тропы и маршруты, недоступные для массового туризма.",
-          uz: "Ommaviy turizm uchun mavjud bo'lmagan eksklyuziv yo'llar va marshrutlarni o'rganing.",
-          en: "Explore exclusive trails and routes unavailable to mass tourism.",
-          de: "Erkunden Sie exklusive Pfade und Routen, die dem Massentourismus nicht zugänglich sind.",
+          ru: "Мы составили природные маршруты разного темпа и сложности — от лёгких прогулок до более активных сценариев. Каждый маршрут подбираем под сезон, погоду и вашу группу.",
+          uz: "Biz turli sur'at va murakkablikdagi tabiiy marshrutlarni tuzdik — engil sayrlardan faolroq stsenariylargacha. Har bir marshrutni mavsumga, ob-havoga va guruhingizga moslashtiramiz.",
+          en: "We've designed nature trails of varying pace and difficulty — from easy walks to more active scenarios. Each route is tailored to the season, weather, and your group.",
+          de: "Wir haben Naturrouten unterschiedlichen Tempos und Schwierigkeitsgrads zusammengestellt — von leichten Spaziergängen bis zu aktiveren Szenarien. Jede Route wird an Saison, Wetter und Ihre Gruppe angepasst.",
         }),
         translate({
-          ru: "От лёгких прогулок до экстремальных походов — каждый найдёт маршрут по душе и возможностям.",
-          uz: "Engil sayrlardan ekstremal sayohatlargacha - har bir kishi o'z qiziqishi va imkoniyatlariga mos marshrutni topadi.",
-          en: "From easy walks to extreme hikes - everyone will find a route to their liking and abilities.",
-          de: "Von leichten Spaziergängen bis zu extremen Wanderungen - jeder findet eine Route nach seinem Geschmack und seinen Fähigkeiten.",
+          ru: "Маршруты проходят через видовые участки и места, где природу легче почувствовать и наблюдать. Мы не гарантируем встречи с животными — но выбираем треки так, чтобы шанс был выше.",
+          uz: "Marshrutlar manzarali joylar va tabiatni his qilish va kuzatish osonroq bo'lgan joylardan o'tadi. Biz hayvonlar bilan uchrashuvni kafolatlamaymiz — lekin imkoniyat yuqoriroq bo'lishi uchun treklarni tanlaymiz.",
+          en: "Routes pass through scenic areas and places where nature is easier to feel and observe. We don't guarantee wildlife encounters — but we choose tracks to maximize your chances.",
+          de: "Die Routen führen durch landschaftlich reizvolle Gebiete und Orte, wo die Natur leichter zu spüren und zu beobachten ist. Wir garantieren keine Tierbegegnungen — aber wir wählen die Wege so, dass die Chance höher ist.",
         }),
       ],
       image: "/why-us-routes.webp",
@@ -445,18 +435,15 @@ const NewAboutPage: React.FC = () => {
                 className="flex flex-col gap-[clamp(16px,1.39vw,20px)] text-white font-medium"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
-                <h2 className="text-[clamp(40px,4.17vw,60px)] leading-[1] tracking-[-0.03em]">
+                <h2 className="text-[clamp(28px,3.33vw,48px)] leading-[1.15] tracking-[-0.02em] font-semibold">
                   {t("aboutPage.professionals.title")}
                 </h2>
-                <p className="text-[clamp(14px,1.11vw,16px)] leading-[1.75] tracking-[-0.03em] md:max-w-[51.5%]">
-                  <span>{t("aboutPage.professionals.description")} </span>
-                  <span className="font-bold">
-                    {t("aboutPage.professionals.discount")}
-                  </span>
+                <p className="text-[clamp(14px,1.25vw,18px)] leading-[1.6] tracking-[-0.01em] opacity-90 md:max-w-[65%]">
+                  {t("aboutPage.professionals.description")}
                 </p>
               </div>
               <button
-                onClick={() => navigate("/tours")}
+                onClick={() => setIsRequestModalOpen(true)}
                 className="bg-[#333333] hover:bg-[#1a1a1a] transition-colors rounded-[10px] px-[clamp(40px,3.89vw,56px)] py-[clamp(20px,2.08vw,30px)] h-[clamp(60px,5.56vw,80px)] flex items-center justify-center cursor-pointer"
               >
                 <p
@@ -569,10 +556,10 @@ const NewAboutPage: React.FC = () => {
             style={{ fontFamily: "Montserrat, sans-serif" }}
           >
             {translate({
-              ru: "Мы - пространство, где природа оживает, отдых наполняется смыслом, а впечатления остаются в сердце навсегда!",
-              uz: "Biz - tabiat jonlanadigan, dam olish ma'noga to'lib, taassurotlar qalbda abadiy qoladigan makonmiz!",
-              en: "We're a space where nature comes alive, vacation fills with meaning, and impressions stay in the heart forever!",
-              de: "Wir sind ein Raum, in dem die Natur lebendig wird, der Urlaub mit Bedeutung gefüllt wird und Eindrücke für immer im Herzen bleiben!",
+              ru: "Dalverzin — природный ретрит, где важны пространство, тишина и хорошо поставленный сервис. Мы создаём впечатления, которые остаются с вами",
+              uz: "Dalverzin — tabiiy dam olish maskani, bu yerda makon, sukunat va yuqori darajadagi xizmat muhim. Biz siz bilan qoladigan taassurotlar yaratamiz",
+              en: "Dalverzin — a natural retreat where space, tranquility, and exceptional service matter. We create impressions that stay with you",
+              de: "Dalverzin — ein Naturretreat, wo Raum, Stille und erstklassiger Service zählen. Wir schaffen Eindrücke, die bei Ihnen bleiben",
             })}
           </p>
 
@@ -832,6 +819,12 @@ const NewAboutPage: React.FC = () => {
         </div>
       </section>
       <ScrollToTopButton />
+
+      {/* Request Program Modal */}
+      <RequestProgramModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+      />
     </div>
   );
 };

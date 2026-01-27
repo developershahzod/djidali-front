@@ -282,25 +282,26 @@ const translations = {
     "aboutPage.hero.statsClients": "Our regular customers",
     "aboutPage.hero.statsThousand": "thousand",
     "aboutPage.help.title":
-      "We invite you to discover the beauty of Dalverzin's wild nature",
+      "Dalverzin — a unique space for your nature retreat in Uzbekistan with comfort.",
     "aboutPage.help.description":
-      "Visit a territory with unique nature and picturesque landscapes, where clean air, silence and the scent of forests create an atmosphere of tranquility. Here you can see rare species of plants and animals, and specially designed routes will help you experience this beauty firsthand.",
+      "Dalverzin is located in Tashkent region, Bekabad district. It's a territory for those who value silence, clean air, and natural trails — in an individual format with thoughtful service. We tailor the program to your pace: a family day, an active program, or a peaceful retreat. Sometimes on the trails you can encounter pheasants, wild boars, deer, and birds of prey — we don't guarantee encounters, but we create the conditions where they're possible.",
     "aboutPage.help.cta": "Book a tour",
-    "aboutPage.mission.title": "Our mission",
+    "aboutPage.mission.title": "Our Mission",
     "aboutPage.mission.description":
-      "We preserve natural ecosystems and develop a culture of caring attitude towards nature",
-    "aboutPage.guide.title": "Our approach",
+      "We preserve and carefully develop the Dalverzin natural territory so guests can relax in peace and comfort, leaving a minimal footprint and respecting the ecosystem.",
+    "aboutPage.guide.title": "Our Approach",
     "aboutPage.guide.description":
-      "We support eco-friendly tourism and create conditions for sustainable development of the territory",
-    "aboutPage.professionals.title": "We are professionals",
+      "We create and offer turnkey individual programs: route, timing, meals, guidance and safety. Guidance in RU/EN, DE, FR translators available upon request.",
+    "aboutPage.professionals.title":
+      "We organize turnkey vacations in an individual format without fuss and random groups",
     "aboutPage.professionals.description":
-      "Start planning your trip now and get",
-    "aboutPage.professionals.discount": "30% off!",
+      "Leave a request — within 24 hours we will offer 2–3 programs for your dates, group composition and interests.",
+    "aboutPage.professionals.discount": "",
     "aboutPage.professionals.statsYears": "Years of experience",
     "aboutPage.professionals.statsPackages": "Customers",
-    "aboutPage.professionals.statsCustomers": "Regular customers",
-    "aboutPage.professionals.statsTravelers": "Happy travelers",
-    "aboutPage.professionals.cta": "Book a tour",
+    "aboutPage.professionals.statsCustomers": "Private trips",
+    "aboutPage.professionals.statsTravelers": "Guests",
+    "aboutPage.professionals.cta": "Request a program",
     "aboutPage.team.title": "Our team",
     "aboutPage.team.showMore": "Show more",
     "aboutPage.team.member1.name": "Ruslan",
@@ -1097,6 +1098,43 @@ const translations = {
     "dashboard.emptyState.noToursAvailable":
       "No tours available at the moment.",
     "dashboard.emptyState.browseAllTours": "Browse All Tours",
+
+    // Request Program Modal
+    "requestModal.title": "Request a Program",
+    "requestModal.subtitle":
+      "Fill out the form and we will contact you shortly",
+    "requestModal.fields.name": "Your name",
+    "requestModal.fields.phone": "Phone number",
+    "requestModal.fields.email": "Email",
+    "requestModal.fields.telegram": "Telegram (optional)",
+    "requestModal.fields.dates": "Preferred dates",
+    "requestModal.fields.message": "Your message",
+    "requestModal.placeholders.name": "Enter your name",
+    "requestModal.placeholders.phone": "+998 90 123 45 67",
+    "requestModal.placeholders.email": "your@email.com",
+    "requestModal.placeholders.telegram": "@username",
+    "requestModal.placeholders.dateFrom": "Start date",
+    "requestModal.placeholders.dateTo": "End date",
+    "requestModal.placeholders.message": "Tell us what you're interested in...",
+    "requestModal.submit": "Send request",
+    "requestModal.submitting": "Sending...",
+    "requestModal.successMessage":
+      "Your request has been sent successfully. We will contact you soon.",
+    "requestModal.errorMessage": "An error occurred. Please try again.",
+    "requestModal.errors.nameRequired": "Name is required",
+    "requestModal.errors.nameMinLength": "Name must be at least 2 characters",
+    "requestModal.errors.nameMaxLength": "Name must not exceed 100 characters",
+    "requestModal.errors.phoneRequired": "Phone number is required",
+    "requestModal.errors.phoneInvalid": "Please enter a valid phone number",
+    "requestModal.errors.emailRequired": "Email is required",
+    "requestModal.errors.emailInvalid": "Please enter a valid email address",
+    "requestModal.errors.telegramMaxLength":
+      "Telegram username must not exceed 50 characters",
+    "requestModal.errors.messageRequired": "Message is required",
+    "requestModal.errors.messageMinLength":
+      "Message must be at least 10 characters",
+    "requestModal.errors.messageMaxLength":
+      "Message must not exceed 1000 characters",
   },
   ru: {
     // Header
@@ -1286,25 +1324,26 @@ const translations = {
     "aboutPage.hero.statsClients": "Наши постоянные клиенты",
     "aboutPage.hero.statsThousand": "тыс",
     "aboutPage.help.title":
-      "Мы предлагаем вам открыть красоту дикой природы Дальверзина",
+      "Dalverzin — уникальное пространство для Вашего отдыха на природе в Узбекистане с комфортом.",
     "aboutPage.help.description":
-      "Посетите территорию с уникальной природой и живописными пейзажами, где чистый воздух, тишина и аромат лесов создают атмосферу спокойствия. Здесь вы сможете увидеть редкие виды растений и животных, а специально разработанные маршруты помогут вам познакомиться с этой красотой лично.",
+      "Dalverzin находится в Ташкентской области, Бекабадском районе. Это территория для тех, кто ценит тишину, чистый воздух и живые природные маршруты — в индивидуальном формате и с продуманным сервисом. Мы подбираем программу под ваш ритм: семейный день, активная программа или спокойный ретрит. Иногда на маршрутах можно встретить фазанов, кабанов, оленей и хищных птиц — мы не гарантируем встречу, но создаём условия, в которых она возможна.",
     "aboutPage.help.cta": "Забронировать тур",
     "aboutPage.mission.title": "Наша миссия",
     "aboutPage.mission.description":
-      "Мы сохраняем природные экосистемы и развиваем культуру бережного отношения к природе",
+      "Мы сохраняем и бережно развиваем природную территорию Dalverzin, чтобы гости могли отдыхать в тишине и комфорте, оставляя минимальный след и уважая экосистему.",
     "aboutPage.guide.title": "Наш подход",
     "aboutPage.guide.description":
-      "Мы поддерживаем экологичный туризм и создаём условия для устойчивого развития территории",
-    "aboutPage.professionals.title": "Мы профессионалы",
+      "Мы создаём и предлагаем индивидуальные программы «под ключ»: маршрут, тайминг, питание, сопровождение и безопасность. Сопровождение RU/EN, DE, FR переводчики — по запросу.",
+    "aboutPage.professionals.title":
+      "Мы организуем отдых «под ключ» в индивидуальном формате без суеты и случайных групп",
     "aboutPage.professionals.description":
-      "Начните планировать своё путешествие уже сейчас и получите",
-    "aboutPage.professionals.discount": "скидку 30%!",
-    "aboutPage.professionals.statsYears": "Годы опыта",
+      "Оставьте запрос — в течение 24 часов мы предложим 2–3 программы под ваши даты, состав группы и интересы.",
+    "aboutPage.professionals.discount": "",
+    "aboutPage.professionals.statsYears": "Лет опыта",
     "aboutPage.professionals.statsPackages": "Клиенты",
-    "aboutPage.professionals.statsCustomers": "Постоянных клиентов",
-    "aboutPage.professionals.statsTravelers": "Счастливые путешественники",
-    "aboutPage.professionals.cta": "Забронировать тур",
+    "aboutPage.professionals.statsCustomers": "Частных выездов",
+    "aboutPage.professionals.statsTravelers": "Гостей",
+    "aboutPage.professionals.cta": "Запросить программу",
     "aboutPage.team.title": "Наша команда",
     "aboutPage.team.showMore": "Показать больше",
     "aboutPage.team.member1.name": "Руслан",
@@ -2125,6 +2164,47 @@ const translations = {
     "admin.viewAll": "Смотреть все",
     "admin.popularTours": "Популярные туры",
     "admin.addNewTour": "Добавить тур",
+
+    // Request Program Modal
+    "requestModal.title": "Запросить программу",
+    "requestModal.subtitle":
+      "Заполните форму, и мы свяжемся с вами в ближайшее время",
+    "requestModal.fields.name": "Ваше имя",
+    "requestModal.fields.phone": "Номер телефона",
+    "requestModal.fields.email": "Email",
+    "requestModal.fields.telegram": "Telegram (необязательно)",
+    "requestModal.fields.dates": "Желаемые даты",
+    "requestModal.fields.message": "Ваше сообщение",
+    "requestModal.placeholders.name": "Введите ваше имя",
+    "requestModal.placeholders.phone": "+998 90 123 45 67",
+    "requestModal.placeholders.email": "your@email.com",
+    "requestModal.placeholders.telegram": "@username",
+    "requestModal.placeholders.dateFrom": "Дата начала",
+    "requestModal.placeholders.dateTo": "Дата окончания",
+    "requestModal.placeholders.message": "Расскажите, что вас интересует...",
+    "requestModal.submit": "Отправить заявку",
+    "requestModal.submitting": "Отправка...",
+    "requestModal.successMessage":
+      "Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.",
+    "requestModal.errorMessage":
+      "Произошла ошибка. Пожалуйста, попробуйте снова.",
+    "requestModal.errors.nameRequired": "Имя обязательно для заполнения",
+    "requestModal.errors.nameMinLength":
+      "Имя должно содержать минимум 2 символа",
+    "requestModal.errors.nameMaxLength": "Имя не должно превышать 100 символов",
+    "requestModal.errors.phoneRequired":
+      "Номер телефона обязателен для заполнения",
+    "requestModal.errors.phoneInvalid": "Введите корректный номер телефона",
+    "requestModal.errors.emailRequired": "Email обязателен для заполнения",
+    "requestModal.errors.emailInvalid": "Введите корректный email адрес",
+    "requestModal.errors.telegramMaxLength":
+      "Telegram username не должен превышать 50 символов",
+    "requestModal.errors.messageRequired":
+      "Сообщение обязательно для заполнения",
+    "requestModal.errors.messageMinLength":
+      "Сообщение должно содержать минимум 10 символов",
+    "requestModal.errors.messageMaxLength":
+      "Сообщение не должно превышать 1000 символов",
   },
   uz: {
     // Header
@@ -2315,25 +2395,26 @@ const translations = {
     "aboutPage.hero.statsClients": "Bizning doimiy mijozlarimiz",
     "aboutPage.hero.statsThousand": "ming",
     "aboutPage.help.title":
-      "Biz sizni Dalverzin yovvoyi tabiatining go'zalligini kashf etishga taklif qilamiz",
+      "Dalverzin — O'zbekistonda tabiatda qulay dam olish uchun noyob makon.",
     "aboutPage.help.description":
-      "Toza havo, jimjitlik va o'rmonlar hidi tinchlik atmosferasini yaratadigan noyob tabiat va go'zal manzaralarga ega hududga tashrif buyuring. Bu yerda siz o'simliklar va hayvonlarning noyob turlarini ko'rishingiz mumkin, maxsus ishlab chiqilgan marshrutlar esa bu go'zallik bilan shaxsan tanishishga yordam beradi.",
+      "Dalverzin Toshkent viloyati, Bekobod tumanida joylashgan. Bu jimjitlik, toza havo va tabiiy marshrutlarni qadrlaydigan kishilar uchun hudud — individual formatda va puxta o'ylangan xizmat bilan. Biz dasturni sizning ritmingizga moslashtiramiz: oilaviy kun, faol dastur yoki tinch dam olish. Ba'zan yo'llarda qirg'ovullar, yovvoyi cho'chqalar, kiyiklar va yirtqich qushlarni uchratish mumkin — biz uchrashuvni kafolatlamaymiz, lekin bunga imkon beradigan sharoitlarni yaratamiz.",
     "aboutPage.help.cta": "Turni bron qilish",
     "aboutPage.mission.title": "Bizning missiyamiz",
     "aboutPage.mission.description":
-      "Biz tabiiy ekotizimlarni saqlaymiz va tabiatga ehtiyotkorona munosabat madaniyatini rivojlantiramiz",
+      "Biz Dalverzin tabiiy hududini asrab-avaylaymiz va ehtiyotkorlik bilan rivojlantiramiz, shunda mehmonlar tinchlik va qulaylikda dam olishlari, minimal iz qoldirib va ekotizimni hurmat qilishlari mumkin.",
     "aboutPage.guide.title": "Bizning yondashuvimiz",
     "aboutPage.guide.description":
-      "Biz ekologik turizmni qo'llab-quvvatlaymiz va hududni barqaror rivojlantirish uchun sharoitlar yaratamiz",
-    "aboutPage.professionals.title": "Biz professionallar",
+      "Biz «kalit topshirish» formatida individual dasturlar yaratamiz va taklif qilamiz: marshrut, vaqt jadvali, ovqatlanish, hamrohlik va xavfsizlik. RU/EN hamrohligi, DE, FR tarjimonlari — so'rov bo'yicha.",
+    "aboutPage.professionals.title":
+      'Biz dam olishni "kalit topshirish" formatida, shoshilinchsiz va tasodifiy guruhlarsiz tashkil etamiz',
     "aboutPage.professionals.description":
-      "Sayohatingizni hoziroq rejalashtiring va",
-    "aboutPage.professionals.discount": "30% chegirma oling!",
+      "So'rov qoldiring — 24 soat ichida biz sizning sanalaringiz, guruh tarkibi va qiziqishlaringizga mos 2–3 ta dastur taklif qilamiz.",
+    "aboutPage.professionals.discount": "",
     "aboutPage.professionals.statsYears": "Yillik tajriba",
     "aboutPage.professionals.statsPackages": "Mijozlar",
-    "aboutPage.professionals.statsCustomers": "Doimiy mijozlar",
-    "aboutPage.professionals.statsTravelers": "Baxtli sayohatchilar",
-    "aboutPage.professionals.cta": "Turni bron qilish",
+    "aboutPage.professionals.statsCustomers": "Xususiy safar",
+    "aboutPage.professionals.statsTravelers": "Mehmonlar",
+    "aboutPage.professionals.cta": "Dastur so'rash",
     "aboutPage.team.title": "Bizning jamoa",
     "aboutPage.team.showMore": "Ko'proq ko'rsatish",
     "aboutPage.team.member1.name": "Ruslan",
@@ -3232,6 +3313,46 @@ const translations = {
     "admin.viewAll": "Barchasini ko'rish",
     "admin.popularTours": "Mashhur turlar",
     "admin.addNewTour": "Yangi tur qo'shish",
+
+    // Request Program Modal
+    "requestModal.title": "Dastur so'rash",
+    "requestModal.subtitle":
+      "Formani to'ldiring va biz tez orada siz bilan bog'lanamiz",
+    "requestModal.fields.name": "Ismingiz",
+    "requestModal.fields.phone": "Telefon raqami",
+    "requestModal.fields.email": "Email",
+    "requestModal.fields.telegram": "Telegram (ixtiyoriy)",
+    "requestModal.fields.dates": "Afzal sanalar",
+    "requestModal.fields.message": "Xabaringiz",
+    "requestModal.placeholders.name": "Ismingizni kiriting",
+    "requestModal.placeholders.phone": "+998 90 123 45 67",
+    "requestModal.placeholders.email": "your@email.com",
+    "requestModal.placeholders.telegram": "@username",
+    "requestModal.placeholders.dateFrom": "Boshlanish sanasi",
+    "requestModal.placeholders.dateTo": "Tugash sanasi",
+    "requestModal.placeholders.message":
+      "Sizni nima qiziqtirayotganini aytib bering...",
+    "requestModal.submit": "So'rov yuborish",
+    "requestModal.submitting": "Yuborilmoqda...",
+    "requestModal.successMessage":
+      "So'rovingiz muvaffaqiyatli yuborildi. Tez orada siz bilan bog'lanamiz.",
+    "requestModal.errorMessage":
+      "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+    "requestModal.errors.nameRequired": "Ism kiritilishi shart",
+    "requestModal.errors.nameMinLength":
+      "Ism kamida 2 ta belgidan iborat bo'lishi kerak",
+    "requestModal.errors.nameMaxLength": "Ism 100 ta belgidan oshmasligi kerak",
+    "requestModal.errors.phoneRequired": "Telefon raqami kiritilishi shart",
+    "requestModal.errors.phoneInvalid": "To'g'ri telefon raqamini kiriting",
+    "requestModal.errors.emailRequired": "Email kiritilishi shart",
+    "requestModal.errors.emailInvalid": "To'g'ri email manzilini kiriting",
+    "requestModal.errors.telegramMaxLength":
+      "Telegram username 50 ta belgidan oshmasligi kerak",
+    "requestModal.errors.messageRequired": "Xabar kiritilishi shart",
+    "requestModal.errors.messageMinLength":
+      "Xabar kamida 10 ta belgidan iborat bo'lishi kerak",
+    "requestModal.errors.messageMaxLength":
+      "Xabar 1000 ta belgidan oshmasligi kerak",
   },
   de: {
     // Header
@@ -3423,25 +3544,26 @@ const translations = {
     "aboutPage.hero.statsClients": "Unsere Stammkunden",
     "aboutPage.hero.statsThousand": "Tausend",
     "aboutPage.help.title":
-      "Wir laden Sie ein, die Schönheit der wilden Natur von Dalverzin zu entdecken",
+      "Dalverzin — ein einzigartiger Raum für Ihren komfortablen Naturaufenthalt in Usbekistan.",
     "aboutPage.help.description":
-      "Besuchen Sie ein Gebiet mit einzigartiger Natur und malerischen Landschaften, wo saubere Luft, Stille und der Duft der Wälder eine Atmosphäre der Ruhe schaffen. Hier können Sie seltene Pflanzen- und Tierarten sehen, und speziell entwickelte Routen helfen Ihnen, diese Schönheit persönlich zu erleben.",
+      "Dalverzin liegt in der Region Taschkent, Bezirk Bekabad. Es ist ein Gebiet für alle, die Stille, saubere Luft und natürliche Wanderwege schätzen — im individuellen Format mit durchdachtem Service. Wir passen das Programm Ihrem Rhythmus an: Familientag, aktives Programm oder ruhiger Rückzug. Manchmal kann man auf den Wegen Fasane, Wildschweine, Hirsche und Greifvögel treffen — wir garantieren keine Begegnung, aber wir schaffen die Bedingungen, unter denen sie möglich ist.",
     "aboutPage.help.cta": "Eine Tour buchen",
     "aboutPage.mission.title": "Unsere Mission",
     "aboutPage.mission.description":
-      "Wir bewahren natürliche Ökosysteme und entwickeln eine Kultur des sorgsamen Umgangs mit der Natur",
+      "Wir bewahren und pflegen das Naturgebiet Dalverzin behutsam, damit Gäste in Ruhe und Komfort entspannen können, einen minimalen Fußabdruck hinterlassen und das Ökosystem respektieren.",
     "aboutPage.guide.title": "Unser Ansatz",
     "aboutPage.guide.description":
-      "Wir unterstützen ökologischen Tourismus und schaffen Bedingungen für eine nachhaltige Entwicklung des Gebiets",
-    "aboutPage.professionals.title": "Wir sind Profis",
+      "Wir erstellen und bieten individuelle Rundum-Programme: Route, Zeitplanung, Verpflegung, Begleitung und Sicherheit. Begleitung in RU/EN, DE, FR Übersetzer auf Anfrage.",
+    "aboutPage.professionals.title":
+      "Wir organisieren Urlaub zum Festpreis im individuellen Format ohne Hektik und zufällige Gruppen",
     "aboutPage.professionals.description":
-      "Beginnen Sie jetzt mit der Planung Ihrer Reise und erhalten Sie",
-    "aboutPage.professionals.discount": "30% Rabatt!",
+      "Hinterlassen Sie eine Anfrage — innerhalb von 24 Stunden bieten wir 2–3 Programme für Ihre Termine, Gruppenzusammensetzung und Interessen an.",
+    "aboutPage.professionals.discount": "",
     "aboutPage.professionals.statsYears": "Jahre Erfahrung",
     "aboutPage.professionals.statsPackages": "Kunden",
-    "aboutPage.professionals.statsCustomers": "Stammkunden",
-    "aboutPage.professionals.statsTravelers": "Glückliche Reisende",
-    "aboutPage.professionals.cta": "Eine Tour buchen",
+    "aboutPage.professionals.statsCustomers": "Private Ausflüge",
+    "aboutPage.professionals.statsTravelers": "Gäste",
+    "aboutPage.professionals.cta": "Programm anfordern",
     "aboutPage.team.title": "Unser Team",
     "aboutPage.team.showMore": "Mehr anzeigen",
     "aboutPage.team.member1.name": "Ruslan",
@@ -4338,6 +4460,49 @@ const translations = {
     "admin.viewAll": "Alle anzeigen",
     "admin.popularTours": "Beliebte Touren",
     "admin.addNewTour": "Neue Tour hinzufügen",
+
+    // Request Program Modal
+    "requestModal.title": "Programm anfragen",
+    "requestModal.subtitle":
+      "Füllen Sie das Formular aus und wir werden Sie in Kürze kontaktieren",
+    "requestModal.fields.name": "Ihr Name",
+    "requestModal.fields.phone": "Telefonnummer",
+    "requestModal.fields.email": "E-Mail",
+    "requestModal.fields.telegram": "Telegram (optional)",
+    "requestModal.fields.dates": "Bevorzugte Daten",
+    "requestModal.fields.message": "Ihre Nachricht",
+    "requestModal.placeholders.name": "Geben Sie Ihren Namen ein",
+    "requestModal.placeholders.phone": "+998 90 123 45 67",
+    "requestModal.placeholders.email": "ihre@email.com",
+    "requestModal.placeholders.telegram": "@benutzername",
+    "requestModal.placeholders.dateFrom": "Startdatum",
+    "requestModal.placeholders.dateTo": "Enddatum",
+    "requestModal.placeholders.message":
+      "Erzählen Sie uns, woran Sie interessiert sind...",
+    "requestModal.submit": "Anfrage senden",
+    "requestModal.submitting": "Wird gesendet...",
+    "requestModal.successMessage":
+      "Ihre Anfrage wurde erfolgreich gesendet. Wir werden uns in Kürze bei Ihnen melden.",
+    "requestModal.errorMessage":
+      "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "requestModal.errors.nameRequired": "Name ist erforderlich",
+    "requestModal.errors.nameMinLength":
+      "Name muss mindestens 2 Zeichen lang sein",
+    "requestModal.errors.nameMaxLength":
+      "Name darf 100 Zeichen nicht überschreiten",
+    "requestModal.errors.phoneRequired": "Telefonnummer ist erforderlich",
+    "requestModal.errors.phoneInvalid":
+      "Bitte geben Sie eine gültige Telefonnummer ein",
+    "requestModal.errors.emailRequired": "E-Mail ist erforderlich",
+    "requestModal.errors.emailInvalid":
+      "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "requestModal.errors.telegramMaxLength":
+      "Telegram-Benutzername darf 50 Zeichen nicht überschreiten",
+    "requestModal.errors.messageRequired": "Nachricht ist erforderlich",
+    "requestModal.errors.messageMinLength":
+      "Nachricht muss mindestens 10 Zeichen lang sein",
+    "requestModal.errors.messageMaxLength":
+      "Nachricht darf 1000 Zeichen nicht überschreiten",
   },
 };
 

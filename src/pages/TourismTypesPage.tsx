@@ -74,10 +74,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Reisen, die Wert für die Natur schaffen",
       }),
       mainDescription: translate({
-        ru: "Экотуризм — это вид путешествий, направленный на знакомство с природными территориями, их экосистемами и биоразнообразием. Его цель — не только отдых, но и сохранение окружающей среды, развитие местных сообществ и экологическое просвещение.",
-        uz: "Ekoturizm — bu tabiat hududlari, ularning ekotizimlari va bioturliligini o'rganishga qaratilgan sayohat turi. Uning maqsadi nafaqat dam olish, balki atrof-muhitni asrash, mahalliy jamoalarni rivojlantirish va ekologik ma'rifatdir.",
-        en: "Ecotourism is a type of travel focused on exploring natural areas, their ecosystems, and biodiversity. Its goal is not only recreation but also environmental conservation, local community development, and ecological education.",
-        de: "Ökotourismus ist eine Art des Reisens, die sich auf die Erkundung von Naturgebieten, deren Ökosystemen und der Biodiversität konzentriert. Sein Ziel ist nicht nur Erholung, sondern auch Umweltschutz, Entwicklung lokaler Gemeinschaften und ökologische Bildung.",
+        ru: "Это формат «перезагрузки»: вы идёте по природным тропам, слышите лес и чувствуете пространство, а не город. Мы заранее продумываем тайминг и точки маршрута, чтобы прогулка была продуктивной, спокойной и безопасной.",
+        uz: "Bu «qayta yuklash» formati: siz tabiiy yo'llardan yurasiz, o'rmonni eshitasiz va shahar emas, balki makonni his qilasiz. Biz oldindan vaqt va marshrut nuqtalarini o'ylab chiqamiz, shunda sayr samarali, tinch va xavfsiz bo'ladi.",
+        en: "This is a 'reboot' format: you walk along nature trails, hear the forest, and feel the space rather than the city. We plan the timing and route points in advance so that your walk is productive, peaceful, and safe.",
+        de: "Dies ist ein «Neustart»-Format: Sie gehen auf Naturpfaden, hören den Wald und spüren den Raum statt der Stadt. Wir planen das Timing und die Routenpunkte im Voraus, damit Ihr Spaziergang produktiv, ruhig und sicher ist.",
       }),
       section1Title: translate({
         ru: "Мы создаём экологичные маршруты с заботой о природе",
@@ -132,10 +132,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Einführung in Landwirtschaft und Traditionen",
       }),
       mainDescription: translate({
-        ru: "Агротуризм — это уникальная возможность познакомиться с сельским укладом жизни, традиционными методами ведения хозяйства и насладиться экологически чистыми продуктами.",
-        uz: "Agroturizm — bu qishloq turmush tarzini, an'anaviy xo'jalik yuritish usullarini o'rganish va ekologik toza mahsulotlardan bahramand bo'lishning noyob imkoniyatidir.",
-        en: "Agrotourism is a unique opportunity to experience rural lifestyle, traditional farming methods, and enjoy organic products.",
-        de: "Agrotourismus ist eine einzigartige Gelegenheit, das ländliche Leben, traditionelle Landwirtschaftsmethoden kennenzulernen und Bio-Produkte zu genießen.",
+        ru: "Агротуризм в Dalverzin — это знакомство с локальными продуктами и спокойным фермерским ритмом. Мы можем включить в программу дегустации и «farm-to-table» обед, где вкус — часть впечатления. Формат подбираем под сезон и пожелания гостей.",
+        uz: "Dalverzinda agroturizm — bu mahalliy mahsulotlar va tinch fermer ritmi bilan tanishish. Biz dasturga degustatsiyalar va «farm-to-table» tushlik qo'shishimiz mumkin, bu yerda ta'm — taassurotning bir qismi. Formatni mavsumga va mehmonlar istaklariga moslashtiramiz.",
+        en: "Agrotourism at Dalverzin means discovering local products and the calm rhythm of farm life. We can include tastings and a 'farm-to-table' lunch in the program, where flavor is part of the experience. We tailor the format to the season and guests' preferences.",
+        de: "Agrotourismus in Dalverzin bedeutet, lokale Produkte und den ruhigen Rhythmus des Landlebens kennenzulernen. Wir können Verkostungen und ein «Farm-to-Table»-Mittagessen ins Programm aufnehmen, bei dem der Geschmack Teil des Erlebnisses ist. Das Format passen wir an die Saison und die Wünsche der Gäste an.",
       }),
       section1Title: translate({
         ru: "Традиционные фермы и органические хозяйства",
@@ -149,18 +149,8 @@ const TourismTypesPage: React.FC = () => {
         en: "Visit authentic farms where organic products are grown. Learn the secrets of traditional agriculture and animal husbandry from local farmers.",
         de: "Besuchen Sie authentische Bauernhöfe, auf denen Bio-Produkte angebaut werden. Erfahren Sie die Geheimnisse traditioneller Landwirtschaft und Tierhaltung von lokalen Bauern.",
       }),
-      section2Title: translate({
-        ru: "Мастер-классы и дегустации",
-        uz: "Master-klasslar va degustatsiyalar",
-        en: "Workshops and Tastings",
-        de: "Workshops und Verkostungen",
-      }),
-      section2Description: translate({
-        ru: "Примите участие в приготовлении национальных блюд, научитесь делать сыр, хлеб и другие продукты традиционными методами",
-        uz: "Milliy taomlarni tayyorlashda ishtirok eting, pishloq, non va boshqa mahsulotlarni an'anaviy usullar bilan tayyorlashni o'rganing",
-        en: "Participate in preparing national dishes, learn to make cheese, bread, and other products using traditional methods",
-        de: "Nehmen Sie an der Zubereitung nationaler Gerichte teil, lernen Sie, Käse, Brot und andere Produkte nach traditionellen Methoden herzustellen",
-      }),
+      section2Title: "",
+      section2Description: "",
     },
     teambuilding: {
       bannerImage: "/teambuilding-banner.webp",
@@ -190,10 +180,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Firmenprogramme für Teambildung",
       }),
       mainDescription: translate({
-        ru: "Тимбилдинг на природе — это эффективный способ улучшить взаимодействие в команде, развить лидерские качества и создать прочные связи между сотрудниками в неформальной обстановке.",
-        uz: "Tabiatda jamoa qurish — bu jamoada o'zaro hamkorlikni yaxshilash, yetakchilik fazilatlarini rivojlantirish va xodimlar o'rtasida norasmiy muhitda mustahkam aloqalar o'rnatishning samarali usuli.",
-        en: "Team building in nature is an effective way to improve team interaction, develop leadership qualities, and create strong bonds between employees in an informal setting.",
-        de: "Teambildung in der Natur ist ein effektiver Weg, um die Teaminteraktion zu verbessern, Führungsqualitäten zu entwickeln und starke Bindungen zwischen Mitarbeitern in einem informellen Rahmen zu schaffen.",
+        ru: "Программы для команд: активность, сценарии взаимодействия и отдых на природе. Организация «под ключ» — тайминг, координация, питание.",
+        uz: "Jamoalar uchun dasturlar: faollik, o'zaro ta'sir stsenariylari va tabiatda dam olish. «Kalit topshirish» tashkiloti — vaqt, muvofiqlashtirish, ovqatlanish.",
+        en: "Programs for teams: activities, interaction scenarios, and outdoor recreation. Turnkey organization — timing, coordination, catering.",
+        de: "Programme für Teams: Aktivitäten, Interaktionsszenarien und Erholung in der Natur. Schlüsselfertige Organisation — Timing, Koordination, Verpflegung.",
       }),
       section1Title: translate({
         ru: "Программы для команд любого размера",
@@ -248,10 +238,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Professionelles Tontaubenschießen",
       }),
       mainDescription: translate({
-        ru: "Стендовая стрельба — это увлекательный вид спорта, который требует концентрации, координации и хладнокровия. Подходит как для новичков, так и для опытных стрелков.",
-        uz: "Stend otish — bu diqqatni jamlash, muvofiqlashtirish va sovuqqonlikni talab qiladigan qiziqarli sport turi. Yangi boshlovchilar va tajribali otuvchilar uchun mos keladi.",
-        en: "Trap shooting is an exciting sport that requires concentration, coordination, and composure. Suitable for both beginners and experienced shooters.",
-        de: "Tontaubenschießen ist eine spannende Sportart, die Konzentration, Koordination und Gelassenheit erfordert. Geeignet für Anfänger und erfahrene Schützen.",
+        ru: "Динамичный формат активного отдыха в безопасной и контролируемой среде. Занятие проходит с инструктором: техника, правила безопасности и серия тренировочных выстрелов. По желанию — мини-турнир «между своими» для компании или команды.",
+        uz: "Xavfsiz va nazorat qilinadigan muhitda faol dam olishning dinamik formati. Mashg'ulot instruktor bilan o'tkaziladi: texnika, xavfsizlik qoidalari va mashq o'qlari seriyasi. Ixtiyoriy ravishda — kompaniya yoki jamoa uchun «o'z oramizda» mini-turnir.",
+        en: "A dynamic active recreation format in a safe and controlled environment. Sessions are led by an instructor: technique, safety rules, and a series of practice shots. Optional — a 'friendly' mini-tournament for your company or team.",
+        de: "Ein dynamisches Aktiverholungsformat in einer sicheren und kontrollierten Umgebung. Die Sitzung wird von einem Instruktor geleitet: Technik, Sicherheitsregeln und eine Serie von Übungsschüssen. Optional — ein «freundschaftliches» Mini-Turnier für Ihre Firma oder Ihr Team.",
       }),
       section1Title: translate({
         ru: "Обучение от профессионалов",
@@ -427,20 +417,22 @@ const TourismTypesPage: React.FC = () => {
         </div>
 
         {/* Text Section 2 */}
-        <div className="flex flex-col gap-[clamp(10px,0.83vw,12px)]">
-          <h3
-            className="text-[#333333] text-[clamp(24px,2.22vw,32px)] font-medium leading-[1.25] tracking-[-0.02em]"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            {currentContent.section2Title}
-          </h3>
-          <p
-            className="text-[#333333] text-[clamp(16px,1.67vw,24px)] font-normal leading-[1.67] tracking-[-0.02em]"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            {currentContent.section2Description}
-          </p>
-        </div>
+        {currentContent.section2Title && currentContent.section2Description && (
+          <div className="flex flex-col gap-[clamp(10px,0.83vw,12px)]">
+            <h3
+              className="text-[#333333] text-[clamp(24px,2.22vw,32px)] font-medium leading-[1.25] tracking-[-0.02em]"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              {currentContent.section2Title}
+            </h3>
+            <p
+              className="text-[#333333] text-[clamp(16px,1.67vw,24px)] font-normal leading-[1.67] tracking-[-0.02em]"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              {currentContent.section2Description}
+            </p>
+          </div>
+        )}
       </div>
 
       <ScrollToTopButton />

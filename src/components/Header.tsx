@@ -66,7 +66,7 @@ const Header: React.FC = () => {
         const b = parseInt(rgb[2]);
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-        setIsOnLightBackground(brightness > 128);
+        _setIsOnLightBackground(brightness > 128);
       }
     };
 
