@@ -869,22 +869,63 @@ class DjidaliApiService {
 
   // Transform backend news format to frontend format
   private transformNewsToFrontend(backendNews: ApiNewsBackend): ApiNewsArticle {
+    // Helper to extract value from nested object or flat field by language
+    const getValueLang = (
+      nested: any,
+      flat: string | null | undefined,
+      lang: "uz" | "ru" | "eng" | "de",
+    ): string => {
+      if (typeof nested === "object" && nested !== null) {
+        return nested[lang] || "";
+      }
+      return flat || "";
+    };
+
+    // Handle both nested (from transformToMultiLanguage) and flat formats
+    const title = (backendNews as any).title;
+    const content = (backendNews as any).content;
+    const excerpt = (backendNews as any).excerpt;
+
     return {
       id: backendNews.id,
-      titleRu: backendNews.titleRu || "",
-      titleUz: backendNews.titleUz || "",
-      titleEn: backendNews.titleEng || "", // Backend uses 'titleEng', frontend uses 'titleEn'
-      titleDe: backendNews.titleDe || "",
-      summaryRu: backendNews.excerptRu || "", // Backend uses 'excerpt', frontend uses 'summary'
-      summaryUz: backendNews.excerptUz || "",
-      summaryEn: backendNews.excerptEng || "",
-      summaryDe: backendNews.excerptDe || "",
-      contentRu: backendNews.contentRu || "",
-      contentUz: backendNews.contentUz || "",
-      contentEn: backendNews.contentEng || "",
-      contentDe: backendNews.contentDe || "",
+      titleRu: title
+        ? getValueLang(title, backendNews.titleRu, "ru")
+        : backendNews.titleRu || "",
+      titleUz: title
+        ? getValueLang(title, backendNews.titleUz, "uz")
+        : backendNews.titleUz || "",
+      titleEn: title
+        ? getValueLang(title, backendNews.titleEng, "eng")
+        : backendNews.titleEng || "",
+      titleDe: title
+        ? getValueLang(title, backendNews.titleDe, "de")
+        : backendNews.titleDe || "",
+      summaryRu: excerpt
+        ? getValueLang(excerpt, backendNews.excerptRu, "ru")
+        : backendNews.excerptRu || "",
+      summaryUz: excerpt
+        ? getValueLang(excerpt, backendNews.excerptUz, "uz")
+        : backendNews.excerptUz || "",
+      summaryEn: excerpt
+        ? getValueLang(excerpt, backendNews.excerptEng, "eng")
+        : backendNews.excerptEng || "",
+      summaryDe: excerpt
+        ? getValueLang(excerpt, backendNews.excerptDe, "de")
+        : backendNews.excerptDe || "",
+      contentRu: content
+        ? getValueLang(content, backendNews.contentRu, "ru")
+        : backendNews.contentRu || "",
+      contentUz: content
+        ? getValueLang(content, backendNews.contentUz, "uz")
+        : backendNews.contentUz || "",
+      contentEn: content
+        ? getValueLang(content, backendNews.contentEng, "eng")
+        : backendNews.contentEng || "",
+      contentDe: content
+        ? getValueLang(content, backendNews.contentDe, "de")
+        : backendNews.contentDe || "",
       slug: backendNews.slug,
-      imageUrl: backendNews.coverImage || "", // Backend uses 'coverImage', frontend uses 'imageUrl'
+      imageUrl: backendNews.coverImage || "",
       isPublished: backendNews.status === "PUBLISHED",
       publishedAt: backendNews.publishedAt,
       createdAt: backendNews.createdAt,

@@ -190,9 +190,12 @@ export interface News {
 
 export interface NewsListResponse {
   data: News[];
-  total: number;
-  page: number;
-  totalPages: number;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 export interface ApiResponse<T> {

@@ -989,32 +989,170 @@ const getNewsLocalizedField = (
   return "";
 };
 
+// Pagination Component
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
+  const { translate } = useLanguage();
+
+  if (totalPages <= 1) return null;
+
+  // Generate page numbers to show
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible + 2) {
+      // Show all pages
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("...");
+      }
+
+      // Show pages around current
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("...");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  return (
+    <div className="flex items-center justify-center gap-2 mt-12">
+      {/* Previous Button */}
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+          currentPage === 1
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#333] hover:bg-[#8f7b49] hover:text-white shadow-sm"
+        }`}
+      >
+        {translate({
+          ru: "Назад",
+          uz: "Oldingi",
+          en: "Previous",
+          de: "Zurück",
+        })}
+      </button>
+
+      {/* Page Numbers */}
+      <div className="flex items-center gap-1">
+        {getPageNumbers().map((page, index) =>
+          page === "..." ? (
+            <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-400">
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              onClick={() => onPageChange(page as number)}
+              className={`min-w-[40px] h-[40px] rounded-lg font-medium text-sm transition-all ${
+                currentPage === page
+                  ? "bg-[#8f7b49] text-white"
+                  : "bg-white text-[#333] hover:bg-[#8f7b49]/10 shadow-sm"
+              }`}
+            >
+              {page}
+            </button>
+          ),
+        )}
+      </div>
+
+      {/* Next Button */}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+          currentPage === totalPages
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#333] hover:bg-[#8f7b49] hover:text-white shadow-sm"
+        }`}
+      >
+        {translate({
+          ru: "Далее",
+          uz: "Keyingi",
+          en: "Next",
+          de: "Weiter",
+        })}
+      </button>
+    </div>
+  );
+}
+
 // Main NewsPage Component
 export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [apiNews, setApiNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalNews, setTotalNews] = useState(0);
   const selectedCategory = "Все";
   const { language } = useLanguage();
 
-  // Load news from API
+  const ITEMS_PER_PAGE = 9; // 9 items per page for 3x3 grid
+
+  // Load news from API with pagination
   useEffect(() => {
     const loadNews = async () => {
+      setLoading(true);
       try {
         const langParam = language === "en" ? "eng" : language;
-        const response = await api.getNews({ limit: 50, lang: langParam });
+        const response = await api.getNews({
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          lang: langParam as "uz" | "ru" | "eng" | "de",
+        });
         setApiNews(response.data);
+        setTotalPages(response.meta.totalPages);
+        setTotalNews(response.meta.total);
       } catch (error) {
         console.error("Failed to load news from API:", error);
-        // Keep empty array - will show static data as fallback
+        // Fallback to static data
+        const staticNews = getLocalizedNewsData(language);
+        setApiNews([]);
+        setTotalPages(1);
+        setTotalNews(staticNews.length);
       } finally {
         setLoading(false);
       }
     };
     loadNews();
+  }, [language, currentPage]);
+
+  // Reset to page 1 when language changes
+  useEffect(() => {
+    setCurrentPage(1);
   }, [language]);
 
-  // Combine API news with static fallback
+  // Transform API news to display format
   const localizedNews = useMemo(() => {
     if (apiNews.length > 0) {
       return apiNews.map((news) => ({
@@ -1033,12 +1171,19 @@ export default function NewsPage() {
     return getLocalizedNewsData(language);
   }, [apiNews, language]);
 
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of news section
+    window.scrollTo({ top: 500, behavior: "smooth" });
+  };
+
   return (
     <div className="bg-[#f4f2ed] min-h-screen">
       <Hero
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        newsCount={localizedNews.length}
+        newsCount={totalNews}
       />
       <NewsGridWithData
         searchQuery={searchQuery}
@@ -1046,6 +1191,18 @@ export default function NewsPage() {
         newsData={localizedNews}
         loading={loading}
       />
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="w-full px-[20px] md:px-[50px] pb-12 md:pb-20">
+          <div className="max-w-[1340px] mx-auto">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
+      )}
       <ScrollToTopButton />
     </div>
   );

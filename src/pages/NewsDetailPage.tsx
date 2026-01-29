@@ -1,12 +1,13 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getLocalizedNewsData } from "./NewsPage";
 import { svgPaths } from "../utils/svgPaths";
 import { useLanguage } from "../contexts/LanguageContext";
+import api, { News } from "../services/api";
+import { getImageUrl } from "../utils/imageUtils";
+import { SafeHTML } from "../components/SafeHTML";
 
 // Import images
-const topImage = "/94eadad3f522e8bdfb19c56bb585ddeaf0e637a3.webp";
-const bottomLeftImage = "/2b6a963dd74a6d1123449922b8611661d321728f.webp";
-const bottomRightImage = "/8d906978fc716fe472c5b52bc4524b8e62b9bf38.webp";
 const similarNewsImage = "/fcd4ea8bf176e4851a46f14de3020f62faed656d (1).webp";
 
 // Navigation Components (reused from NewsPage)
@@ -382,154 +383,227 @@ function _Footer() {
   );
 }
 
+// Helper to get localized field from News
+const getNewsLocalizedField = (
+  news: News,
+  field: "title" | "content" | "excerpt",
+  language: string,
+): string => {
+  // If API returned localized field directly
+  if (field === "title" && news.title) return news.title;
+  if (field === "content" && news.content) return news.content;
+  if (field === "excerpt" && news.excerpt) return news.excerpt;
+
+  // Fallback to specific language fields
+  const langSuffix =
+    language === "en"
+      ? "Eng"
+      : language.charAt(0).toUpperCase() + language.slice(1);
+  const fieldKey = `${field}${langSuffix}` as keyof News;
+  const value = news[fieldKey];
+  if (value && typeof value === "string") return value;
+
+  // Fallback chain
+  const fallbacks = ["Ru", "Uz", "Eng", "De"];
+  for (const fb of fallbacks) {
+    const fbKey = `${field}${fb}` as keyof News;
+    const fbValue = news[fbKey];
+    if (fbValue && typeof fbValue === "string") return fbValue;
+  }
+
+  return "";
+};
+
 export function NewsDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { translate, language } = useLanguage();
-  const newsData = getLocalizedNewsData(language);
-  const newsItem = newsData.find((item) => item.id === Number(id));
 
-  if (!newsItem) {
+  const [newsItem, setNewsItem] = useState<News | null>(null);
+  const [relatedNews, setRelatedNews] = useState<News[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  // Load news from API
+  useEffect(() => {
+    const loadNews = async () => {
+      if (!id) return;
+
+      setLoading(true);
+      setError(false);
+
+      try {
+        const langParam = language === "en" ? "eng" : language;
+
+        // Try to load by slug first, then by id
+        let news: News;
+        try {
+          news = await api.getNewsBySlug(
+            id,
+            langParam as "uz" | "ru" | "eng" | "de",
+          );
+        } catch {
+          // If slug fails, try by id (for backward compatibility)
+          news = await api.getNewsById(
+            id,
+            langParam as "uz" | "ru" | "eng" | "de",
+          );
+        }
+
+        setNewsItem(news);
+
+        // Load related news (latest 3, excluding current)
+        const response = await api.getNews({
+          page: 1,
+          limit: 4,
+          lang: langParam as "uz" | "ru" | "eng" | "de",
+        });
+        setRelatedNews(
+          response.data.filter((item) => item.id !== news.id).slice(0, 3),
+        );
+      } catch (err) {
+        console.error("Failed to load news:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNews();
+  }, [id, language]);
+
+  // Loading state
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#f4f2ed] flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-[#333] text-[32px] mb-4">
-            {translate({
-              ru: "Новость не найдена",
-              uz: "Yangilik topilmadi",
-              en: "News not found",
-              de: "Nachricht nicht gefunden",
-            })}
-          </h1>
-          <button
-            onClick={() => navigate("/news")}
-            className="bg-[#8f7b49] hover:bg-[#7a6839] text-white px-8 py-3 rounded-full font-['Montserrat:SemiBold',sans-serif] font-semibold text-[14px] uppercase transition-all duration-200"
-          >
-            {translate({
-              ru: "Вернуться к новостям",
-              uz: "Yangiliklarга qaytish",
-              en: "Back to news",
-              de: "Zurück zu den Nachrichten",
-            })}
-          </button>
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8f7b49]"></div>
       </div>
     );
+  }
+
+  // Error or not found state
+  if (error || !newsItem) {
+    // Fallback to static data
+    const staticNews = getLocalizedNewsData(language);
+    const staticItem = staticNews.find(
+      (item) => item.id === Number(id) || String(item.id) === id,
+    );
+
+    if (!staticItem) {
+      return (
+        <div className="min-h-screen bg-[#f4f2ed] flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-[#333] text-[32px] mb-4">
+              {translate({
+                ru: "Новость не найдена",
+                uz: "Yangilik topilmadi",
+                en: "News not found",
+                de: "Nachricht nicht gefunden",
+              })}
+            </h1>
+            <button
+              onClick={() => navigate("/news")}
+              className="bg-[#8f7b49] hover:bg-[#7a6839] text-white px-8 py-3 rounded-full font-['Montserrat:SemiBold',sans-serif] font-semibold text-[14px] uppercase transition-all duration-200"
+            >
+              {translate({
+                ru: "Вернуться к новостям",
+                uz: "Yangiliklarга qaytish",
+                en: "Back to news",
+                de: "Zurück zu den Nachrichten",
+              })}
+            </button>
+          </div>
+        </div>
+      );
+    }
   }
 
   const handleBack = () => {
     navigate("/news");
   };
 
-  // Get related news (same category, exclude current)
-  const relatedNews = newsData
-    .filter(
-      (item) => item.category === newsItem.category && item.id !== newsItem.id,
-    )
-    .slice(0, 3);
+  // Get display data from API news item
+  const title = newsItem
+    ? getNewsLocalizedField(newsItem, "title", language)
+    : "";
+  const content = newsItem
+    ? getNewsLocalizedField(newsItem, "content", language)
+    : "";
+  const excerpt = newsItem
+    ? getNewsLocalizedField(newsItem, "excerpt", language)
+    : "";
+  const coverImage = newsItem?.coverImage
+    ? getImageUrl(newsItem.coverImage)
+    : "/news-1.webp";
 
   return (
     <div className="bg-[#f4f2ed] min-h-screen">
       {/* Hero Section */}
       <HeroSection
-        title={newsItem.title}
-        backgroundImage={
-          newsItem.image.startsWith("/") ? newsItem.image : `/${newsItem.image}`
-        }
+        title={title}
+        backgroundImage={coverImage}
         onBack={handleBack}
       />
 
       {/* Main Content */}
       <div className="max-w-[1340px] mx-auto px-[20px] md:px-[50px] pt-10 md:pt-20 pb-10 md:pb-16">
         <div className="flex flex-col gap-[60px] items-start w-full">
-          {/* Title and Description */}
+          {/* Title and Excerpt */}
           <div className="content-stretch flex flex-col gap-[40px] items-start relative shrink-0 text-[#333333] w-full">
-            <p className="font-['Montserrat:Medium',sans-serif] font-medium leading-[32px] md:leading-[48px] lg:leading-[60px] relative shrink-0 text-[28px] md:text-[48px] lg:text-[60px] tracking-[-0.9px] md:tracking-[-1.5px] lg:tracking-[-1.8px] w-full">
-              {translate({
-                ru: "Внедрение устойчивых экологических практик",
-                uz: "Barqaror ekologik amaliyotlarni joriy qilish",
-                en: "Implementation of sustainable environmental practices",
-                de: "Umsetzung nachhaltiger Umweltpraktiken",
-              })}
-            </p>
-            <p className="font-['Montserrat:Regular',sans-serif] font-normal leading-[24px] md:leading-[32px] lg:leading-[40px] relative shrink-0 text-[16px] md:text-[20px] lg:text-[24px] tracking-[-0.32px] md:tracking-[-0.4px] lg:tracking-[-0.48px] w-full">
-              {translate({
-                ru: "Мы использовали немецкий опыт озеленения, чтобы подобрать виды деревьев, которые легко переносят засуху и укрепляют экосистему. Такой подход помогает восстанавливать природный баланс на долгие годы",
-                uz: "Biz quruqchilikka chidamli va ekotizimni mustahkamlaydigan daraxt turlarini tanlash uchun nemis ko'kamlantirish tajribasidan foydalandik. Bunday yondashuv uzoq yillar davomida tabiiy muvozanatni tiklashga yordam beradi",
-                en: "We used German greening experience to select tree species that easily tolerate drought and strengthen the ecosystem. This approach helps restore natural balance for years to come",
-                de: "Wir nutzten deutsche Begrünungserfahrung, um Baumarten auszuwählen, die Trockenheit leicht vertragen und das Ökosystem stärken. Dieser Ansatz hilft, das natürliche Gleichgewicht für Jahre wiederherzustellen",
-              })}
-            </p>
+            <h1 className="font-['Montserrat:Medium',sans-serif] font-medium leading-[32px] md:leading-[48px] lg:leading-[60px] relative shrink-0 text-[28px] md:text-[48px] lg:text-[60px] tracking-[-0.9px] md:tracking-[-1.5px] lg:tracking-[-1.8px] w-full">
+              {title}
+            </h1>
+            {excerpt && (
+              <p className="font-['Montserrat:Regular',sans-serif] font-normal leading-[24px] md:leading-[32px] lg:leading-[40px] relative shrink-0 text-[16px] md:text-[20px] lg:text-[24px] tracking-[-0.32px] md:tracking-[-0.4px] lg:tracking-[-0.48px] w-full text-[#5c5c5c]">
+                {excerpt}
+              </p>
+            )}
           </div>
 
-          {/* Top Image */}
+          {/* Cover Image */}
           <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
             <div className="h-[250px] md:h-[400px] lg:h-[500px] relative rounded-[10px] md:rounded-[20px] shrink-0 w-full">
               <img
-                alt=""
+                alt={title}
                 className="absolute inset-0 object-cover rounded-[10px] md:rounded-[20px] size-full"
-                src={topImage}
+                src={coverImage}
               />
             </div>
           </div>
 
-          {/* Content Section */}
-          <div className="content-stretch flex flex-col gap-[12px] items-start leading-[40px] relative shrink-0 text-[#333333] w-full">
-            <p className="font-['Montserrat:Medium',sans-serif] font-medium relative shrink-0 text-[20px] md:text-[26px] lg:text-[32px] tracking-[-0.4px] md:tracking-[-0.52px] lg:tracking-[-0.64px] w-full">
-              {translate({
-                ru: "Разнообразие посаженных пород",
-                uz: "Ekilgan turlarning xilma-xilligi",
-                en: "Diversity of planted species",
-                de: "Vielfalt gepflanzter Arten",
-              })}
-            </p>
-            <p className="font-['Montserrat:Regular',sans-serif] font-normal relative shrink-0 text-[16px] md:text-[20px] lg:text-[24px] tracking-[-0.32px] md:tracking-[-0.4px] lg:tracking-[-0.48px] w-full">
-              {translate({
-                ru: "Всего высажено 665 деревьев 11 видов — клёны, тополя, дубы и вяз. Это создаёт устойчивую природную среду, где разные породы поддерживают друг друга и повышают биоразнообразие территории",
-                uz: "Jami 11 turdan 665 ta daraxt — zarang, terak, eman va qarag'ay ekildi. Bu turli xil turlar bir-birini qo'llab-quvvatlaydigan va hududning bioturliligini oshiradigan barqaror tabiiy muhitni yaratadi",
-                en: "A total of 665 trees of 11 species were planted — maples, poplars, oaks and elm. This creates a sustainable natural environment where different species support each other and increase the biodiversity of the area",
-                de: "Insgesamt wurden 665 Bäume aus 11 Arten gepflanzt — Ahorne, Pappeln, Eichen und Ulmen. Dies schafft eine nachhaltige natürliche Umgebung, in der verschiedene Arten sich gegenseitig unterstützen und die Artenvielfalt des Gebiets erhöhen",
-              })}
-            </p>
-          </div>
+          {/* Main Content - rendered safely with DOMPurify */}
+          {content && (
+            <SafeHTML
+              html={content}
+              className="prose prose-lg max-w-none text-[#333333] font-['Montserrat:Regular',sans-serif] [&_h1]:text-[32px] [&_h1]:font-medium [&_h2]:text-[28px] [&_h2]:font-medium [&_h3]:text-[24px] [&_h3]:font-medium [&_p]:text-[16px] md:[&_p]:text-[18px] lg:[&_p]:text-[20px] [&_p]:leading-[1.8] [&_img]:rounded-lg [&_img]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:border-[#8f7b49] [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-[#8f7b49] [&_a]:underline"
+            />
+          )}
 
-          {/* Bottom Images */}
-          <div className="content-stretch flex flex-col md:flex-row items-center gap-2 relative shrink-0 w-full">
-            <div className="w-full md:basis-0 md:grow h-[300px] md:h-[400px] lg:h-[586px] min-h-px min-w-px relative rounded-[10px] md:rounded-bl-[20px] md:rounded-tl-[20px] md:rounded-tr-[0px] md:rounded-br-[0px] shrink-0">
-              <img
-                alt=""
-                className="absolute inset-0 object-cover rounded-[10px] md:rounded-bl-[20px] md:rounded-tl-[20px] md:rounded-tr-[0px] md:rounded-br-[0px] size-full"
-                src={bottomLeftImage}
-              />
+          {/* Additional Images from API */}
+          {newsItem?.images && newsItem.images.length > 0 && (
+            <div className="content-stretch flex flex-col md:flex-row items-center gap-2 relative shrink-0 w-full">
+              {newsItem.images.slice(0, 2).map((img, index) => (
+                <div
+                  key={index}
+                  className={`w-full md:basis-0 md:grow h-[300px] md:h-[400px] lg:h-[586px] min-h-px min-w-px relative shrink-0 ${
+                    index === 0
+                      ? "rounded-[10px] md:rounded-bl-[20px] md:rounded-tl-[20px] md:rounded-tr-[0px] md:rounded-br-[0px]"
+                      : "rounded-[10px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-tl-[0px] md:rounded-bl-[0px]"
+                  }`}
+                >
+                  <img
+                    alt=""
+                    className={`absolute inset-0 object-cover size-full ${
+                      index === 0
+                        ? "rounded-[10px] md:rounded-bl-[20px] md:rounded-tl-[20px] md:rounded-tr-[0px] md:rounded-br-[0px]"
+                        : "rounded-[10px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-tl-[0px] md:rounded-bl-[0px]"
+                    }`}
+                    src={getImageUrl(img)}
+                  />
+                </div>
+              ))}
             </div>
-            <div className="w-full md:basis-0 md:grow h-[300px] md:h-[400px] lg:h-[586px] min-h-px min-w-px relative rounded-[10px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-tl-[0px] md:rounded-bl-[0px] shrink-0">
-              <img
-                alt=""
-                className="absolute inset-0 object-cover rounded-[10px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-tl-[0px] md:rounded-bl-[0px] size-full"
-                src={bottomRightImage}
-              />
-            </div>
-          </div>
-
-          {/* Final Content Section */}
-          <div className="content-stretch flex flex-col gap-[12px] items-start leading-[40px] relative shrink-0 text-[#333333] w-full">
-            <p className="font-['Montserrat:Medium',sans-serif] font-medium relative shrink-0 text-[20px] md:text-[26px] lg:text-[32px] tracking-[-0.4px] md:tracking-[-0.52px] lg:tracking-[-0.64px] w-full">
-              {translate({
-                ru: "Восстановление природных ландшафтов",
-                uz: "Tabiiy landshaftlarni tiklash",
-                en: "Restoration of natural landscapes",
-                de: "Wiederherstellung natürlicher Landschaften",
-              })}
-            </p>
-            <p className="font-['Montserrat:Regular',sans-serif] font-normal relative shrink-0 text-[16px] md:text-[20px] lg:text-[24px] tracking-[-0.32px] md:tracking-[-0.4px] lg:tracking-[-0.48px] w-full">
-              {translate({
-                ru: "Дополнительно посеяны 6 кг семян трёх видов деревьев, включая орех чёрный. Это помогает укреплять почвы, улучшать структуру лесных массивов и ускорять восстановление природных зон",
-                uz: "Qo'shimcha ravishda qora yong'oq daraxtining uch turidan 6 kg urug' ekildi. Bu tuproqni mustahkamlash, o'rmon massivlarining tuzilishini yaxshilash va tabiiy hududlarni tiklashni tezlashtirish",
-                en: "Additionally, 6 kg of seeds from three tree species, including black walnut, were sown. This helps strengthen soils, improve the structure of forest areas and accelerate the restoration of natural zones",
-                de: "Zusätzlich wurden 6 kg Samen von drei Baumarten, darunter Schwarznuss, gesät. Dies hilft, Böden zu stärken, die Struktur von Waldgebieten zu verbessern und die Wiederherstellung natürlicher Zonen zu beschleunigen",
-              })}
-            </p>
-          </div>
+          )}
         </div>
       </div>
 
@@ -591,31 +665,41 @@ export function NewsDetailPage() {
           </div>
 
           {/* Related News Cards */}
-          {relatedNews.slice(0, 2).map((item) => (
-            <Link
-              key={item.id}
-              to={`/news/${item.id}`}
-              className="flex flex-col gap-[20px] group"
-            >
-              <div className="h-[285px] relative rounded-[20px] overflow-hidden">
-                <img
-                  alt={item.title}
-                  className="absolute inset-0 object-cover rounded-[20px] size-full transition-transform duration-500 group-hover:scale-110"
-                  src={
-                    item.image.startsWith("/") ? item.image : `/${item.image}`
-                  }
-                />
-              </div>
-              <div className="flex flex-col gap-[10px]">
-                <p className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-[#333333] text-[22px] tracking-[-0.44px] group-hover:text-[#8f7b49] transition-colors">
-                  {item.title}
-                </p>
-                <p className="font-['Montserrat:Regular',sans-serif] font-normal text-[#5c5c5c] text-[16px] tracking-[-0.48px] line-clamp-2">
-                  {item.description}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {relatedNews.slice(0, 2).map((item) => {
+            const itemTitle = getNewsLocalizedField(item, "title", language);
+            const itemExcerpt = getNewsLocalizedField(
+              item,
+              "excerpt",
+              language,
+            );
+            const itemImage = item.coverImage
+              ? getImageUrl(item.coverImage)
+              : "/news-1.webp";
+
+            return (
+              <Link
+                key={item.id}
+                to={`/news/${item.slug || item.id}`}
+                className="flex flex-col gap-[20px] group"
+              >
+                <div className="h-[285px] relative rounded-[20px] overflow-hidden">
+                  <img
+                    alt={itemTitle}
+                    className="absolute inset-0 object-cover rounded-[20px] size-full transition-transform duration-500 group-hover:scale-110"
+                    src={itemImage}
+                  />
+                </div>
+                <div className="flex flex-col gap-[10px]">
+                  <p className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-[#333333] text-[22px] tracking-[-0.44px] group-hover:text-[#8f7b49] transition-colors">
+                    {itemTitle}
+                  </p>
+                  <p className="font-['Montserrat:Regular',sans-serif] font-normal text-[#5c5c5c] text-[16px] tracking-[-0.48px] line-clamp-2">
+                    {itemExcerpt}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
 

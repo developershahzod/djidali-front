@@ -8,35 +8,18 @@ import {
   Calendar,
   Globe,
   ImageIcon,
+  Upload,
+  X,
 } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
-import { djidaliApi } from "../../services/djidaliApi";
+import { djidaliApi, ApiNewsArticle } from "../../services/djidaliApi";
 import { useToast } from "../../contexts/ToastContext";
 import { useConfirm } from "../../contexts/ConfirmContext";
 import { cn } from "../../lib/utils";
 import { getImageUrl } from "../../utils/imageUtils";
+import { RichTextEditor } from "../../components/admin/RichTextEditor";
 
-interface NewsArticle {
-  id: string;
-  titleRu: string;
-  titleUz: string;
-  titleEn: string;
-  titleDe: string;
-  summaryRu: string;
-  summaryUz: string;
-  summaryEn: string;
-  summaryDe: string;
-  contentRu: string;
-  contentUz: string;
-  contentEn: string;
-  contentDe: string;
-  slug: string;
-  imageUrl: string;
-  isPublished: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+// Use ApiNewsArticle from djidaliApi for type consistency
 
 interface NewsFormData {
   titleRu: string;
@@ -77,16 +60,93 @@ const initialFormData: NewsFormData = {
 const AdminNewsPage = () => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
-  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [news, setNews] = useState<ApiNewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(
+  const [editingArticle, setEditingArticle] = useState<ApiNewsArticle | null>(
     null,
   );
   const [formData, setFormData] = useState<NewsFormData>(initialFormData);
   const [activeTab, setActiveTab] = useState<"ru" | "uz" | "en" | "de">("ru");
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error({
+        title: "Ошибка",
+        message: "Максимальный размер файла 10MB",
+      });
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error({
+        title: "Ошибка",
+        message: "Разрешены только PNG, JPG, WEBP, GIF",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await djidaliApi.uploadImages([file]);
+      if (response.urls && response.urls.length > 0) {
+        setFormData((prev) => ({ ...prev, imageUrl: response.urls[0] }));
+        toast.success("Изображение загружено");
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error({
+        title: "Ошибка загрузки",
+        message: "Не удалось загрузить изображение",
+      });
+    } finally {
+      setIsUploading(false);
+      e.target.value = ""; // Reset input
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, imageUrl: "" }));
+  };
+
+  // Upload image for rich text editor (returns URL)
+  const handleEditorImageUpload = async (file: File): Promise<string> => {
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Размер файла не должен превышать 10MB");
+      throw new Error("File too large");
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Допустимы только изображения (PNG, JPEG, WEBP, GIF)");
+      throw new Error("Invalid file type");
+    }
+
+    const result = await djidaliApi.uploadImages([file]);
+    if (result.urls && result.urls.length > 0) {
+      return getImageUrl(result.urls[0]);
+    }
+    throw new Error("Upload failed");
+  };
+
+  // Handle content change from RichTextEditor
+  const handleContentChange = (fieldName: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+  };
 
   const fetchNews = useCallback(async () => {
     try {
@@ -136,26 +196,37 @@ const AdminNewsPage = () => {
     });
   };
 
-  const openEditModal = (article: NewsArticle) => {
-    setEditingArticle(article);
-    setFormData({
-      titleRu: article.titleRu || "",
-      titleUz: article.titleUz || "",
-      titleEn: article.titleEn || "",
-      titleDe: article.titleDe || "",
-      summaryRu: article.summaryRu || "",
-      summaryUz: article.summaryUz || "",
-      summaryEn: article.summaryEn || "",
-      summaryDe: article.summaryDe || "",
-      contentRu: article.contentRu || "",
-      contentUz: article.contentUz || "",
-      contentEn: article.contentEn || "",
-      contentDe: article.contentDe || "",
-      slug: article.slug || "",
-      imageUrl: article.imageUrl || "",
-      isPublished: article.isPublished || false,
-    });
-    setShowModal(true);
+  const openEditModal = async (article: ApiNewsArticle) => {
+    // Fetch full article data since list may not include all content fields
+    setIsLoadingEdit(true);
+    try {
+      const fullArticle = await djidaliApi.getNewsById(article.id);
+      setEditingArticle(fullArticle);
+      setFormData({
+        titleRu: fullArticle.titleRu || "",
+        titleUz: fullArticle.titleUz || "",
+        titleEn: fullArticle.titleEn || "",
+        titleDe: fullArticle.titleDe || "",
+        summaryRu: fullArticle.summaryRu || "",
+        summaryUz: fullArticle.summaryUz || "",
+        summaryEn: fullArticle.summaryEn || "",
+        summaryDe: fullArticle.summaryDe || "",
+        contentRu: fullArticle.contentRu || "",
+        contentUz: fullArticle.contentUz || "",
+        contentEn: fullArticle.contentEn || "",
+        contentDe: fullArticle.contentDe || "",
+        slug: fullArticle.slug || "",
+        imageUrl: fullArticle.imageUrl || "",
+        isPublished: fullArticle.isPublished || false,
+      });
+      setActiveTab("ru"); // Reset to Russian tab when opening
+      setShowModal(true);
+    } catch (error) {
+      console.error("Failed to load article:", error);
+      toast.error("Не удалось загрузить статью для редактирования");
+    } finally {
+      setIsLoadingEdit(false);
+    }
   };
 
   const openCreateModal = () => {
@@ -237,6 +308,22 @@ const AdminNewsPage = () => {
     { key: "en" as const, label: "English" },
     { key: "de" as const, label: "Deutsch" },
   ];
+
+  // Check if a language has content filled (title and content are required)
+  const hasLanguageContent = (lang: "ru" | "uz" | "en" | "de"): boolean => {
+    const langSuffix = lang.charAt(0).toUpperCase() + lang.slice(1);
+    const title = formData[
+      `title${langSuffix}` as keyof NewsFormData
+    ] as string;
+    const content = formData[
+      `content${langSuffix}` as keyof NewsFormData
+    ] as string;
+    // Consider content filled if both title and content have meaningful content
+    return (
+      Boolean(title?.trim()) &&
+      Boolean(content?.trim() && content !== "<p></p>")
+    );
+  };
 
   return (
     <AdminLayout
@@ -343,9 +430,23 @@ const AdminNewsPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-[#6B5B4C]">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(article.createdAt)}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4" />
+                        <span>
+                          {article.isPublished && article.publishedAt
+                            ? formatDate(article.publishedAt)
+                            : formatDate(article.createdAt)}
+                        </span>
+                      </div>
+                      {article.isPublished && article.publishedAt && (
+                        <span className="text-xs text-[#8E7A5E]">
+                          Опубликовано
+                        </span>
+                      )}
+                      {!article.isPublished && (
+                        <span className="text-xs text-[#8E7A5E]">Создано</span>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -361,7 +462,8 @@ const AdminNewsPage = () => {
                       </a>
                       <button
                         onClick={() => openEditModal(article)}
-                        className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24]"
+                        disabled={isLoadingEdit}
+                        className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24] disabled:opacity-50"
                         title="Редактировать"
                       >
                         <Edit className="h-4 w-4" />
@@ -382,6 +484,16 @@ const AdminNewsPage = () => {
         </div>
       )}
 
+      {/* Loading overlay for edit */}
+      {isLoadingEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-xl">
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-[#BFA480]/40 border-t-[#8F6E47]" />
+            <span className="text-sm text-[#6B5B4C]">Загрузка статьи...</span>
+          </div>
+        </div>
+      )}
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
@@ -392,21 +504,38 @@ const AdminNewsPage = () => {
 
             {/* Language Tabs */}
             <div className="mb-6 flex gap-2 border-b border-[#E2D5C1] pb-4">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                    activeTab === tab.key
-                      ? "bg-[#2F2A24] text-white"
-                      : "bg-[#F7F1E6] text-[#6B5B4C] hover:bg-[#E2D5C1]",
-                  )}
-                >
-                  <Globe className="h-4 w-4" />
-                  {tab.label}
-                </button>
-              ))}
+              {tabs.map((tab) => {
+                const hasFilled = hasLanguageContent(tab.key);
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                      activeTab === tab.key
+                        ? "bg-[#2F2A24] text-white"
+                        : "bg-[#F7F1E6] text-[#6B5B4C] hover:bg-[#E2D5C1]",
+                    )}
+                  >
+                    <Globe className="h-4 w-4" />
+                    {tab.label}
+                    {/* Content filled indicator */}
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full",
+                        hasFilled
+                          ? "bg-green-500"
+                          : activeTab === tab.key
+                            ? "bg-white/30"
+                            : "bg-gray-300",
+                      )}
+                      title={
+                        hasFilled ? "Контент заполнен" : "Контент не заполнен"
+                      }
+                    />
+                  </button>
+                );
+              })}
             </div>
 
             {/* Form Fields */}
@@ -451,53 +580,95 @@ const AdminNewsPage = () => {
                 />
               </div>
 
-              {/* Content */}
+              {/* Content - Rich Text Editor */}
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-[#6B5B4C]">
                   Содержание ({activeTab.toUpperCase()})
                 </label>
-                <textarea
-                  name={`content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
-                  value={
+                <RichTextEditor
+                  key={activeTab}
+                  content={
                     formData[
                       `content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}` as keyof NewsFormData
                     ] as string
                   }
-                  onChange={handleInputChange}
-                  rows={6}
-                  className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
-                  placeholder="Полный текст новости..."
+                  onChange={(value) =>
+                    handleContentChange(
+                      `content${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`,
+                      value,
+                    )
+                  }
+                  onImageUpload={handleEditorImageUpload}
+                  placeholder="Напишите содержание новости... Вы можете добавлять изображения, видео, форматирование."
+                  minHeight="300px"
+                  className="rounded-xl border-[#E2D5C1]"
                 />
               </div>
 
-              {/* Slug & Image (only shown once) */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[#6B5B4C]">
-                    URL-путь (slug)
+              {/* Slug */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#6B5B4C]">
+                  URL-путь (slug)
+                </label>
+                <input
+                  type="text"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleInputChange}
+                  className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
+                  placeholder="my-news-article"
+                />
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#6B5B4C]">
+                  Изображение
+                </label>
+                {formData.imageUrl ? (
+                  <div className="relative rounded-xl border border-[#E2D5C1] overflow-hidden">
+                    <img
+                      src={getImageUrl(formData.imageUrl)}
+                      alt="Preview"
+                      className="w-full h-48 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed border-[#E2D5C1] bg-[#F7F1E6]/50 cursor-pointer hover:bg-[#F7F1E6] transition-colors">
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                    {isUploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#BFA480]/40 border-t-[#8F6E47]" />
+                        <span className="text-sm text-[#6B5B4C]">
+                          Загрузка...
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <Upload className="h-8 w-8 text-[#BFA480]" />
+                        <span className="text-sm text-[#6B5B4C]">
+                          Нажмите для загрузки
+                        </span>
+                        <span className="text-xs text-[#8E7A5E]">
+                          PNG, JPG, WEBP, GIF (макс. 10MB)
+                        </span>
+                      </div>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    name="slug"
-                    value={formData.slug}
-                    onChange={handleInputChange}
-                    className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
-                    placeholder="my-news-article"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[#6B5B4C]">
-                    URL изображения
-                  </label>
-                  <input
-                    type="text"
-                    name="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                    className="w-full rounded-xl border border-[#E2D5C1] bg-white px-4 py-2.5 text-[#2F2A24] focus:border-[#BFA480] focus:outline-none focus:ring-2 focus:ring-[#BFA480]/30"
-                    placeholder="https://..."
-                  />
-                </div>
+                )}
               </div>
 
               {/* Published checkbox */}
