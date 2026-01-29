@@ -1,8 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { svgPaths } from "../utils/svgPaths";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import api, { News } from "../services/api";
+import { getImageUrl } from "../utils/imageUtils";
 
 // Import images with local paths
 const heroImage = "/about-hero.webp";
@@ -584,7 +586,205 @@ function NewsCard({ item, isLarge = false }: NewsCardProps) {
     </Link>
   );
 }
-// News Grid Section
+// News item type for grid
+interface NewsItem {
+  id: string | number;
+  slug?: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  date: Date;
+  tags?: string[];
+  fullContent?: string;
+}
+
+// News Grid Section with data prop
+interface NewsGridWithDataProps {
+  searchQuery: string;
+  selectedCategory: string;
+  newsData: NewsItem[];
+  loading?: boolean;
+}
+
+function NewsGridWithData({
+  searchQuery,
+  selectedCategory,
+  newsData,
+  loading,
+}: NewsGridWithDataProps) {
+  const { translate } = useLanguage();
+
+  const filteredNews = useMemo(() => {
+    let filtered = [...newsData];
+
+    // Filter by category
+    if (selectedCategory !== "Все") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.description.toLowerCase().includes(query) ||
+          item.tags?.some((tag) => tag.toLowerCase().includes(query)),
+      );
+    }
+
+    return filtered;
+  }, [searchQuery, selectedCategory, newsData]);
+
+  if (loading) {
+    return (
+      <div className="w-full px-[20px] md:px-[50px] pt-10 md:pt-16 pb-12 md:pb-20">
+        <div className="max-w-[1340px] mx-auto">
+          <div className="flex items-center justify-center h-[300px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8f7b49]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full px-[20px] md:px-[50px] pt-10 md:pt-16 pb-12 md:pb-20">
+      <div className="max-w-[1340px] mx-auto">
+        {/* Section Header */}
+        <h2 className="font-['Montserrat:Medium',sans-serif] font-medium text-[#333] text-[32px] md:text-[48px] lg:text-[60px] tracking-[-1px] md:tracking-[-1.5px] lg:tracking-[-1.8px] mb-8 md:mb-16 leading-tight">
+          {translate({
+            ru: "Новости",
+            uz: "Yangiliklar",
+            en: "News",
+            de: "Nachrichten",
+          })}
+        </h2>
+
+        {/* News Grid - Custom Layout */}
+        {filteredNews.length > 0 ? (
+          <div className="flex flex-col gap-10">
+            {/* First Row: Large featured card + Small card */}
+            <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 md:gap-6">
+              {/* Large Featured Card */}
+              {filteredNews[0] && (
+                <Link
+                  to={`/news/${filteredNews[0].slug || filteredNews[0].id}`}
+                  className="group block"
+                >
+                  <div className="relative h-[300px] md:h-[400px] lg:h-[450px] rounded-[10px] md:rounded-[20px] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300">
+                    <img
+                      alt={filteredNews[0].title}
+                      className="absolute inset-0 object-cover size-full transition-transform duration-700 group-hover:scale-105"
+                      src={
+                        filteredNews[0].image.startsWith("http")
+                          ? filteredNews[0].image
+                          : filteredNews[0].image.startsWith("/")
+                            ? filteredNews[0].image
+                            : `/${filteredNews[0].image}`
+                      }
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
+                      <h3 className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-white text-[20px] md:text-[26px] lg:text-[32px] leading-[1.3] mb-2 md:mb-4">
+                        {filteredNews[0].title}
+                      </h3>
+                      <p className="font-['Montserrat:Regular',sans-serif] font-normal text-white/95 text-[14px] md:text-[16px] leading-[1.6] line-clamp-2">
+                        {filteredNews[0].description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Small Card */}
+              {filteredNews[1] && (
+                <Link
+                  to={`/news/${filteredNews[1].slug || filteredNews[1].id}`}
+                  className="group block"
+                >
+                  <div className="relative h-[250px] md:h-[400px] lg:h-[450px] rounded-[10px] md:rounded-[20px] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300">
+                    <img
+                      alt={filteredNews[1].title}
+                      className="absolute inset-0 object-cover size-full transition-transform duration-700 group-hover:scale-105"
+                      src={
+                        filteredNews[1].image.startsWith("http")
+                          ? filteredNews[1].image
+                          : filteredNews[1].image.startsWith("/")
+                            ? filteredNews[1].image
+                            : `/${filteredNews[1].image}`
+                      }
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                      <h3 className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-white text-[16px] md:text-[20px] leading-[1.3] mb-2">
+                        {filteredNews[1].title}
+                      </h3>
+                      <p className="font-['Montserrat:Regular',sans-serif] font-normal text-white/90 text-[13px] md:text-[14px] leading-[1.5] line-clamp-2">
+                        {filteredNews[1].description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )}
+            </div>
+
+            {/* Remaining Cards Grid */}
+            {filteredNews.length > 2 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {filteredNews.slice(2).map((item) => (
+                  <Link
+                    key={item.id}
+                    to={`/news/${item.slug || item.id}`}
+                    className="group block"
+                  >
+                    <div className="flex flex-col h-full rounded-[10px] md:rounded-[20px] overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
+                      <div className="relative h-[200px] md:h-[220px] overflow-hidden">
+                        <img
+                          alt={item.title}
+                          className="object-cover size-full transition-transform duration-700 group-hover:scale-105"
+                          src={
+                            item.image.startsWith("http")
+                              ? item.image
+                              : item.image.startsWith("/")
+                                ? item.image
+                                : `/${item.image}`
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2 md:gap-3 p-4 md:p-6 flex-1">
+                        <h3 className="font-['Montserrat:SemiBold',sans-serif] font-semibold text-[#333333] text-[18px] md:text-[20px] leading-[1.3] group-hover:text-[#8f7b49] transition-colors line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="font-['Montserrat:Regular',sans-serif] font-normal text-[#5c5c5c] text-[14px] md:text-[15px] leading-[1.6] line-clamp-3">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-[#5c5c5c] text-[18px]">
+              {translate({
+                ru: "Новости не найдены",
+                uz: "Yangiliklar topilmadi",
+                en: "No news found",
+                de: "Keine Nachrichten gefunden",
+              })}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Legacy News Grid Section (kept for compatibility)
 interface NewsGridProps {
   searchQuery: string;
   selectedCategory: string;
@@ -758,16 +958,80 @@ function NewsGrid({ searchQuery, selectedCategory }: NewsGridProps) {
   );
 }
 
+// Helper to get localized field from API News
+const getNewsLocalizedField = (
+  news: News,
+  field: "title" | "content" | "excerpt",
+  language: string,
+): string => {
+  // If API returned localized field directly
+  if (field === "title" && news.title) return news.title;
+  if (field === "content" && news.content) return news.content;
+  if (field === "excerpt" && news.excerpt) return news.excerpt;
+
+  // Fallback to specific language fields
+  const langKey =
+    language === "en"
+      ? "Eng"
+      : language.charAt(0).toUpperCase() + language.slice(1);
+  const fieldKey = `${field}${langKey}` as keyof News;
+  const value = news[fieldKey];
+  if (value && typeof value === "string") return value;
+
+  // Fallback chain: ru -> uz -> eng
+  const fallbacks = ["Ru", "Uz", "Eng", "De"];
+  for (const fb of fallbacks) {
+    const fbKey = `${field}${fb}` as keyof News;
+    const fbValue = news[fbKey];
+    if (fbValue && typeof fbValue === "string") return fbValue;
+  }
+
+  return "";
+};
+
 // Main NewsPage Component
 export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [apiNews, setApiNews] = useState<News[]>([]);
+  const [loading, setLoading] = useState(true);
   const selectedCategory = "Все";
   const { language } = useLanguage();
 
-  const localizedNews = useMemo(
-    () => getLocalizedNewsData(language),
-    [language],
-  );
+  // Load news from API
+  useEffect(() => {
+    const loadNews = async () => {
+      try {
+        const langParam = language === "en" ? "eng" : language;
+        const response = await api.getNews({ limit: 50, lang: langParam });
+        setApiNews(response.data);
+      } catch (error) {
+        console.error("Failed to load news from API:", error);
+        // Keep empty array - will show static data as fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNews();
+  }, [language]);
+
+  // Combine API news with static fallback
+  const localizedNews = useMemo(() => {
+    if (apiNews.length > 0) {
+      return apiNews.map((news) => ({
+        id: news.id,
+        slug: news.slug,
+        title: getNewsLocalizedField(news, "title", language),
+        description: getNewsLocalizedField(news, "excerpt", language),
+        fullContent: getNewsLocalizedField(news, "content", language),
+        image: news.coverImage ? getImageUrl(news.coverImage) : "/news-1.webp",
+        category: "Экотуризм", // Default category
+        date: news.publishedAt ? new Date(news.publishedAt) : new Date(),
+        tags: news.tags || [],
+      }));
+    }
+    // Fallback to static data
+    return getLocalizedNewsData(language);
+  }, [apiNews, language]);
 
   return (
     <div className="bg-[#f4f2ed] min-h-screen">
@@ -776,7 +1040,12 @@ export default function NewsPage() {
         onSearchChange={setSearchQuery}
         newsCount={localizedNews.length}
       />
-      <NewsGrid searchQuery={searchQuery} selectedCategory={selectedCategory} />
+      <NewsGridWithData
+        searchQuery={searchQuery}
+        selectedCategory={selectedCategory}
+        newsData={localizedNews}
+        loading={loading}
+      />
       <ScrollToTopButton />
     </div>
   );

@@ -9,6 +9,98 @@ import {
   defaultTourWizardData,
 } from "../../features/tour-wizard/types";
 import { Loader2 } from "lucide-react";
+import { AxiosError } from "axios";
+
+// User-friendly field name mappings
+const fieldLabels: Record<string, string> = {
+  title: "Tour title",
+  titleUz: "Tour title (Uzbek)",
+  titleRu: "Tour title (Russian)",
+  titleEng: "Tour title (English)",
+  titleDe: "Tour title (German)",
+  description: "Description",
+  descriptionUz: "Description (Uzbek)",
+  descriptionRu: "Description (Russian)",
+  descriptionEng: "Description (English)",
+  descriptionDe: "Description (German)",
+  destination: "Destination",
+  duration: "Duration",
+  price: "Price",
+  currency: "Currency",
+  maxParticipants: "Max participants",
+  startDate: "Start date",
+  endDate: "End date",
+  categoryId: "Category",
+  inclusions: "Included in price",
+  exclusions: "Not included",
+  itinerary: "Tour program",
+  program: "Day-by-day program",
+  images: "Tour images",
+  uz: "Uzbek text",
+  ru: "Russian text",
+  eng: "English text",
+  de: "German text",
+};
+
+// Parse validation errors from API response into user-friendly messages
+const parseValidationErrors = (error: unknown): string[] => {
+  if (!(error instanceof AxiosError)) return [];
+
+  const response = error.response?.data;
+  if (!response) return [];
+
+  // Handle NestJS validation error format: { message: string[] }
+  const messages = response.message;
+  if (!Array.isArray(messages)) return [];
+
+  return messages.map((msg: string) => {
+    // Parse messages like "inclusions.0.uz must be longer than or equal to 1 characters"
+    // or "title must be a string"
+
+    // Extract field path (e.g., "inclusions.0.uz" or "title")
+    const fieldMatch = msg.match(/^([a-zA-Z0-9_.]+)\s/);
+    if (!fieldMatch) return msg;
+
+    const fieldPath = fieldMatch[1];
+    const pathParts = fieldPath.split(".");
+
+    // Build user-friendly field name
+    let friendlyField = "";
+    for (const part of pathParts) {
+      // Skip array indices (numbers)
+      if (/^\d+$/.test(part)) continue;
+
+      const label = fieldLabels[part];
+      if (label) {
+        friendlyField = friendlyField ? `${friendlyField} - ${label}` : label;
+      }
+    }
+
+    if (!friendlyField) {
+      friendlyField = fieldPath;
+    }
+
+    // Simplify the error message
+    if (
+      msg.includes("must be longer than or equal to") ||
+      msg.includes("should not be empty")
+    ) {
+      return `Please fill in the "${friendlyField}" field`;
+    }
+    if (msg.includes("must be a string")) {
+      return `"${friendlyField}" must be text`;
+    }
+    if (msg.includes("must be a number")) {
+      return `"${friendlyField}" must be a number`;
+    }
+    if (msg.includes("must be a valid")) {
+      return `Please enter a valid ${friendlyField.toLowerCase()}`;
+    }
+
+    // Default: show original message with friendly field name
+    return `${friendlyField}: ${msg.replace(fieldPath, "").trim()}`;
+  });
+};
 
 const TourWizardPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -327,10 +419,27 @@ const TourWizardPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to save tour:", error);
-      toast.error({
-        title: "Error",
-        message: "Failed to save tour. Please try again.",
-      });
+
+      // Parse validation errors for user-friendly messages
+      const validationErrors = parseValidationErrors(error);
+
+      if (validationErrors.length > 0) {
+        // Show first 3 errors max to avoid overwhelming the user
+        const displayErrors = validationErrors.slice(0, 3);
+        const remainingCount = validationErrors.length - 3;
+
+        toast.error({
+          title: "Please check the following fields",
+          message:
+            displayErrors.join("\n") +
+            (remainingCount > 0 ? `\n...and ${remainingCount} more` : ""),
+        });
+      } else {
+        toast.error({
+          title: "Error",
+          message: "Failed to save tour. Please try again.",
+        });
+      }
       throw error;
     }
   };
