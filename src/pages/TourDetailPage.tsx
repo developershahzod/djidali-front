@@ -824,8 +824,11 @@ const TourDetailPage: React.FC = () => {
                           className="text-[20px] text-black flex-1"
                           style={{ letterSpacing: "-0.4px" }}
                         >
-                          {item.title.replace(/^День\s*\d+\s*/i, "").trim() ||
-                            item.title}
+                          {item.title
+                            ? item.title
+                                .replace(/^День\s*\d+\s*/i, "")
+                                .trim() || item.title
+                            : t("tourDetail.day") + " " + item.dayNumber}
                         </div>
                       </div>
                       <svg
