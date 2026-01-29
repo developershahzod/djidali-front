@@ -24,6 +24,7 @@ import {
 } from "../../lib/utils";
 import { ApiTour } from "../../services/djidaliApi";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { getImageUrl } from "../../utils/imageUtils";
 
 // Helper to extract localized string from multilingual object
 const getLocalizedText = (
@@ -434,8 +435,9 @@ const ToursPage = () => {
                             <img
                               className="h-full w-full object-cover"
                               src={
-                                tour.images?.[0] ||
-                                "https://via.placeholder.com/40"
+                                tour.images?.[0]
+                                  ? getImageUrl(tour.images[0])
+                                  : "https://via.placeholder.com/40"
                               }
                               alt={getLocalizedText(tour.title, language)}
                             />
