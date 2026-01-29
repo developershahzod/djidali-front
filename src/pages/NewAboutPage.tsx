@@ -631,21 +631,17 @@ const NewAboutPage: React.FC = () => {
                     onClick={() => setCurrentSlide(index)}
                     className="text-left transition-all duration-300"
                   >
-                    {index === currentSlide ? (
-                      <p
-                        className="text-[clamp(16px,1.39vw,20px)] font-medium leading-[normal] text-[#8f7b49] tracking-[-0.02em]"
-                        style={{ fontFamily: "Montserrat, sans-serif" }}
-                      >
-                        ▸ {feature.highlight}
-                      </p>
-                    ) : (
-                      <p
-                        className="text-[clamp(16px,1.39vw,20px)] font-medium leading-[normal] text-[#333333] tracking-[-0.02em]"
-                        style={{ fontFamily: "Montserrat, sans-serif" }}
-                      >
-                        {feature.title}
-                      </p>
-                    )}
+                    <p
+                      className={`text-[clamp(16px,1.39vw,20px)] font-medium leading-[normal] tracking-[-0.02em] ${
+                        index === currentSlide
+                          ? "text-[#8f7b49]"
+                          : "text-[#333333]"
+                      }`}
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      {index === currentSlide && "▸ "}
+                      {feature.title}
+                    </p>
                   </button>
                 ))}
               </div>

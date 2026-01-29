@@ -28,7 +28,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-const MAX_FILE_SIZE_MB = 2;
+const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const MediaStep: React.FC = () => {
@@ -62,12 +62,21 @@ const MediaStep: React.FC = () => {
         return;
       }
 
-      // Check file types
+      // Check file types - allow PNG, JPG, WEBP, GIF
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+      ];
       const invalidFiles = selectedFiles.filter(
-        (file) => !file.type.startsWith("image/"),
+        (file) => !allowedTypes.includes(file.type),
       );
       if (invalidFiles.length > 0) {
-        setUploadError(t("wizard.media.onlyImagesError"));
+        setUploadError(
+          t("wizard.media.formatError") ||
+            "Only PNG, JPG, WEBP, and GIF images are allowed",
+        );
         return;
       }
 
@@ -174,7 +183,7 @@ const MediaStep: React.FC = () => {
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image/*"
+            accept="image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif"
             onChange={(e) => handleFileSelect(e.target.files)}
             className="hidden"
           />
@@ -252,8 +261,16 @@ const MediaStep: React.FC = () => {
                   alt={`Tour image ${index + 1}`}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src =
-                      "https://via.placeholder.com/400x300?text=Image";
+                    const img = e.currentTarget as HTMLImageElement;
+                    const currentSrc = img.src;
+                    // Try .jpg fallback if .webp failed
+                    if (currentSrc.endsWith(".webp")) {
+                      img.src = currentSrc.replace(".webp", ".jpg");
+                    } else {
+                      // Use data URL placeholder to avoid external dependency
+                      img.src =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23f1f5f9' width='400' height='300'/%3E%3Ctext fill='%2394a3b8' font-family='system-ui' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3EImage not found%3C/text%3E%3C/svg%3E";
+                    }
                   }}
                 />
 

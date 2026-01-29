@@ -346,11 +346,17 @@ const EssentialsStep: React.FC = () => {
               <Input
                 type="number"
                 min={1000}
-                step={1000}
+                step={1}
                 value={formData.price}
                 onChange={(e) => {
                   const value = parseFloat(e.target.value) || 0;
-                  updateFormData("price", Math.max(1000, value));
+                  updateFormData("price", value);
+                }}
+                onBlur={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  if (value < 1000) {
+                    updateFormData("price", 1000);
+                  }
                 }}
                 className="h-12 text-lg"
               />

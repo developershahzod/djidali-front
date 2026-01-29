@@ -30,10 +30,10 @@ const aboutContent = [
       de: " und die Schönheit der Natur in ihrer besten Form entdecken.",
     },
     bottomText: {
-      ru: "ДАЛЬВЕРЗИН         лесоохотничье хозяйство",
-      uz: "DALVERZIN         o'rmon-ov xo'jaligi",
-      en: "DALVERZIN         forestry and hunting",
-      de: "DALVERZIN         Forst- und Jagdwirtschaft",
+      ru: "Дальверзин - уникальное пространство для Вашего отдыха в Узбекистане",
+      uz: "Dalverzin - O'zbekistonda dam olishingiz uchun noyob makon",
+      en: "Dalverzin - A unique space for your relaxation in Uzbekistan",
+      de: "Dalverzin - Ein einzigartiger Ort für Ihre Erholung in Usbekistan",
     },
   },
   {

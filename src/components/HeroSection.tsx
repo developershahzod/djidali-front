@@ -50,10 +50,10 @@ const HeroSection: React.FC = () => {
         <div className="max-w-[1400px] mx-auto">
           <h1 className="text-[32px] sm:text-[38px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[1.1] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
             {translate({
-              ru: "ДАЛЬВЕРЗИН - лесоохотничье хозяйство",
-              uz: "DALVARZIN - o'rmon va ov xo'jaligi",
-              en: "DALVERZIN - Forest and Hunting Reserve",
-              de: "DALVERZIN - Forst- und Jagdwirtschaft",
+              ru: "Дальверзин - уникальное пространство для Вашего отдыха в Узбекистане",
+              uz: "Dalverzin - O'zbekistonda dam olishingiz uchun noyob makon",
+              en: "Dalverzin - A unique space for your relaxation in Uzbekistan",
+              de: "Dalverzin - Ein einzigartiger Ort für Ihre Erholung in Usbekistan",
             })}
           </h1>
         </div>

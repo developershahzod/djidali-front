@@ -279,10 +279,9 @@ const translations = {
 
     // About page - New
     "aboutPage.hero.title": "A place where every step is designed by nature",
-    "aboutPage.hero.statsClients": "Our regular customers",
+    "aboutPage.hero.statsClients": "private trips",
     "aboutPage.hero.statsThousand": "thousand",
-    "aboutPage.help.title":
-      "Dalverzin — a unique space for your nature retreat in Uzbekistan with comfort.",
+    "aboutPage.help.title": "Dalverzin - the unique nature of Uzbekistan",
     "aboutPage.help.description":
       "Dalverzin is located in Tashkent region, Bekabad district. It's a territory for those who value silence, clean air, and natural trails — in an individual format with thoughtful service. We tailor the program to your pace: a family day, an active program, or a peaceful retreat. Sometimes on the trails you can encounter pheasants, wild boars, deer, and birds of prey — we don't guarantee encounters, but we create the conditions where they're possible.",
     "aboutPage.help.cta": "Book a tour",
@@ -1321,10 +1320,9 @@ const translations = {
 
     // About page - New
     "aboutPage.hero.title": "Место, где каждый шаг продуман природой",
-    "aboutPage.hero.statsClients": "Наши постоянные клиенты",
+    "aboutPage.hero.statsClients": "частных выездов",
     "aboutPage.hero.statsThousand": "тыс",
-    "aboutPage.help.title":
-      "Dalverzin — уникальное пространство для Вашего отдыха на природе в Узбекистане с комфортом.",
+    "aboutPage.help.title": "Дальверзин - уникальная природа Узбекистана",
     "aboutPage.help.description":
       "Dalverzin находится в Ташкентской области, Бекабадском районе. Это территория для тех, кто ценит тишину, чистый воздух и живые природные маршруты — в индивидуальном формате и с продуманным сервисом. Мы подбираем программу под ваш ритм: семейный день, активная программа или спокойный ретрит. Иногда на маршрутах можно встретить фазанов, кабанов, оленей и хищных птиц — мы не гарантируем встречу, но создаём условия, в которых она возможна.",
     "aboutPage.help.cta": "Забронировать тур",
@@ -2392,10 +2390,9 @@ const translations = {
 
     // About page - New
     "aboutPage.hero.title": "Har bir qadam tabiat tomonidan o'ylangan joy",
-    "aboutPage.hero.statsClients": "Bizning doimiy mijozlarimiz",
+    "aboutPage.hero.statsClients": "xususiy sayohatlar",
     "aboutPage.hero.statsThousand": "ming",
-    "aboutPage.help.title":
-      "Dalverzin — O'zbekistonda tabiatda qulay dam olish uchun noyob makon.",
+    "aboutPage.help.title": "Dalverzin - O'zbekistonning noyob tabiati",
     "aboutPage.help.description":
       "Dalverzin Toshkent viloyati, Bekobod tumanida joylashgan. Bu jimjitlik, toza havo va tabiiy marshrutlarni qadrlaydigan kishilar uchun hudud — individual formatda va puxta o'ylangan xizmat bilan. Biz dasturni sizning ritmingizga moslashtiramiz: oilaviy kun, faol dastur yoki tinch dam olish. Ba'zan yo'llarda qirg'ovullar, yovvoyi cho'chqalar, kiyiklar va yirtqich qushlarni uchratish mumkin — biz uchrashuvni kafolatlamaymiz, lekin bunga imkon beradigan sharoitlarni yaratamiz.",
     "aboutPage.help.cta": "Turni bron qilish",
@@ -3541,10 +3538,9 @@ const translations = {
     // About page - New
     "aboutPage.hero.title":
       "Ein Ort, an dem jeder Schritt von der Natur durchdacht ist",
-    "aboutPage.hero.statsClients": "Unsere Stammkunden",
+    "aboutPage.hero.statsClients": "private Ausflüge",
     "aboutPage.hero.statsThousand": "Tausend",
-    "aboutPage.help.title":
-      "Dalverzin — ein einzigartiger Raum für Ihren komfortablen Naturaufenthalt in Usbekistan.",
+    "aboutPage.help.title": "Dalverzin - die einzigartige Natur Usbekistans",
     "aboutPage.help.description":
       "Dalverzin liegt in der Region Taschkent, Bezirk Bekabad. Es ist ein Gebiet für alle, die Stille, saubere Luft und natürliche Wanderwege schätzen — im individuellen Format mit durchdachtem Service. Wir passen das Programm Ihrem Rhythmus an: Familientag, aktives Programm oder ruhiger Rückzug. Manchmal kann man auf den Wegen Fasane, Wildschweine, Hirsche und Greifvögel treffen — wir garantieren keine Begegnung, aber wir schaffen die Bedingungen, unter denen sie möglich ist.",
     "aboutPage.help.cta": "Eine Tour buchen",

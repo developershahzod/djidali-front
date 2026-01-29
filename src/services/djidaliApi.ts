@@ -448,6 +448,7 @@ class DjidaliApiService {
             "Content-Type": "application/json",
             Authorization: `Bearer ${refreshToken}`,
           },
+          body: JSON.stringify({ refreshToken }),
         });
 
         if (!response.ok) {
@@ -1026,19 +1027,31 @@ class DjidaliApiService {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
+    const token = this.getToken();
+    console.log("[uploadImages] Starting upload", {
+      fileCount: files.length,
+      files: files.map((f) => ({ name: f.name, type: f.type, size: f.size })),
+      hasToken: !!token,
+      url: `${this.baseURL}/tours/upload-images`,
+    });
+
     try {
-      // Use fetch directly instead of the request method to handle the response manually
       const response = await fetch(`${this.baseURL}/tours/upload-images`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${this.getToken()}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
+      console.log("[uploadImages] Response status:", response.status);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to upload images");
+        console.error("[uploadImages] Error response:", errorData);
+        throw new Error(
+          errorData.message || `Upload failed: ${response.status}`,
+        );
       }
 
       const responseData = await response.json();
