@@ -14,6 +14,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import AdminLayout from "../../layouts/AdminLayout";
 import { djidaliApi } from "../../services/djidaliApi";
 import { formatCurrency } from "../../lib/utils";
+import { getImageUrl } from "../../utils/imageUtils";
 
 interface StatsCardProps {
   title: string;
@@ -407,12 +408,7 @@ const DashboardPage = () => {
                 <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                   {tour.image ? (
                     <img
-                      src={
-                        tour.image.startsWith("http") ||
-                        tour.image.startsWith("/api")
-                          ? tour.image
-                          : `/api/uploads/${tour.image}`
-                      }
+                      src={getImageUrl(tour.image)}
                       alt={tour.name}
                       className="h-full w-full object-cover"
                       onError={(e) => {

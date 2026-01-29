@@ -728,9 +728,9 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/why-us#team")}
             className="absolute right-0 top-0 w-[51.04%] h-[clamp(560px,62.5vw,900px)] overflow-hidden cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl"
             style={{
-              backgroundImage: "url(/why-us-team-new.webp)",
+              backgroundImage: "url(/10.webp)",
               backgroundSize: "cover",
-              backgroundPosition: "center center",
+              backgroundPosition: "center top",
             }}
             role="button"
             tabIndex={0}
@@ -867,7 +867,7 @@ const HomePage: React.FC = () => {
             }}
           >
             <img
-              src="/why-us-team-new.webp"
+              src="/10.webp"
               alt={t("home.experience.team")}
               className="absolute inset-0 w-full h-full object-cover"
             />

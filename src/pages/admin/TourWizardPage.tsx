@@ -294,8 +294,12 @@ const TourWizardPage: React.FC = () => {
       price: formData.price,
       currency: formData.currency,
       maxParticipants: formData.maxParticipants,
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: new Date(formData.endDate).toISOString(),
+      startDate: formData.startDate
+        ? new Date(formData.startDate).toISOString()
+        : undefined,
+      endDate: formData.endDate
+        ? new Date(formData.endDate).toISOString()
+        : undefined,
       status: formData.status,
       categoryId: formData.categoryId,
 

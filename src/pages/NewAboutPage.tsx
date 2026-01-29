@@ -66,7 +66,7 @@ const NewAboutPage: React.FC = () => {
           de: "In Dalverzin begleitet Sie ein Team von Guides und Koordinatoren, denen Details wichtig sind: Timing, Sicherheit, Komfort und Respekt vor der Natur.",
         }),
       ],
-      image: "/why-us-team.webp",
+      image: "/10.webp",
       highlight: translate({
         ru: "Профессиональное сопровождение",
         uz: "Professional hamrohlik",
@@ -131,26 +131,11 @@ const NewAboutPage: React.FC = () => {
   const currentFeature = whyUsFeatures[currentSlide];
 
   const teamMembers = [
-    {
-      name: t("aboutPage.team.member1.name"),
-      role: t("aboutPage.team.member1.role"),
-      image: "/1.webp",
-    },
-    {
-      name: t("aboutPage.team.member2.name"),
-      role: t("aboutPage.team.member2.role"),
-      image: "/2.webp",
-    },
-    {
-      name: t("aboutPage.team.member3.name"),
-      role: t("aboutPage.team.member3.role"),
-      image: "/3.webp",
-    },
-    {
-      name: t("aboutPage.team.member4.name"),
-      role: t("aboutPage.team.member4.role"),
-      image: "/4.webp",
-    },
+    // Hidden temporarily:
+    // { name: t("aboutPage.team.member1.name"), role: t("aboutPage.team.member1.role"), image: "/1.webp" }, // Руслан - Егерь
+    // { name: t("aboutPage.team.member2.name"), role: t("aboutPage.team.member2.role"), image: "/2.webp" }, // Фазлиддин - Егерь
+    // { name: t("aboutPage.team.member3.name"), role: t("aboutPage.team.member3.role"), image: "/3.webp" }, // Азиз - Кинолог
+    // { name: t("aboutPage.team.member4.name"), role: t("aboutPage.team.member4.role"), image: "/4.webp" }, // Нарзулла - Лесник
     {
       name: t("aboutPage.team.member5.name"),
       role: t("aboutPage.team.member5.role"),
