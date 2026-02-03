@@ -314,20 +314,17 @@ const TourListPage: React.FC = () => {
                     <div className="absolute left-[clamp(140px,19.31vw,278px)] bottom-[clamp(22px,2.92vw,42px)] w-0 h-[clamp(40px,4.38vw,63px)] border-l border-[#333333] opacity-20"></div>
 
                     {/* Информация о туре */}
-                    <div className="absolute left-[clamp(180px,22.78vw,328px)] bottom-[clamp(20px,2.78vw,40px)]">
-                      <div
-                        className="flex flex-col gap-[clamp(6px,0.69vw,10px)] text-[#333333]"
+                    <div className="absolute left-[clamp(180px,22.78vw,328px)] bottom-[clamp(20px,2.78vw,40px)] h-[clamp(40px,4.38vw,63px)] flex items-center">
+                      <p
+                        className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em] whitespace-nowrap text-[#333333]"
                         style={{ fontFamily: "Montserrat, sans-serif" }}
                       >
-                        <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em] whitespace-nowrap">
-                          {tour.duration || 0} {t("tour.days")},{" "}
-                          {t("tour.upTo")}{" "}
-                          {tour.max_participants ??
-                            (tour as any).maxParticipants ??
-                            15}{" "}
-                          {t("tour.people")}
-                        </p>
-                      </div>
+                        {tour.duration || 0} {t("tour.days")}, {t("tour.upTo")}{" "}
+                        {tour.max_participants ??
+                          (tour as any).maxParticipants ??
+                          15}{" "}
+                        {t("tour.people")}
+                      </p>
                     </div>
 
                     {/* Правая часть - изображение */}
