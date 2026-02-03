@@ -67,10 +67,48 @@ export const experienceStepSchema = z.object({
 
 export type ExperienceStepData = z.infer<typeof experienceStepSchema>;
 
+// Predefined regions for search/filtering
+export const TOUR_REGIONS = [
+  {
+    value: "Dalverzin",
+    labelRu: "Дальверзин",
+    labelUz: "Dalverzin",
+    labelEn: "Dalverzin",
+  },
+  {
+    value: "Tashkent",
+    labelRu: "Ташкент",
+    labelUz: "Toshkent",
+    labelEn: "Tashkent",
+  },
+  {
+    value: "Samarkand",
+    labelRu: "Самарканд",
+    labelUz: "Samarqand",
+    labelEn: "Samarkand",
+  },
+  {
+    value: "Bukhara",
+    labelRu: "Бухара",
+    labelUz: "Buxoro",
+    labelEn: "Bukhara",
+  },
+  { value: "Khiva", labelRu: "Хива", labelUz: "Xiva", labelEn: "Khiva" },
+  {
+    value: "Fergana",
+    labelRu: "Фергана",
+    labelUz: "Farg'ona",
+    labelEn: "Fergana",
+  },
+  { value: "Nukus", labelRu: "Нукус", labelUz: "Nukus", labelEn: "Nukus" },
+  { value: "Termez", labelRu: "Термез", labelUz: "Termiz", labelEn: "Termez" },
+] as const;
+
 // Step 3: Logistics
 export const logisticsStepSchema = z
   .object({
     destination: z.string().min(1, "Destination is required"),
+    regions: z.array(z.string()).default([]),
     maxParticipants: z.number().min(1, "Must have at least 1 participant"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
@@ -119,6 +157,9 @@ export const tourWizardSchema = z.object({
 
   // Step 3: Logistics
   destination: z.string(),
+  regions: z.array(z.string()).default([]),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
   maxParticipants: z.number(),
   startDate: z.string(),
   endDate: z.string(),
@@ -197,6 +238,9 @@ export const defaultTourWizardData: TourWizardData = {
   inclusions: [{ ...defaultMultilingualText }],
   exclusions: [{ ...defaultMultilingualText }],
   destination: "",
+  regions: [],
+  latitude: null,
+  longitude: null,
   maxParticipants: 10,
   startDate: "",
   endDate: "",
@@ -239,6 +283,7 @@ export function validateStep(
     },
     3: {
       destination: data.destination,
+      regions: data.regions,
       maxParticipants: data.maxParticipants,
       startDate: data.startDate,
       endDate: data.endDate,

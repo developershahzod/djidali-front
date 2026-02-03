@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useCallback } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -7,20 +7,26 @@ import {
   Loader2,
   Lock,
   Phone,
+  ShieldAlert,
   User,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { djidaliApi } from "../services/djidaliApi";
 import { validation, sanitize } from "../utils/validation";
 
+// Cloudflare Turnstile site key from environment
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { t, translate } = useLanguage();
-  const { login, register, isLoading } = useAuth();
+  const { login, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Local loading state
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -30,6 +36,38 @@ const LoginPage: React.FC = () => {
     lastName: "",
     phoneNumber: "",
   });
+
+  // CAPTCHA state
+  const [requiresCaptcha, setRequiresCaptcha] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutSeconds, setLockoutSeconds] = useState<number | undefined>();
+  const turnstileRef = useRef<TurnstileInstance>(null);
+
+  // Check login status when email changes (debounced)
+  const checkLoginStatus = useCallback(async (email: string) => {
+    if (!email || !validation.email(email).isValid) return;
+
+    try {
+      const status = await djidaliApi.getLoginStatus(email);
+      setRequiresCaptcha(status.requiresCaptcha);
+      setIsLocked(status.isLocked);
+      setLockoutSeconds(status.lockoutRemainingSeconds);
+    } catch {
+      // Ignore errors - don't reveal user existence
+    }
+  }, []);
+
+  // Handle CAPTCHA completion
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+  };
+
+  // Reset CAPTCHA on error
+  const resetCaptcha = () => {
+    setCaptchaToken(null);
+    turnstileRef.current?.reset();
+  };
 
   const insights = useMemo(
     () => [t("login.sideStat1"), t("login.sideStat2"), t("login.sideStat3")],
@@ -49,16 +87,50 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      const passwordValidation = validation.password(formData.password);
-      if (!passwordValidation.isValid) {
-        setError(passwordValidation.error || "Invalid password");
+      // For login, only check if password is provided
+      // Full validation (length, uppercase, etc.) only for registration
+      if (isLogin) {
+        if (!formData.password) {
+          setError("Password is required");
+          return;
+        }
+      } else {
+        const passwordValidation = validation.password(formData.password);
+        if (!passwordValidation.isValid) {
+          setError(passwordValidation.error || "Invalid password");
+          return;
+        }
+      }
+
+      // Check if account is locked
+      if (isLocked && lockoutSeconds && lockoutSeconds > 0) {
+        const minutes = Math.ceil(lockoutSeconds / 60);
+        setError(
+          t("login.accountLocked")?.replace("{minutes}", String(minutes)) ||
+            `Account is temporarily locked. Try again in ${minutes} minutes.`,
+        );
+        return;
+      }
+
+      // Check if CAPTCHA is required but not completed
+      if (requiresCaptcha && !captchaToken && TURNSTILE_SITE_KEY) {
+        setError(
+          t("login.captchaRequired") ||
+            "Please complete the CAPTCHA verification",
+        );
         return;
       }
 
       const sanitizedEmail = sanitize.email(formData.email);
 
+      setIsSubmitting(true);
+
       if (isLogin) {
-        await login(sanitizedEmail, formData.password);
+        await login(
+          sanitizedEmail,
+          formData.password,
+          captchaToken || undefined,
+        );
         const currentUser = djidaliApi.getCurrentUser();
 
         if (
@@ -121,8 +193,35 @@ const LoginPage: React.FC = () => {
           navigate("/dashboard");
         }
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("login.genericError"));
+    } catch (err: any) {
+      const errorMessage =
+        err instanceof Error ? err.message : t("login.genericError");
+
+      // Check if CAPTCHA is now required
+      if (err?.code === "CAPTCHA_REQUIRED" || err?.requiresCaptcha) {
+        setRequiresCaptcha(true);
+        setError(
+          t("login.captchaRequired") ||
+            "Please complete the CAPTCHA verification",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Check if CAPTCHA was invalid
+      if (err?.code === "CAPTCHA_INVALID") {
+        resetCaptcha();
+        setError(
+          t("login.captchaInvalid") ||
+            "CAPTCHA verification failed. Please try again.",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Set error message
+      setError(errorMessage);
+      setIsSubmitting(false);
     }
   };
 
@@ -312,6 +411,7 @@ const LoginPage: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
+                  onBlur={() => isLogin && checkLoginStatus(formData.email)}
                   required
                   className="h-12 w-full rounded-2xl border border-[#E1D5C2] bg-white/70 px-4 text-sm text-[#2F261C] shadow-inner focus:border-[#B99571] focus:outline-none focus:ring-2 focus:ring-[#E7D1B6]/60"
                   placeholder="email@example.com"
@@ -366,6 +466,42 @@ const LoginPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* CAPTCHA - shown after 3 failed login attempts */}
+              {isLogin && requiresCaptcha && TURNSTILE_SITE_KEY && (
+                <div className="flex flex-col items-center gap-3 rounded-2xl border border-[#E1D5C2] bg-[#FEF9F3] p-4">
+                  <div className="flex items-center gap-2 text-sm text-[#8F6E47]">
+                    <ShieldAlert className="h-5 w-5" />
+                    <span>
+                      {t("login.captchaMessage") ||
+                        "Please verify you're not a robot"}
+                    </span>
+                  </div>
+                  <Turnstile
+                    ref={turnstileRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    onSuccess={handleCaptchaChange}
+                    options={{
+                      theme: "light",
+                      size: "normal",
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Account locked warning */}
+              {isLogin && isLocked && lockoutSeconds && lockoutSeconds > 0 && (
+                <div className="flex items-center gap-3 rounded-2xl border border-[#F3C4C4] bg-[#FEF3F2] p-4 text-sm text-[#A63A3A]">
+                  <ShieldAlert className="h-5 w-5 flex-shrink-0" />
+                  <span>
+                    {t("login.accountLockedMessage")?.replace(
+                      "{minutes}",
+                      String(Math.ceil(lockoutSeconds / 60)),
+                    ) ||
+                      `Your account is temporarily locked due to too many failed attempts. Please try again in ${Math.ceil(lockoutSeconds / 60)} minutes.`}
+                  </span>
+                </div>
+              )}
             </div>
 
             {isLogin && (
@@ -390,10 +526,10 @@ const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="group relative flex w-full items-center justify-center gap-2 rounded-2xl bg-[#8F6E47] py-3 text-sm font-medium text-white shadow-[0_12px_30px_-18px_rgba(143,110,71,0.9)] transition-all hover:-translate-y-[2px] hover:bg-[#7A5D3C] focus:outline-none focus:ring-2 focus:ring-[#D7C2A3]/70 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span>{t("login.loading")}</span>

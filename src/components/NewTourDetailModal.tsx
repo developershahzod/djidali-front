@@ -19,6 +19,12 @@ interface NewTourDetailModalProps {
   onClose: () => void;
 }
 
+interface DayInfo {
+  day: number;
+  title: string;
+  description: string;
+}
+
 // Helper function to safely extract localized text from multilingual objects
 const getLocalizedText = (
   value: string | { [key: string]: string } | undefined | null,
@@ -85,34 +91,57 @@ const NewTourDetailModal: React.FC<NewTourDetailModalProps> = ({
       ? tourImages
       : ["https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg"];
 
-  const days = [
-    {
-      day: 1,
-      title: "День 1",
-      description: "Встреча в Ташкенте, трансфер в Чаткаль, заселение, ужин",
-    },
-    {
-      day: 2,
-      title: "День 2",
-      description:
-        "Экскурсия по заповеднику, наблюдение за животными и птицами",
-    },
-    {
-      day: 3,
-      title: "День 3",
-      description: "Пеший поход наверху к водопаду и ночевка на природе",
-    },
-    {
-      day: 4,
-      title: "День 4",
-      description: "Отдых, фотосессия, дегустация национальной кухни",
-    },
-    {
-      day: 5,
-      title: "День 5",
-      description: "Отдых, фотосессия, дегустация национальной кухни",
-    },
-  ];
+  // Build days from tour.program if available, otherwise use itinerary or fallback
+  const days: DayInfo[] = (() => {
+    // Check for program array (preferred format)
+    if (
+      tour.program &&
+      Array.isArray(tour.program) &&
+      tour.program.length > 0
+    ) {
+      return tour.program.map((day: any) => {
+        const langKey =
+          language === "en"
+            ? "Eng"
+            : language === "uz"
+              ? "Uz"
+              : language === "de"
+                ? "De"
+                : "Ru";
+        return {
+          day: day.dayNumber || 1,
+          title:
+            day[`title${langKey}`] ||
+            day.titleRu ||
+            `День ${day.dayNumber || 1}`,
+          description: day[`description${langKey}`] || day.descriptionRu || "",
+        };
+      });
+    }
+
+    // Check for itinerary object (legacy format: { day1: "...", day2: "..." })
+    if (tour.itinerary && typeof tour.itinerary === "object") {
+      return Object.entries(tour.itinerary)
+        .sort(([a], [b]) => {
+          const numA = parseInt(a.replace(/\D/g, "")) || 0;
+          const numB = parseInt(b.replace(/\D/g, "")) || 0;
+          return numA - numB;
+        })
+        .map(([_key, value], index) => ({
+          day: index + 1,
+          title: `День ${index + 1}`,
+          description: typeof value === "string" ? value : "",
+        }));
+    }
+
+    // Fallback: generate days based on tour duration
+    const duration = tour.duration || 1;
+    return Array.from({ length: duration }, (_, i) => ({
+      day: i + 1,
+      title: `День ${i + 1}`,
+      description: "Программа дня будет уточнена",
+    }));
+  })();
 
   return (
     <div
@@ -346,7 +375,7 @@ const NewTourDetailModal: React.FC<NewTourDetailModalProps> = ({
                 План по дням
               </h2>
               <div className="space-y-3">
-                {days.map((dayInfo) => (
+                {days.map((dayInfo: DayInfo) => (
                   <div
                     key={dayInfo.day}
                     className="border border-gray-200 rounded-xl overflow-hidden"
@@ -368,7 +397,7 @@ const NewTourDetailModal: React.FC<NewTourDetailModalProps> = ({
                     </button>
                     {openDay === dayInfo.day && (
                       <div className="px-6 pb-6">
-                        <p className="text-gray-700 text-[15px] leading-[1.7]">
+                        <p className="text-gray-700 text-[15px] leading-[1.7] whitespace-pre-line">
                           {dayInfo.description}
                         </p>
                       </div>

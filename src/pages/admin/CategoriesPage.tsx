@@ -215,11 +215,32 @@ const CategoriesPage = () => {
         fetchCategories();
       } catch (error: any) {
         console.error("Error deleting category:", error);
-        showToast(
-          error.message ||
-            "Failed to delete category. It may have tours or subcategories.",
-          "error",
-        );
+
+        // Check if error is about associated tours - offer force delete
+        if (error.message?.includes("associated tour")) {
+          const forceConfirmed = await confirm({
+            title: "Force Delete?",
+            message: `${categoryName} has associated tours. Delete category AND all its tours permanently?`,
+            confirmText: "Delete All",
+            cancelText: "Cancel",
+            variant: "danger",
+          });
+
+          if (forceConfirmed) {
+            try {
+              await djidaliApi.deleteCategory(categoryId, true);
+              showToast("Category and all tours deleted", "success");
+              fetchCategories();
+            } catch (forceError: any) {
+              showToast(
+                forceError.message || "Failed to force delete",
+                "error",
+              );
+            }
+          }
+        } else {
+          showToast(error.message || "Failed to delete category", "error");
+        }
       }
     }
   };

@@ -89,7 +89,7 @@ export function DateRangePicker({
       open={isOpen}
       onOpenChange={setIsOpen}
       align="start"
-      className="date-picker-popover p-0 min-w-max"
+      className="date-picker-popover p-0 min-w-max overflow-visible"
       trigger={
         <div className={cn("bg-white rounded-xl cursor-pointer", className)}>
           {label && (
@@ -134,7 +134,7 @@ export function DateRangePicker({
         </div>
       }
     >
-      <div className="p-5">
+      <div className="p-5 px-8">
         {/* Instruction header */}
         <div className="mb-4 pb-3 border-b border-gray-100">
           <p className="text-sm font-medium text-gray-700">
@@ -168,8 +168,8 @@ export function DateRangePicker({
           )}
         </div>
 
-        {/* Calendar */}
-        <div className="date-picker-calendar">
+        {/* Calendar with padding for navigation buttons */}
+        <div className="date-picker-calendar overflow-visible">
           <DayPicker
             mode="range"
             selected={range}
@@ -181,9 +181,9 @@ export function DateRangePicker({
             components={{
               Chevron: ({ orientation }) =>
                 orientation === "left" ? (
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-6 h-6" />
                 ) : (
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-6 h-6" />
                 ),
             }}
           />

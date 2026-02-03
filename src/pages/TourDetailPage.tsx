@@ -5,6 +5,8 @@ import { useTour } from "../hooks/useTours";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import TourGallerySlider from "../components/TourGallerySlider";
+import TourLocationMap from "../components/TourLocationMap";
 
 interface ItineraryItem {
   dayNumber: number;
@@ -28,11 +30,11 @@ const getLocalizedText = (
 
 const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, translate, language } = useLanguage();
+  const { t, translate, language, pluralize } = useLanguage();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { tour, loading, error } = useTour(id ?? null);
-  const [activeDay, setActiveDay] = useState<number | null>(null);
+  const [openDays, setOpenDays] = useState<Set<number>>(new Set());
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -50,7 +52,7 @@ const TourDetailPage: React.FC = () => {
 
   const galleryImages = useMemo(() => {
     if (!tour) return [];
-    const images =
+    const allImages =
       tour.images
         ?.map((image) => {
           if (typeof image === "string") {
@@ -71,12 +73,18 @@ const TourDetailPage: React.FC = () => {
         })
         .filter(Boolean) ?? [];
 
-    if (!images.length && primaryImage) {
-      return [primaryImage];
+    // Exclude the primary/cover image from the gallery (first image is the cover)
+    // Gallery should show only additional images, not duplicate the banner
+    const galleryOnly = allImages.slice(1);
+
+    // If no gallery images but we have a primary, show nothing in gallery
+    // (cover is already displayed in hero section)
+    if (!galleryOnly.length) {
+      return [];
     }
 
-    return images;
-  }, [tour, primaryImage]);
+    return galleryOnly;
+  }, [tour]);
 
   const itineraryItems = useMemo<ItineraryItem[]>(() => {
     if (!tour) return [];
@@ -152,10 +160,10 @@ const TourDetailPage: React.FC = () => {
     navigate(`/booking/${tour.id}`, { state: { bookingData } });
   };
 
-  // Only set first day as active on initial load, not on every activeDay change
+  // Open first day by default on initial load
   useEffect(() => {
     if (itineraryItems.length > 0) {
-      setActiveDay(itineraryItems[0].dayNumber);
+      setOpenDays(new Set([itineraryItems[0].dayNumber]));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itineraryItems.length]); // Only run when itinerary items are loaded
@@ -222,19 +230,6 @@ const TourDetailPage: React.FC = () => {
 
             {/* Stats */}
             <div className="flex flex-col gap-[40px] mt-auto">
-              {/* Location Link */}
-              <div className="flex justify-end">
-                <a
-                  href="#location"
-                  className="text-white underline text-[20px]"
-                  style={{ letterSpacing: "-0.4px" }}
-                >
-                  {getLocalizedText(tour.destination, language) ||
-                    tour.location ||
-                    t("tourDetail.location")}
-                </a>
-              </div>
-
               <div className="flex flex-wrap gap-[30px]">
                 {/* Price */}
                 <div className="flex flex-col gap-[clamp(20px,2.78vw,40px)] w-full md:w-[426px]">
@@ -291,7 +286,12 @@ const TourDetailPage: React.FC = () => {
                     >
                       {tour.duration}{" "}
                       <span className="text-[clamp(24px,2.78vw,40px)] font-extralight">
-                        {translate("tourDetail.days")}
+                        {pluralize(
+                          tour.duration,
+                          t("tourDetail.days.one"),
+                          t("tourDetail.days.few"),
+                          t("tourDetail.days.many"),
+                        )}
                       </span>
                     </div>
                     <div
@@ -301,6 +301,19 @@ const TourDetailPage: React.FC = () => {
                       {translate("tourDetail.tourDuration")}
                     </div>
                   </div>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-end w-full md:w-auto md:flex-1">
+                  <a
+                    href="#location"
+                    className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] underline text-white"
+                    style={{ letterSpacing: "-0.4px" }}
+                  >
+                    {getLocalizedText(tour.destination, language) ||
+                      tour.location ||
+                      t("tourDetail.location")}
+                  </a>
                 </div>
               </div>
             </div>
@@ -457,15 +470,19 @@ const TourDetailPage: React.FC = () => {
                 >
                   {tour.startDate && tour.endDate ? (
                     <>
-                      {new Date(tour.startDate).toLocaleDateString("ru-RU", {
-                        day: "numeric",
-                        month: "short",
-                      })}
+                      {new Date(tour.startDate)
+                        .toLocaleDateString("ru-RU", {
+                          day: "numeric",
+                          month: "short",
+                        })
+                        .replace(".", "")}
                       {" – "}
-                      {new Date(tour.endDate).toLocaleDateString("ru-RU", {
-                        day: "numeric",
-                        month: "short",
-                      })}
+                      {new Date(tour.endDate)
+                        .toLocaleDateString("ru-RU", {
+                          day: "numeric",
+                          month: "short",
+                        })
+                        .replace(".", "")}
                     </>
                   ) : (
                     <span className="text-gray-400">—</span>
@@ -733,66 +750,21 @@ const TourDetailPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Gallery Section */}
-        <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
-          <h2
-            className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
-            style={{ letterSpacing: "-1.8px" }}
-          >
-            {t("tourDetail.momentsFromTour")}
-          </h2>
-          {galleryImages.length > 0 ? (
-            <div className="flex flex-col gap-0">
-              {/* Top Image */}
-              <div className="w-full h-[clamp(240px,34.72vw,500px)] rounded-t-[20px] overflow-hidden">
-                <img
-                  src={galleryImages[0]}
-                  alt={`${getLocalizedText(tour.title, language)} - Lahza 1`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {/* Bottom Images */}
-              <div className="flex flex-col md:flex-row gap-0">
-                {galleryImages.slice(1, 3).length > 0 ? (
-                  galleryImages.slice(1, 3).map((image, index) => (
-                    <div
-                      key={index}
-                      className={`w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden ${index === 0 ? "rounded-bl-[20px]" : "rounded-br-[20px]"}`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${getLocalizedText(tour.title, language)} - Lahza ${index + 2}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))
-                ) : (
-                  // If only 1 image, duplicate it for layout
-                  <>
-                    <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-bl-[20px]">
-                      <img
-                        src={galleryImages[0]}
-                        alt={`${getLocalizedText(tour.title, language)} - Lahza 2`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="w-full md:w-1/2 h-[clamp(240px,40.69vw,586px)] overflow-hidden rounded-br-[20px]">
-                      <img
-                        src={galleryImages[0]}
-                        alt={`${getLocalizedText(tour.title, language)} - Lahza 3`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-20 text-gray-500">
-              <p className="text-[20px]">{t("tourDetail.imagesLoading")}</p>
-            </div>
-          )}
-        </section>
+        {/* Gallery Section - only show if there are gallery images (excluding cover) */}
+        {galleryImages.length > 0 && (
+          <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
+            <h2
+              className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
+              style={{ letterSpacing: "-1.8px" }}
+            >
+              {t("tourDetail.momentsFromTour")}
+            </h2>
+            <TourGallerySlider
+              images={galleryImages}
+              tourTitle={getLocalizedText(tour.title, language)}
+            />
+          </section>
+        )}
 
         {/* Program Section */}
         {itineraryItems.length > 0 && (
@@ -805,12 +777,23 @@ const TourDetailPage: React.FC = () => {
             </h2>
             <div className="flex flex-col gap-[20px]">
               {itineraryItems.map((item) => {
-                const isOpen = activeDay === item.dayNumber;
+                const isOpen = openDays.has(item.dayNumber);
+                const toggleDay = () => {
+                  setOpenDays((prev) => {
+                    const newSet = new Set(prev);
+                    if (newSet.has(item.dayNumber)) {
+                      newSet.delete(item.dayNumber);
+                    } else {
+                      newSet.add(item.dayNumber);
+                    }
+                    return newSet;
+                  });
+                };
                 return (
                   <div
                     key={item.dayNumber}
                     className="border-2 border-silver rounded-[20px] px-[40px] py-[38px] cursor-pointer hover:border-[#8f7b49] transition-colors"
-                    onClick={() => setActiveDay(isOpen ? null : item.dayNumber)}
+                    onClick={toggleDay}
                   >
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-[16px]">
                       <div className="flex gap-[30px] items-center flex-1 w-full">
@@ -846,7 +829,7 @@ const TourDetailPage: React.FC = () => {
                     </div>
                     {isOpen && (
                       <div
-                        className="mt-4 text-[20px] text-black pl-0 md:pl-[303px]"
+                        className="mt-4 text-[20px] text-black pl-0 md:pl-[303px] whitespace-pre-line"
                         style={{ letterSpacing: "-0.4px" }}
                       >
                         {item.description}
@@ -910,9 +893,6 @@ const TourDetailPage: React.FC = () => {
                       </span>
                       <span className="text-white/70 text-[20px]">UZS</span>
                     </div>
-                    <div className="text-white/50 text-sm mt-1">
-                      {t("tourDetail.cta.perPerson")}
-                    </div>
                   </div>
 
                   {/* Duration badge */}
@@ -931,7 +911,13 @@ const TourDetailPage: React.FC = () => {
                       />
                     </svg>
                     <span>
-                      {tour.duration} {t("tourDetail.days")}
+                      {tour.duration}{" "}
+                      {pluralize(
+                        tour.duration,
+                        t("tourDetail.days.one"),
+                        t("tourDetail.days.few"),
+                        t("tourDetail.days.many"),
+                      )}
                     </span>
                   </div>
 
@@ -981,17 +967,28 @@ const TourDetailPage: React.FC = () => {
           >
             {t("tourDetail.locationTitle")}
           </h2>
-          <div className="relative w-full h-[clamp(300px,34.72vw,500px)] rounded-[20px] overflow-hidden border border-white">
-            <iframe
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(tour.destination || tour.location || t("tourDetail.defaultLocation"))}&output=embed`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Tour Location Map"
-            />
+          <div className="relative w-full h-[clamp(300px,41.67vw,600px)] rounded-[20px] overflow-hidden border border-[#E5E5E5]">
+            {tour.latitude && tour.longitude ? (
+              // Use custom Leaflet map with branded pin when coordinates are available
+              <TourLocationMap
+                latitude={tour.latitude}
+                longitude={tour.longitude}
+                zoom={14}
+                className="h-full w-full"
+              />
+            ) : (
+              // Fallback to Google Maps iframe for text-based search
+              <iframe
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(tour.destination || tour.location || t("tourDetail.defaultLocation"))}&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Tour Location Map"
+              />
+            )}
           </div>
         </section>
       </div>

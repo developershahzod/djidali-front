@@ -17,7 +17,7 @@ const FIGMA_ASSETS = {
 interface TourListHeroProps {
   filters: TourFilters;
   onFilterChange: (filters: Partial<TourFilters>) => void;
-  onSearch: () => void;
+  onSearch: (filters: Partial<TourFilters>) => void;
   totalTours?: number;
 }
 
@@ -96,13 +96,14 @@ const TourListHero: React.FC<TourListHeroProps> = ({
   }, []);
 
   const handleSearch = () => {
-    onFilterChange({
+    const newFilters = {
       country: destination,
       tourType: tourType,
       date: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : "",
       participants: `${adults}${childrenAges.length > 0 ? `,${childrenAges.length}` : ""}`,
-    });
-    onSearch();
+    };
+    onFilterChange(newFilters);
+    onSearch(newFilters); // Pass filters directly to avoid async state issue
   };
 
   return (

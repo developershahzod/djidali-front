@@ -1,10 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, MapPinned, Users, AlertCircle } from "lucide-react";
+import { Calendar, MapPinned, Users, AlertCircle, Globe } from "lucide-react";
 import { useTourWizardStore } from "../hooks/useTourWizardStore";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
+import LocationPicker from "@/components/LocationPicker";
+import { TOUR_REGIONS } from "../types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,20 +89,88 @@ const LogisticsStep: React.FC = () => {
           </div>
         </div>
 
-        <div>
-          <Label className="text-sm font-medium text-slate-700 mb-2 block">
-            {t("wizard.logistics.primaryDestination")}
-          </Label>
-          <Input
-            value={formData.destination}
-            onChange={(e) => updateFormData("destination", e.target.value)}
-            placeholder={t("wizard.logistics.destinationPlaceholder")}
-            className="h-12 text-lg"
-          />
-          <p className="mt-2 text-xs text-slate-400">
-            {t("wizard.logistics.destinationHint")}
-          </p>
+        <LocationPicker
+          value={{
+            destination: formData.destination,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+          }}
+          onChange={(location) => {
+            updateFormData("destination", location.destination);
+            updateFormData("latitude", location.latitude);
+            updateFormData("longitude", location.longitude);
+          }}
+          placeholder={t("wizard.logistics.destinationPlaceholder")}
+          label={t("wizard.logistics.primaryDestination")}
+        />
+      </motion.div>
+
+      {/* Region for Search/Filtering */}
+      <motion.div
+        variants={itemVariants}
+        className="bg-white rounded-xl border border-stone-200 p-6 shadow-sm"
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <Globe className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900">
+              {t("wizard.logistics.region") || "Регион для поиска"}
+            </h3>
+            <p className="text-sm text-slate-500">
+              {t("wizard.logistics.regionDesc") ||
+                "Выберите регион для удобного поиска туров клиентами"}
+            </p>
+          </div>
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          {TOUR_REGIONS.map((region) => {
+            const isSelected =
+              formData.regions?.includes(region.value) ?? false;
+            return (
+              <button
+                key={region.value}
+                type="button"
+                onClick={() => {
+                  const currentRegions = formData.regions || [];
+                  const newRegions = isSelected
+                    ? currentRegions.filter((r) => r !== region.value)
+                    : [...currentRegions, region.value];
+                  updateFormData("regions", newRegions);
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isSelected
+                    ? "bg-emerald-100 text-emerald-700 border-2 border-emerald-300"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 border-2 border-transparent"
+                }`}
+              >
+                {region.labelRu}
+              </button>
+            );
+          })}
+        </div>
+
+        {formData.regions && formData.regions.length > 0 && (
+          <div className="mt-4 p-3 bg-emerald-50 rounded-lg flex items-center justify-between">
+            <span className="text-sm text-emerald-700">
+              Выбрано регионов: <strong>{formData.regions.length}</strong> —{" "}
+              {formData.regions
+                .map(
+                  (r) => TOUR_REGIONS.find((reg) => reg.value === r)?.labelRu,
+                )
+                .join(", ")}
+            </span>
+            <button
+              type="button"
+              onClick={() => updateFormData("regions", [])}
+              className="text-emerald-600 hover:text-emerald-800 text-sm"
+            >
+              Сбросить
+            </button>
+          </div>
+        )}
       </motion.div>
 
       {/* Date Selection */}

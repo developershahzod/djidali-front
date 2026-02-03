@@ -39,10 +39,31 @@
   display: flex;
   gap: 2.5rem;
   justify-content: center;
+  padding: 0 16px; /* Space for navigation buttons outside dates */
+  position: relative;
 }
 
 .date-picker-calendar .rdp-month {
   width: auto;
+}
+
+/* Multi-month layout: hide duplicate nav buttons */
+/* First month: hide next button (it's in the second month) */
+.date-picker-calendar .rdp-month:first-child:not(:only-child) .rdp-button_next {
+  display: none;
+}
+
+/* Last month: hide previous button (it's in the first month) */
+.date-picker-calendar
+  .rdp-month:last-child:not(:only-child)
+  .rdp-button_previous {
+  display: none;
+}
+
+/* For single month view, show both buttons */
+.date-picker-calendar .rdp-month:only-child .rdp-button_previous,
+.date-picker-calendar .rdp-month:only-child .rdp-button_next {
+  display: inline-flex;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -66,31 +87,42 @@
   color: #1f2937;
 }
 
+/* Navigation - hide the default nav container, we'll position buttons individually */
 .date-picker-calendar .rdp-nav {
+  display: contents; /* Remove the nav wrapper, keep children */
+}
+
+/* Larger, more clickable navigation buttons - positioned absolutely */
+.date-picker-calendar .rdp-button_previous,
+.date-picker-calendar .rdp-button_next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  padding: 0 4px;
-  pointer-events: none;
-}
-
-.date-picker-calendar .rdp-button_previous,
-.date-picker-calendar .rdp-button_next {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px; /* Ensure minimum touch target (WCAG 2.5.5) */
+  min-height: 44px;
+  border-radius: 10px;
   background: #fff;
   border: 1px solid #e5e7eb;
   cursor: pointer;
   color: #6b7280;
   transition: all 0.2s ease;
-  pointer-events: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+/* Position previous button to the far left */
+.date-picker-calendar .rdp-button_previous {
+  left: -52px;
+}
+
+/* Position next button to the far right */
+.date-picker-calendar .rdp-button_next {
+  right: -52px;
 }
 
 .date-picker-calendar .rdp-button_previous:hover,
@@ -98,6 +130,19 @@
   background: var(--rdp-hover-background);
   border-color: var(--rdp-accent-color);
   color: var(--rdp-accent-color);
+  box-shadow: 0 2px 6px rgba(139, 115, 85, 0.15);
+}
+
+.date-picker-calendar .rdp-button_previous:active,
+.date-picker-calendar .rdp-button_next:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Make chevron icons larger for better visibility */
+.date-picker-calendar .rdp-button_previous svg,
+.date-picker-calendar .rdp-button_next svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -337,6 +382,11 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 20px 25px -5px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(139, 115, 85, 0.1);
+  overflow: visible !important;
+}
+
+.date-picker-popover > div {
+  overflow: visible !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

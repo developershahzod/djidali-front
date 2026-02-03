@@ -57,7 +57,7 @@ export interface Tour {
   inclusions: MultilingualText[];
   exclusions: MultilingualText[];
 
-  status: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'COMPLETED' | 'FULLY_BOOKED';
+  status: "ACTIVE" | "INACTIVE" | "CANCELLED" | "COMPLETED" | "FULLY_BOOKED";
   isHidden: boolean;
 
   category?: TourCategory;
@@ -82,7 +82,7 @@ export interface LegacyTour {
   price: number;
   originalPrice?: number;
   discount?: string;
-  badge?: 'author' | 'sponsored' | 'recommended' | 'excursion';
+  badge?: "author" | "sponsored" | "recommended" | "excursion";
   guide?: {
     name: string;
     avatar: string;
@@ -107,6 +107,9 @@ export interface ApiTourResponse {
   descriptionEng?: string;
   descriptionDe?: string;
   destination: string;
+  regions?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
   duration: number;
   price: number | { amount: number; currency: string };
   currency: string;
@@ -117,7 +120,7 @@ export interface ApiTourResponse {
   itinerary?: Record<string, any>;
   inclusions: any[];
   exclusions: any[];
-  status: 'ACTIVE' | 'INACTIVE' | 'CANCELLED' | 'COMPLETED' | 'FULLY_BOOKED';
+  status: "ACTIVE" | "INACTIVE" | "CANCELLED" | "COMPLETED" | "FULLY_BOOKED";
   isHidden: boolean;
   categoryId?: string;
   category?: {
@@ -144,6 +147,7 @@ export interface LaravelTourResponse {
   max_participants: number;
   current_participants?: number;
   location: string;
+  destination?: string;
   category_id: number;
   category?: {
     id: number;
@@ -163,4 +167,7 @@ export interface LaravelTourResponse {
   updated_at: string;
   rating?: number;
   reviews_count?: number;
+  // Coordinates for map display
+  latitude?: number | null;
+  longitude?: number | null;
 }

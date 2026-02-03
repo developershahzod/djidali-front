@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex flex-col gap-[8px]">
               <button
-                onClick={() => navigate("/category/ecotourism")}
+                onClick={() => navigate("/tourism-types?type=ecotourism")}
                 className="font-medium text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
@@ -162,7 +162,7 @@ const Footer: React.FC = () => {
                 })}
               </button>
               <button
-                onClick={() => navigate("/category/agrotourism")}
+                onClick={() => navigate("/tourism-types?type=agrotourism")}
                 className="font-medium text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
@@ -174,7 +174,7 @@ const Footer: React.FC = () => {
                 })}
               </button>
               <button
-                onClick={() => navigate("/category/teambuilding")}
+                onClick={() => navigate("/tourism-types?type=teambuilding")}
                 className="font-medium text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
@@ -186,7 +186,7 @@ const Footer: React.FC = () => {
                 })}
               </button>
               <button
-                onClick={() => navigate("/category/sport-shooting")}
+                onClick={() => navigate("/tourism-types?type=sport-shooting")}
                 className="font-medium text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >

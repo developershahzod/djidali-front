@@ -1,10 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 
 const TourismTypesPage: React.FC = () => {
   const { translate } = useLanguage();
-  const [selectedType, setSelectedType] = useState("ecotourism");
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get("type");
+
+  // Valid types for validation
+  const validTypes = [
+    "ecotourism",
+    "agrotourism",
+    "teambuilding",
+    "sport-shooting",
+  ];
+  const initialType =
+    typeParam && validTypes.includes(typeParam) ? typeParam : "ecotourism";
+
+  const [selectedType, setSelectedType] = useState(initialType);
+
+  // Update selected type when URL param changes
+  useEffect(() => {
+    if (typeParam && validTypes.includes(typeParam)) {
+      setSelectedType(typeParam);
+    }
+  }, [typeParam]);
 
   const tourismTypes = [
     {

@@ -401,6 +401,16 @@ const convertApiTourToTour = (apiTour: any, lang: string): Tour => {
     maxParticipants: apiTour.maxParticipants || 0,
     program: programDays,
     programDays: programDays,
+    // Map coordinates for map display
+    latitude: apiTour.latitude ?? null,
+    longitude: apiTour.longitude ?? null,
+    // Also map destination for text-based search fallback
+    destination: (() => {
+      const dest = apiTour.destination;
+      if (!dest) return "";
+      if (typeof dest === "string") return dest;
+      return getLocalizedText(dest, lang) || "";
+    })(),
   };
 };
 

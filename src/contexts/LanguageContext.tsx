@@ -62,6 +62,7 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
   translate: (input: TranslateArgs | string) => string;
+  pluralize: (count: number, one: string, few: string, many: string) => string;
 }
 
 const translations = {
@@ -390,6 +391,10 @@ const translations = {
     "contactPage.form.title": "Get in touch with us",
     "contactPage.form.description":
       "We are always open for collaboration and ready to help you plan an unforgettable trip",
+    "contactPage.form.name": "Name",
+    "contactPage.form.namePlaceholder": "Your name *",
+    "contactPage.form.email": "Email",
+    "contactPage.form.emailPlaceholder": "your@email.com *",
     "contactPage.form.country": "Country",
     "contactPage.form.countryPlaceholder": "Uzbekistan",
     "contactPage.form.phone": "Phone",
@@ -555,6 +560,13 @@ const translations = {
     "login.accessLabel": "Account access",
     "login.createLabel": "Create account",
     "login.joinCommunityBanner": "Join the DJIDALI community",
+    "login.captchaMessage": "Please verify you're not a robot",
+    "login.captchaRequired": "Please complete the CAPTCHA verification",
+    "login.captchaInvalid": "CAPTCHA verification failed. Please try again.",
+    "login.accountLocked":
+      "Account is temporarily locked. Try again in {minutes} minutes.",
+    "login.accountLockedMessage":
+      "Your account is temporarily locked due to too many failed attempts. Please try again in {minutes} minutes.",
 
     // Footer
     "footer.companyName": "DJIDALI ECO TOURISM",
@@ -640,6 +652,9 @@ const translations = {
     "tourDetail.programCost": "Program cost",
     "tourDetail.tourDuration": "Tour duration",
     "tourDetail.days": "days",
+    "tourDetail.days.one": "day",
+    "tourDetail.days.few": "days",
+    "tourDetail.days.many": "days",
     "tourDetail.people": "People",
     "tourDetail.maxPrefix": "Max.",
     "tourDetail.minAge": "Minimum age",
@@ -686,8 +701,8 @@ const translations = {
     "tourDetail.adults": "adults",
     "tourDetail.children": "children",
     "tourDetail.book": "Book",
-    "tourDetail.cta.limitedSpots": "Limited Spots Available",
-    "tourDetail.cta.readyTitle": "Ready to Start Your Adventure?",
+    "tourDetail.cta.limitedSpots": "Limited number of spots",
+    "tourDetail.cta.readyTitle": "Ready to visit Uzbekistan?",
     "tourDetail.cta.description":
       "Don't miss this unforgettable experience. Book now and create memories that will last a lifetime.",
     "tourDetail.cta.freeCancellation": "Free cancellation",
@@ -972,6 +987,9 @@ const translations = {
     "wizard.logistics.destPlaceholder": "e.g., Samarkand, Uzbekistan",
     "wizard.logistics.destinationHint":
       "Enter the main location or region of your tour",
+    "wizard.logistics.region": "Region for Search",
+    "wizard.logistics.regionDesc":
+      "Select region so customers can easily find this tour",
     "wizard.logistics.tourDates": "Tour Dates",
     "wizard.logistics.tourDatesDesc": "When does this tour take place?",
     "wizard.logistics.startDate": "Start Date",
@@ -1431,6 +1449,10 @@ const translations = {
     "contactPage.form.title": "Свяжитесь с нами",
     "contactPage.form.description":
       "Мы всегда открыты для сотрудничества и готовы помочь вам спланировать незабываемое путешествие",
+    "contactPage.form.name": "Имя",
+    "contactPage.form.namePlaceholder": "Ваше имя *",
+    "contactPage.form.email": "Email",
+    "contactPage.form.emailPlaceholder": "ваш@email.com *",
     "contactPage.form.country": "Страна",
     "contactPage.form.countryPlaceholder": "Узбекистан",
     "contactPage.form.phone": "Телефон",
@@ -1599,6 +1621,13 @@ const translations = {
     "login.accessLabel": "Вход в аккаунт",
     "login.createLabel": "Создание аккаунта",
     "login.joinCommunityBanner": "Присоединяйтесь к сообществу DJIDALI",
+    "login.captchaMessage": "Подтвердите, что вы не робот",
+    "login.captchaRequired": "Пожалуйста, пройдите проверку CAPTCHA",
+    "login.captchaInvalid": "Проверка CAPTCHA не пройдена. Попробуйте снова.",
+    "login.accountLocked":
+      "Аккаунт временно заблокирован. Попробуйте через {minutes} минут.",
+    "login.accountLockedMessage":
+      "Ваш аккаунт временно заблокирован из-за слишком большого количества неудачных попыток. Попробуйте через {minutes} минут.",
 
     // Footer
     "footer.companyName": "DJIDALI ECO TOURISM",
@@ -1684,6 +1713,9 @@ const translations = {
     "tourDetail.programCost": "Стоимость программы",
     "tourDetail.tourDuration": "Продолжительность тура",
     "tourDetail.days": "дней",
+    "tourDetail.days.one": "день",
+    "tourDetail.days.few": "дня",
+    "tourDetail.days.many": "дней",
     "tourDetail.people": "Людей",
     "tourDetail.maxPrefix": "Макс.",
     "tourDetail.minAge": "Минимальный возраст",
@@ -1730,8 +1762,8 @@ const translations = {
     "tourDetail.adults": "взр.",
     "tourDetail.children": "дет.",
     "tourDetail.book": "Забронировать",
-    "tourDetail.cta.limitedSpots": "Осталось мало мест",
-    "tourDetail.cta.readyTitle": "Готовы начать приключение?",
+    "tourDetail.cta.limitedSpots": "Количество мест ограничено",
+    "tourDetail.cta.readyTitle": "Готовы посетить Узбекистан?",
     "tourDetail.cta.description":
       "Не упустите это незабываемое впечатление. Забронируйте сейчас и создайте воспоминания на всю жизнь.",
     "tourDetail.cta.freeCancellation": "Бесплатная отмена",
@@ -2017,6 +2049,9 @@ const translations = {
     "wizard.logistics.destPlaceholder": "Например: Самарканд, Узбекистан",
     "wizard.logistics.destinationHint":
       "Введите основное место или регион вашего тура",
+    "wizard.logistics.region": "Регион для поиска",
+    "wizard.logistics.regionDesc":
+      "Выберите регион, чтобы клиенты легко находили этот тур",
     "wizard.logistics.tourDates": "Даты тура",
     "wizard.logistics.tourDatesDesc": "Когда проходит этот тур?",
     "wizard.logistics.startDate": "Дата начала",
@@ -2501,6 +2536,10 @@ const translations = {
     "contactPage.form.title": "Biz bilan bogʻlaning",
     "contactPage.form.description":
       "Biz hamkorlik uchun doim ochiqmiz va unutilmas sayohatni rejalashtrishda yordam berishga tayyormiz",
+    "contactPage.form.name": "Ism",
+    "contactPage.form.namePlaceholder": "Ismingiz *",
+    "contactPage.form.email": "Email",
+    "contactPage.form.emailPlaceholder": "sizning@email.com *",
     "contactPage.form.country": "Mamlakat",
     "contactPage.form.countryPlaceholder": "Oʻzbekiston",
     "contactPage.form.phone": "Telefon",
@@ -2670,6 +2709,14 @@ const translations = {
     "login.accessLabel": "Hisobga kirish",
     "login.createLabel": "Hisob yaratish",
     "login.joinCommunityBanner": "DJIDALI hamjamiyatiga qo'shiling",
+    "login.captchaMessage": "Iltimos, robot emasligingizni tasdiqlang",
+    "login.captchaRequired": "Iltimos, CAPTCHA tekshiruvini bajaring",
+    "login.captchaInvalid":
+      "CAPTCHA tekshiruvi muvaffaqiyatsiz. Qayta urinib ko'ring.",
+    "login.accountLocked":
+      "Hisob vaqtincha bloklangan. {minutes} daqiqadan keyin qayta urinib ko'ring.",
+    "login.accountLockedMessage":
+      "Juda ko'p muvaffaqiyatsiz urinishlar tufayli hisobingiz vaqtincha bloklangan. {minutes} daqiqadan keyin qayta urinib ko'ring.",
 
     // Footer
     "footer.companyName": "DJIDALI ECO TOURISM",
@@ -2755,6 +2802,9 @@ const translations = {
     "tourDetail.programCost": "Dastur narxi",
     "tourDetail.tourDuration": "Tur davomiyligi",
     "tourDetail.days": "kun",
+    "tourDetail.days.one": "kun",
+    "tourDetail.days.few": "kun",
+    "tourDetail.days.many": "kun",
     "tourDetail.people": "Odamlar",
     "tourDetail.maxPrefix": "Maks.",
     "tourDetail.minAge": "Minimal yosh",
@@ -2802,8 +2852,9 @@ const translations = {
     "tourDetail.adults": "katta",
     "tourDetail.children": "bola",
     "tourDetail.book": "Bron qilish",
-    "tourDetail.cta.limitedSpots": "Joylar cheklangan",
-    "tourDetail.cta.readyTitle": "Sarguzashtni boshlashga tayyormisiz?",
+    "tourDetail.cta.limitedSpots": "Joylar soni cheklangan",
+    "tourDetail.cta.readyTitle":
+      "O'zbekistonga tashrif buyurishga tayyormisiz?",
     "tourDetail.cta.description":
       "Bu unutilmas tajribani qo'ldan boy bermang. Hozir bron qiling va umrbod xotiralar yarating.",
     "tourDetail.cta.freeCancellation": "Bepul bekor qilish",
@@ -3108,6 +3159,9 @@ const translations = {
     "wizard.logistics.destPlaceholder": "Masalan: Samarqand, O'zbekiston",
     "wizard.logistics.destinationHint":
       "Turingizning asosiy joyi yoki mintaqasini kiriting",
+    "wizard.logistics.region": "Qidiruv uchun mintaqa",
+    "wizard.logistics.regionDesc":
+      "Mijozlar bu turni oson topishi uchun mintaqani tanlang",
     "wizard.logistics.dates": "Tur sanalari",
     "wizard.logistics.tourDates": "Tur sanalari",
     "wizard.logistics.tourDatesDesc": "Bu tur qachon bo'ladi?",
@@ -3649,6 +3703,10 @@ const translations = {
     "contactPage.form.title": "Kontaktieren Sie uns",
     "contactPage.form.description":
       "Wir sind immer offen für Zusammenarbeit und bereit, Ihnen bei der Planung einer unvergesslichen Reise zu helfen",
+    "contactPage.form.name": "Name",
+    "contactPage.form.namePlaceholder": "Ihr Name *",
+    "contactPage.form.email": "E-Mail",
+    "contactPage.form.emailPlaceholder": "ihre@email.com *",
     "contactPage.form.country": "Land",
     "contactPage.form.countryPlaceholder": "Usbekistan",
     "contactPage.form.phone": "Telefon",
@@ -3820,6 +3878,14 @@ const translations = {
     "login.accessLabel": "Kontozugang",
     "login.createLabel": "Konto erstellen",
     "login.joinCommunityBanner": "Treten Sie der DJIDALI-Community bei",
+    "login.captchaMessage": "Bitte bestätigen Sie, dass Sie kein Roboter sind",
+    "login.captchaRequired": "Bitte führen Sie die CAPTCHA-Überprüfung durch",
+    "login.captchaInvalid":
+      "CAPTCHA-Überprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "login.accountLocked":
+      "Konto vorübergehend gesperrt. Versuchen Sie es in {minutes} Minuten erneut.",
+    "login.accountLockedMessage":
+      "Ihr Konto wurde aufgrund zu vieler fehlgeschlagener Versuche vorübergehend gesperrt. Versuchen Sie es in {minutes} Minuten erneut.",
 
     // Footer
     "footer.companyName": "DJIDALI ÖKOTOURISMUS",
@@ -3905,6 +3971,9 @@ const translations = {
     "tourDetail.programCost": "Programmkosten",
     "tourDetail.tourDuration": "Tourdauer",
     "tourDetail.days": "Tage",
+    "tourDetail.days.one": "Tag",
+    "tourDetail.days.few": "Tage",
+    "tourDetail.days.many": "Tage",
     "tourDetail.people": "Personen",
     "tourDetail.maxPrefix": "Max.",
     "tourDetail.minAge": "Mindestalter",
@@ -3952,8 +4021,8 @@ const translations = {
     "tourDetail.adults": "Erw.",
     "tourDetail.children": "Kinder",
     "tourDetail.book": "Buchen",
-    "tourDetail.cta.limitedSpots": "Begrenzte Plätze verfügbar",
-    "tourDetail.cta.readyTitle": "Bereit für Ihr Abenteuer?",
+    "tourDetail.cta.limitedSpots": "Begrenzte Anzahl an Plätzen",
+    "tourDetail.cta.readyTitle": "Bereit, Usbekistan zu besuchen?",
     "tourDetail.cta.description":
       "Verpassen Sie dieses unvergessliche Erlebnis nicht. Buchen Sie jetzt und schaffen Sie Erinnerungen fürs Leben.",
     "tourDetail.cta.freeCancellation": "Kostenlose Stornierung",
@@ -4254,6 +4323,9 @@ const translations = {
     "wizard.logistics.destPlaceholder": "z.B. Samarkand, Usbekistan",
     "wizard.logistics.destinationHint":
       "Geben Sie den Hauptort oder die Region Ihrer Tour ein",
+    "wizard.logistics.region": "Region für Suche",
+    "wizard.logistics.regionDesc":
+      "Wählen Sie eine Region, damit Kunden diese Tour leicht finden können",
     "wizard.logistics.dates": "Tour-Termine",
     "wizard.logistics.tourDates": "Tour-Termine",
     "wizard.logistics.tourDatesDesc": "Wann findet diese Tour statt?",
@@ -4556,8 +4628,46 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({
     return en ?? ru;
   };
 
+  /**
+   * Returns correct plural form based on count and language.
+   * Russian: 1 день, 2-4 дня, 5-20 дней, 21 день, 22-24 дня, etc.
+   * Other languages: simpler rules (1=one, rest=many)
+   */
+  const pluralize = (
+    count: number,
+    one: string,
+    few: string,
+    many: string,
+  ): string => {
+    const absCount = Math.abs(count);
+
+    if (language === "ru") {
+      // Russian pluralization rules
+      const mod10 = absCount % 10;
+      const mod100 = absCount % 100;
+
+      if (mod10 === 1 && mod100 !== 11) {
+        return one; // 1, 21, 31, ... (but not 11)
+      }
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        return few; // 2-4, 22-24, 32-34, ... (but not 12-14)
+      }
+      return many; // 0, 5-20, 25-30, ...
+    }
+
+    // German: 1 = singular, rest = plural
+    if (language === "de") {
+      return absCount === 1 ? one : many;
+    }
+
+    // English and Uzbek: 1 = singular, rest = plural
+    return absCount === 1 ? one : many;
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, translate }}>
+    <LanguageContext.Provider
+      value={{ language, setLanguage, t, translate, pluralize }}
+    >
       {children}
     </LanguageContext.Provider>
   );

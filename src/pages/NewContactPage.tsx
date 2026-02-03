@@ -2,37 +2,78 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import { djidaliApi } from "../services/djidaliApi";
 
-type ButtonState = "idle" | "loading" | "success";
+type ButtonState = "idle" | "loading" | "success" | "error";
 
 const NewContactPage: React.FC = () => {
   const { t } = useLanguage();
-  const [country, setCountry] = useState("");
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [subject, setSubject] = useState("");
+  const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("");
   const [message, setMessage] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return;
 
     setButtonState("loading");
+    setErrorMessage("");
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Build the full message with country info
+      const countryNames: Record<string, string> = {
+        uz: "Узбекистан",
+        ru: "Россия",
+        kz: "Казахстан",
+        kg: "Кыргызстан",
+        tj: "Таджикистан",
+        tm: "Туркменистан",
+        us: "США",
+        gb: "Великобритания",
+        de: "Германия",
+        fr: "Франция",
+      };
+      const countryName = country ? countryNames[country] || country : "";
+      const fullMessage = countryName
+        ? `[Страна: ${countryName}]\n\n${message}`
+        : message;
 
-    setButtonState("success");
+      await djidaliApi.submitContactRequest({
+        name,
+        phone,
+        email,
+        message: fullMessage,
+      });
 
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setButtonState("idle");
-      setPhone("");
-      setSubject("");
-      setMessage("");
-      setAgreed(false);
-    }, 3000);
+      setButtonState("success");
+
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setButtonState("idle");
+        setName("");
+        setPhone("");
+        setEmail("");
+        setCountry("");
+        setMessage("");
+        setAgreed(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Failed to submit contact request:", error);
+      setButtonState("error");
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Произошла ошибка. Попробуйте позже.",
+      );
+      setTimeout(() => {
+        setButtonState("idle");
+      }, 3000);
+    }
   };
 
   return (
@@ -107,6 +148,49 @@ const NewContactPage: React.FC = () => {
               onSubmit={handleSubmit}
               className="flex flex-col gap-[20px] max-w-[605px]"
             >
+              {/* Name Input - 605x80px */}
+              <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] flex items-center">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={
+                    t("contactPage.form.namePlaceholder") || "Ваше имя *"
+                  }
+                  required
+                  className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                />
+              </div>
+
+              {/* Phone Input - 605x80px */}
+              <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] flex items-center">
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={t("contactPage.form.phonePlaceholder")}
+                  required
+                  className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                />
+              </div>
+
+              {/* Email Input - 605x80px */}
+              <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] flex items-center">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={
+                    t("contactPage.form.emailPlaceholder") || "Email *"
+                  }
+                  required
+                  className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                />
+              </div>
+
               {/* Country Dropdown - 605x80px */}
               <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] bg-transparent flex flex-col justify-center overflow-visible">
                 <label
@@ -137,36 +221,14 @@ const NewContactPage: React.FC = () => {
                 </select>
               </div>
 
-              {/* Phone Input - 605x80px */}
-              <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] flex items-center">
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={t("contactPage.form.phonePlaceholder")}
-                  className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                />
-              </div>
-
-              {/* Subject Input - 605x80px */}
-              <div className="w-full h-[80px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[18px] flex items-center">
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder={t("contactPage.form.subject")}
-                  className="w-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                />
-              </div>
-
               {/* Message Textarea - 605x200px */}
               <div className="w-full h-[200px] border-2 border-[rgba(51,51,51,0.4)] rounded-[10px] px-[20px] py-[28px]">
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={t("contactPage.form.messagePlaceholder")}
+                  required
+                  minLength={10}
                   className="w-full h-full bg-transparent text-[22px] font-semibold leading-[24px] tracking-[-0.44px] text-[#333333] placeholder:text-[#555555] outline-none resize-none"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 />
@@ -196,11 +258,27 @@ const NewContactPage: React.FC = () => {
                 </label>
               </div>
 
+              {/* Error Message */}
+              {errorMessage && (
+                <p
+                  className="text-red-600 text-[16px] font-medium"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  {errorMessage}
+                </p>
+              )}
+
               {/* Submit Button - 352x80px */}
               <button
                 type="submit"
-                disabled={!agreed || buttonState !== "idle"}
-                className="w-full md:w-[352px] h-[80px] bg-[#333333] hover:bg-[#4a4a4a] disabled:opacity-50 disabled:cursor-not-allowed transition-all rounded-[10px] px-[56px] py-[30px] flex items-center justify-center"
+                disabled={!agreed || buttonState === "loading"}
+                className={`w-full md:w-[352px] h-[80px] ${
+                  buttonState === "error"
+                    ? "bg-red-600"
+                    : buttonState === "success"
+                      ? "bg-green-600"
+                      : "bg-[#333333] hover:bg-[#4a4a4a]"
+                } disabled:opacity-50 disabled:cursor-not-allowed transition-all rounded-[10px] px-[56px] py-[30px] flex items-center justify-center`}
               >
                 {buttonState === "idle" && (
                   <span
@@ -225,6 +303,21 @@ const NewContactPage: React.FC = () => {
                       strokeLinejoin="round"
                       strokeWidth={3}
                       d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+                {buttonState === "error" && (
+                  <svg
+                    className="w-[28px] h-[28px] text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
                 )}

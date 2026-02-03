@@ -1,18 +1,28 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { djidaliApi, ApiUser, ApiAuthResponse } from '../services/djidaliApi';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { djidaliApi, ApiUser, ApiAuthResponse } from "../services/djidaliApi";
 
 interface AuthContextType {
   user: ApiUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ) => Promise<void>;
   register: (userData: {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phoneNumber: string;
-    role: 'CUSTOMER';
+    role: "CUSTOMER";
     passportNumber: string;
     dateOfBirth: string;
     nationality: string;
@@ -23,7 +33,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<ApiUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,7 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
         logout();
       } finally {
         setIsLoading(false);
@@ -51,23 +63,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(customEvent.detail);
     };
 
-    window.addEventListener('djidali:auth-change', handleAuthChange);
+    window.addEventListener("djidali:auth-change", handleAuthChange);
 
     return () => {
-      window.removeEventListener('djidali:auth-change', handleAuthChange);
+      window.removeEventListener("djidali:auth-change", handleAuthChange);
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ): Promise<void> => {
+    // Don't set global isLoading - it unmounts the entire app!
+    // LoginPage has its own loading state via useAuth().isLoading
     try {
-      setIsLoading(true);
-      const response: ApiAuthResponse = await djidaliApi.login(email, password);
+      const response: ApiAuthResponse = await djidaliApi.login(
+        email,
+        password,
+        captchaToken,
+      );
       setUser(response.user);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -77,7 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     firstName: string;
     lastName: string;
     phoneNumber: string;
-    role: 'CUSTOMER';
+    role: "CUSTOMER";
     passportNumber: string;
     dateOfBirth: string;
     nationality: string;
@@ -88,7 +107,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response: ApiAuthResponse = await djidaliApi.register(userData);
       setUser(response.user);
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -109,17 +128,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

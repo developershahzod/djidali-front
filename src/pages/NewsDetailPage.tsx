@@ -7,9 +7,6 @@ import api, { News } from "../services/api";
 import { getImageUrl } from "../utils/imageUtils";
 import { SafeHTML } from "../components/SafeHTML";
 
-// Import images
-const similarNewsImage = "/fcd4ea8bf176e4851a46f14de3020f62faed656d (1).webp";
-
 // Navigation Components (reused from NewsPage)
 function Group() {
   return (
@@ -202,23 +199,9 @@ function HeroSection({ title, backgroundImage, onBack }: HeroSectionProps) {
       </button>
 
       {/* Title */}
-      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[40px] md:leading-[60px] lg:leading-[100px] left-[20px] md:left-[50px] right-[20px] md:right-auto text-[32px] md:text-[60px] lg:text-[90px] text-white top-[200px] md:top-[350px] lg:top-[450px] tracking-[-1.2px] md:tracking-[-2px] lg:tracking-[-2.7px] max-w-[calc(100%-40px)] md:w-[900px] lg:w-[1340px]">
+      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[40px] md:leading-[65px] lg:leading-[100px] left-[20px] md:left-[50px] right-[20px] md:right-[50px] text-[32px] md:text-[55px] lg:text-[80px] text-white bottom-[80px] md:bottom-[100px] lg:bottom-[120px] tracking-[-1.2px] md:tracking-[-2px] lg:tracking-[-2.4px]">
         {title}
       </p>
-
-      {/* Decorative line */}
-      <div className="hidden md:block absolute h-0 left-[80px] md:left-[120px] top-[550px] md:top-[617px] w-[60px] md:w-[100px]">
-        <div className="absolute bottom-0 left-0 right-0 top-[-6px]">
-          <svg
-            className="block size-full"
-            fill="none"
-            preserveAspectRatio="none"
-            viewBox="0 0 100 6"
-          >
-            <line stroke="white" strokeWidth="6" x2="100" y1="3" y2="3" />
-          </svg>
-        </div>
-      </div>
     </div>
   );
 }
@@ -560,22 +543,23 @@ export function NewsDetailPage() {
             )}
           </div>
 
-          {/* Cover Image */}
-          <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-            <div className="h-[250px] md:h-[400px] lg:h-[500px] relative rounded-[10px] md:rounded-[20px] shrink-0 w-full">
-              <img
-                alt={title}
-                className="absolute inset-0 object-cover rounded-[10px] md:rounded-[20px] size-full"
-                src={coverImage}
-              />
-            </div>
-          </div>
-
           {/* Main Content - rendered safely with DOMPurify */}
           {content && (
             <SafeHTML
               html={content}
-              className="prose prose-lg max-w-none text-[#333333] font-['Montserrat:Regular',sans-serif] [&_h1]:text-[32px] [&_h1]:font-medium [&_h2]:text-[28px] [&_h2]:font-medium [&_h3]:text-[24px] [&_h3]:font-medium [&_p]:text-[16px] md:[&_p]:text-[18px] lg:[&_p]:text-[20px] [&_p]:leading-[1.8] [&_img]:rounded-lg [&_img]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:border-[#8f7b49] [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-[#8f7b49] [&_a]:underline"
+              className="prose prose-lg max-w-none w-full text-[#333333] font-['Montserrat:Regular',sans-serif]
+                [&_h1]:text-[32px] [&_h1]:font-medium [&_h1]:mb-6 [&_h1]:mt-8
+                [&_h2]:text-[28px] [&_h2]:font-medium [&_h2]:mb-5 [&_h2]:mt-7
+                [&_h3]:text-[24px] [&_h3]:font-medium [&_h3]:mb-4 [&_h3]:mt-6
+                [&_p]:text-[16px] md:[&_p]:text-[18px] lg:[&_p]:text-[20px] [&_p]:leading-[1.8] [&_p]:mb-6
+                [&_ul]:list-disc [&_ul]:pl-8 [&_ul]:mb-6 [&_ul]:space-y-2
+                [&_ol]:list-decimal [&_ol]:pl-8 [&_ol]:mb-6 [&_ol]:space-y-2
+                [&_li]:text-[16px] md:[&_li]:text-[18px] lg:[&_li]:text-[20px] [&_li]:leading-[1.8]
+                [&_img]:rounded-lg [&_img]:my-6
+                [&_blockquote]:border-l-4 [&_blockquote]:border-[#8f7b49] [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:bg-[#f9f7f3]
+                [&_a]:text-[#8f7b49] [&_a]:underline
+                [&_hr]:my-8 [&_hr]:border-[#e0e0e0]
+                [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
             />
           )}
 
@@ -618,54 +602,9 @@ export function NewsDetailPage() {
           })}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr] gap-4 md:gap-6">
-          {/* Featured Promotional Card */}
-          <div className="relative h-[540px] rounded-[20px] overflow-hidden group cursor-pointer">
-            <img
-              alt="Путешествовать"
-              className="absolute inset-0 object-cover size-full transition-transform duration-500 group-hover:scale-110"
-              src={similarNewsImage}
-            />
-            <div className="absolute bg-[rgba(0,0,0,0.3)] inset-0 rounded-[20px]" />
-            <div className="relative z-10 p-10 h-full flex flex-col justify-between">
-              <p className="font-['Montserrat:Medium',sans-serif] font-medium text-white text-[16px] tracking-[-0.48px]">
-                {translate({
-                  ru: "Путешествовать",
-                  uz: "Sayohat qilish",
-                  en: "Travel",
-                  de: "Reisen",
-                })}
-              </p>
-              <div>
-                <p className="font-['Montserrat:Regular',sans-serif] text-white text-[45px] leading-[60px] tracking-[-1.35px]">
-                  {translate({
-                    ru: "Мы поможем вам",
-                    uz: "Biz sizga yordam beramiz",
-                    en: "We will help you",
-                    de: "Wir helfen Ihnen",
-                  })}
-                  <br />
-                  {translate({
-                    ru: "найти ",
-                    uz: "topishga ",
-                    en: "find ",
-                    de: "finden ",
-                  })}
-                  <span className="font-['Montserrat:SemiBold',sans-serif] font-semibold">
-                    {translate({
-                      ru: "свою мечту",
-                      uz: "o'z orzuingizni",
-                      en: "your dream",
-                      de: "Ihren Traum",
-                    })}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Related News Cards */}
-          {relatedNews.slice(0, 2).map((item) => {
+          {relatedNews.slice(0, 3).map((item) => {
             const itemTitle = getNewsLocalizedField(item, "title", language);
             const itemExcerpt = getNewsLocalizedField(
               item,

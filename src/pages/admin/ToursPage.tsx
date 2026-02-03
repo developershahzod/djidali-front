@@ -7,6 +7,7 @@ import {
   Edit,
   Trash2,
   Eye,
+  EyeOff,
   Calendar,
   MapPin,
   ChevronDown,
@@ -37,6 +38,55 @@ const getLocalizedText = (
     const langKey = language === "en" ? "eng" : language;
     return value[langKey] || value.ru || value.eng || value.uz || "";
   }
+  return "";
+};
+
+// Helper to extract price value (handles both number and {amount, currency} formats)
+const getPriceValue = (
+  price: number | { amount: number; currency: string } | undefined | null,
+): number => {
+  if (price === null || price === undefined) return 0;
+  if (typeof price === "number") return price;
+  if (typeof price === "object" && "amount" in price) return price.amount;
+  return 0;
+};
+
+// Helper to extract currency from price
+const getPriceCurrency = (
+  price: number | { amount: number; currency: string } | undefined | null,
+  defaultCurrency: string = "UZS",
+): string => {
+  if (typeof price === "object" && price !== null && "currency" in price) {
+    return price.currency;
+  }
+  return defaultCurrency;
+};
+
+// Helper to extract short location name (first part of address or region)
+const getShortLocation = (
+  destination: string | { [key: string]: string } | undefined | null,
+  regions: string[] | undefined,
+  language: string,
+): string => {
+  // Prefer regions if available
+  if (regions && regions.length > 0) {
+    return regions[0];
+  }
+
+  // Handle plain string destination
+  if (typeof destination === "string" && destination) {
+    // Extract just the first part (before first comma)
+    return destination.split(",")[0].trim();
+  }
+
+  // Handle multilingual object destination
+  if (typeof destination === "object" && destination) {
+    const fullLocation = getLocalizedText(destination, language);
+    if (fullLocation) {
+      return fullLocation.split(",")[0].trim();
+    }
+  }
+
   return "";
 };
 
@@ -83,6 +133,7 @@ const ToursPage = () => {
           status:
             statusFilter !== "all" ? statusFilter.toUpperCase() : undefined,
           search: searchQuery || undefined,
+          includeHidden: true, // Admin should see all tours including hidden
         });
         setTours(response.data || []);
       } catch (error) {
@@ -155,6 +206,28 @@ const ToursPage = () => {
     }
   };
 
+  const handleToggleVisibility = async (
+    tourId: string,
+    isCurrentlyHidden: boolean,
+  ) => {
+    try {
+      await djidaliApi.toggleTourVisibility(tourId);
+      // Update local state
+      setTours(
+        tours.map((tour) =>
+          tour.id === tourId ? { ...tour, isHidden: !isCurrentlyHidden } : tour,
+        ),
+      );
+      showToast(
+        "success",
+        isCurrentlyHidden ? "Tour is now visible" : "Tour is now hidden",
+      );
+    } catch (error) {
+      console.error("Error toggling visibility:", error);
+      showToast("error", "Failed to update tour visibility");
+    }
+  };
+
   const filteredAndSortedTours = React.useMemo(() => {
     let result = [...tours];
 
@@ -199,10 +272,10 @@ const ToursPage = () => {
         );
         break;
       case "price_asc":
-        result.sort((a, b) => (a.price?.amount || 0) - (b.price?.amount || 0));
+        result.sort((a, b) => getPriceValue(a.price) - getPriceValue(b.price));
         break;
       case "price_desc":
-        result.sort((a, b) => (b.price?.amount || 0) - (a.price?.amount || 0));
+        result.sort((a, b) => getPriceValue(b.price) - getPriceValue(a.price));
         break;
       case "popular":
         result.sort(
@@ -450,8 +523,28 @@ const ToursPage = () => {
                             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                               <Calendar className="mr-1 h-3 w-3" />
                               <span>
-                                {formatDate(tour.startDate, "MMM d")} -{" "}
-                                {formatDate(tour.endDate, "MMM d, yyyy")}
+                                {tour.startDate && tour.endDate ? (
+                                  <>
+                                    {formatDate(tour.startDate, "MMM d")} -{" "}
+                                    {formatDate(tour.endDate, "MMM d, yyyy")}
+                                  </>
+                                ) : tour.dates && tour.dates.length > 0 ? (
+                                  <>
+                                    {formatDate(
+                                      tour.dates[0].start_date,
+                                      "MMM d",
+                                    )}{" "}
+                                    -{" "}
+                                    {formatDate(
+                                      tour.dates[0].end_date,
+                                      "MMM d, yyyy",
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="text-gray-400">
+                                    No dates
+                                  </span>
+                                )}
                               </span>
                             </div>
                           </div>
@@ -461,16 +554,19 @@ const ToursPage = () => {
                         <div className="flex items-center">
                           <MapPin className="mr-1 h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-900 dark:text-gray-100">
-                            {getLocalizedText(tour.destination, language) ||
-                              "—"}
+                            {getShortLocation(
+                              tour.destination,
+                              tour.regions,
+                              language,
+                            ) || "—"}
                           </span>
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {formatCurrency(
-                            tour.price?.amount || 0,
-                            tour.price?.currency || "USD",
+                            getPriceValue(tour.price),
+                            getPriceCurrency(tour.price, tour.currency),
                           )}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -490,7 +586,27 @@ const ToursPage = () => {
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
+                        <div className="flex items-center justify-end space-x-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleVisibility(
+                                tour.id,
+                                tour.isHidden || false,
+                              );
+                            }}
+                            className={cn(
+                              "p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+                              tour.isHidden ? "text-red-500" : "text-green-500",
+                            )}
+                            title={tour.isHidden ? "Show tour" : "Hide tour"}
+                          >
+                            {tour.isHidden ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
                           <Link
                             to={`/admin/tours/edit/${tour.id}`}
                             className="text-primary hover:text-primary/80"

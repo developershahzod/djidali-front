@@ -179,6 +179,8 @@ const TourWizardPage: React.FC = () => {
       currency?: string;
       categoryId?: string;
       category?: { id: string };
+      latitude?: number | null;
+      longitude?: number | null;
     };
 
     // Extract multilingual title
@@ -237,20 +239,29 @@ const TourWizardPage: React.FC = () => {
         "",
     };
 
-    // Transform itinerary/program
-    const itinerary = (tourExt.program || []).map((day, index) => ({
-      dayNumber: day.dayNumber || index + 1,
+    // Transform itinerary/program (check both program and programDays)
+    // Handle both flat format (titleRu) and nested format (title.ru)
+    const programData = tourExt.program || (tour as any).programDays || [];
+    const itinerary = programData.map((day: any, index: number) => ({
+      dayNumber: day.dayNumber || day.day_number || index + 1,
       title: {
-        uz: day.titleUz || "",
-        ru: day.titleRu || "",
-        eng: day.titleEng || "",
-        de: day.titleDe || "",
+        uz: day.titleUz || day.title_uz || day.title?.uz || "",
+        ru: day.titleRu || day.title_ru || day.title?.ru || "",
+        eng: day.titleEng || day.title_eng || day.title?.eng || "",
+        de: day.titleDe || day.title_de || day.title?.de || "",
       },
       description: {
-        uz: day.descriptionUz || "",
-        ru: day.descriptionRu || "",
-        eng: day.descriptionEng || "",
-        de: day.descriptionDe || "",
+        uz:
+          day.descriptionUz || day.description_uz || day.description?.uz || "",
+        ru:
+          day.descriptionRu || day.description_ru || day.description?.ru || "",
+        eng:
+          day.descriptionEng ||
+          day.description_eng ||
+          day.description?.eng ||
+          "",
+        de:
+          day.descriptionDe || day.description_de || day.description?.de || "",
       },
     }));
 
@@ -285,6 +296,9 @@ const TourWizardPage: React.FC = () => {
       title,
       description,
       destination: tour.destination || "",
+      regions: (tour as any).regions || [],
+      latitude: tourExt.latitude ?? null,
+      longitude: tourExt.longitude ?? null,
       duration: tour.duration || 1,
       price: typeof tour.price === "number" ? tour.price : 0,
       currency: tourExt.currency || "UZS",
@@ -382,16 +396,18 @@ const TourWizardPage: React.FC = () => {
 
       // Basic fields
       destination: formData.destination,
+      regions: formData.regions || [],
+      latitude: formData.latitude,
+      longitude: formData.longitude,
       duration: formData.duration,
       price: formData.price,
       currency: formData.currency,
       maxParticipants: formData.maxParticipants,
+      // Dates are required - send ISO string or empty for validation error
       startDate: formData.startDate
         ? new Date(formData.startDate).toISOString()
-        : undefined,
-      endDate: formData.endDate
-        ? new Date(formData.endDate).toISOString()
-        : undefined,
+        : "",
+      endDate: formData.endDate ? new Date(formData.endDate).toISOString() : "",
       status: formData.status,
       categoryId: formData.categoryId,
 

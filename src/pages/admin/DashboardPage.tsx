@@ -90,6 +90,16 @@ const getLocalizedText = (
   return "";
 };
 
+// Helper to extract price value (handles both number and {amount, currency} formats)
+const getPriceValue = (
+  price: number | { amount: number; currency: string } | undefined | null,
+): number => {
+  if (price === null || price === undefined) return 0;
+  if (typeof price === "number") return price;
+  if (typeof price === "object" && "amount" in price) return price.amount;
+  return 0;
+};
+
 const DashboardPage = () => {
   const { t, language, translate } = useLanguage();
   const [stats, setStats] = useState({
@@ -183,7 +193,7 @@ const DashboardPage = () => {
                 de: "Unbenannte Tour",
               }),
             bookings: tour._count?.orders || 0,
-            revenue: (tour._count?.orders || 0) * (tour.price?.amount || 0),
+            revenue: (tour._count?.orders || 0) * getPriceValue(tour.price),
             rating: tour.averageRating || tour.rating || 0,
             image: tour.images?.[0] || tour.mainImage || undefined,
           })),

@@ -19,6 +19,8 @@ export interface ApiTourLegacy {
   descriptionEng?: string;
   descriptionDe?: string;
   destination: string;
+  latitude?: number | null;
+  longitude?: number | null;
   duration: number;
   price: number | { amount: number; currency: string };
   currency: string;
@@ -301,8 +303,14 @@ class DjidaliApiService {
     });
 
     if (!response.ok) {
-      if (response.status === 401 && !endpoint.includes("/auth/refresh")) {
-        // Try to refresh token
+      // Skip token refresh for auth endpoints - they should show errors directly
+      const isAuthEndpoint =
+        endpoint.includes("/auth/login") ||
+        endpoint.includes("/auth/register") ||
+        endpoint.includes("/auth/refresh");
+
+      if (response.status === 401 && !isAuthEndpoint) {
+        // Try to refresh token for non-auth endpoints
         try {
           await this.refreshAccessToken();
 
@@ -352,7 +360,14 @@ class DjidaliApiService {
               .join("; ")
           : `HTTP error! status: ${response.status}`);
 
-      throw new Error(errorMessage);
+      // Create error with preserved data for CAPTCHA handling
+      const error = new Error(errorMessage) as Error & {
+        code?: string;
+        requiresCaptcha?: boolean;
+      };
+      error.code = errorData.error;
+      error.requiresCaptcha = errorData.requiresCaptcha;
+      throw error;
     }
 
     // Handle empty responses (204 No Content, or empty body)
@@ -400,10 +415,28 @@ class DjidaliApiService {
     return response;
   }
 
-  async login(email: string, password: string): Promise<ApiAuthResponse> {
+  /**
+   * Check if CAPTCHA is required for login (after failed attempts)
+   */
+  async getLoginStatus(email: string): Promise<{
+    requiresCaptcha: boolean;
+    isLocked: boolean;
+    lockoutRemainingSeconds?: number;
+  }> {
+    return this.request("/auth/login/status", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async login(
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ): Promise<ApiAuthResponse> {
     const response = await this.request<ApiAuthResponse>("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, captchaToken }),
     });
 
     this.token = response.accessToken;
@@ -439,8 +472,11 @@ class DjidaliApiService {
         const refreshToken = localStorage.getItem("refresh_token");
 
         if (!refreshToken) {
+          console.warn("[Auth] No refresh token available in localStorage");
           throw new Error("No refresh token available");
         }
+
+        console.log("[Auth] Attempting token refresh...");
 
         const response = await fetch(`${this.baseURL}/auth/refresh`, {
           method: "POST",
@@ -452,7 +488,13 @@ class DjidaliApiService {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to refresh token");
+          const errorText = await response.text();
+          console.error(
+            "[Auth] Token refresh failed:",
+            response.status,
+            errorText,
+          );
+          throw new Error(`Failed to refresh token: ${response.status}`);
         }
 
         const data: ApiAuthResponse = await response.json();
@@ -461,9 +503,16 @@ class DjidaliApiService {
         this.token = data.accessToken;
         localStorage.setItem("auth_token", data.accessToken);
         localStorage.setItem("refresh_token", data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Only update user if it exists in response
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        console.log("[Auth] Token refresh successful");
       } catch (error) {
         // Refresh failed, clear auth and throw
+        console.error("[Auth] Token refresh error:", error);
         this.clearAuth();
         throw error;
       } finally {
@@ -492,6 +541,7 @@ class DjidaliApiService {
     lang?: string;
     startDate?: string;
     endDate?: string;
+    includeHidden?: boolean; // For admin views
   }): Promise<ApiToursResponse> {
     const queryParams = new URLSearchParams();
 
@@ -534,6 +584,9 @@ class DjidaliApiService {
     descriptionEng?: string;
     descriptionDe?: string;
     destination: string;
+    regions?: string[];
+    latitude?: number | null;
+    longitude?: number | null;
     duration: number;
     price: number;
     currency: string;
@@ -568,6 +621,9 @@ class DjidaliApiService {
       descriptionEng: tourData.descriptionEng,
       descriptionDe: tourData.descriptionDe,
       destination: tourData.destination,
+      regions: (tourData as any).regions,
+      latitude: (tourData as any).latitude,
+      longitude: (tourData as any).longitude,
       duration: tourData.duration,
       price: tourData.price,
       currency: tourData.currency || "UZS",
@@ -630,6 +686,12 @@ class DjidaliApiService {
 
   async deleteTour(id: string): Promise<void> {
     await this.request(`/tours/${id}`, { method: "DELETE" });
+  }
+
+  async toggleTourVisibility(id: string): Promise<ApiTour> {
+    return this.request<ApiTour>(`/tours/${id}/visibility`, {
+      method: "PATCH",
+    });
   }
 
   async getOrders(params?: {
@@ -809,8 +871,8 @@ class DjidaliApiService {
     });
   }
 
-  async deleteCategory(id: string): Promise<void> {
-    const url = `${this.baseURL}/tour-categories/${id}`;
+  async deleteCategory(id: string, force: boolean = false): Promise<void> {
+    const url = `${this.baseURL}/tour-categories/${id}${force ? "?force=true" : ""}`;
     const currentToken = this.getFreshToken();
 
     const headers: Record<string, string> = {
@@ -1202,6 +1264,22 @@ class DjidaliApiService {
     }>;
   }> {
     return this.request("/statistics/managers");
+  }
+
+  // Contact Requests
+  async submitContactRequest(data: {
+    name: string;
+    phone: string;
+    email: string;
+    telegram?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    message: string;
+  }): Promise<{ success: boolean; message: string }> {
+    return this.request("/contact-requests", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
   }
 }
 

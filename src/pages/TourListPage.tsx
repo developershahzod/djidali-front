@@ -24,6 +24,15 @@ export interface TourFilters {
     | "popular";
 }
 
+// Маппинг стран на destinations (с правильным регистром для API regions)
+const COUNTRY_TO_REGION_MAP: Record<string, string> = {
+  tashkent: "Tashkent",
+  samarkand: "Samarkand",
+  bukhara: "Bukhara",
+  khiva: "Khiva",
+  dalverzin: "Dalverzin",
+};
+
 // Helper function to safely extract localized text from multilingual objects
 const getLocalizedText = (
   value: string | { [key: string]: string } | undefined | null,
@@ -77,30 +86,16 @@ const TourListPage: React.FC = () => {
     {},
   );
 
-  // Маппинг значений фильтров для API
-  const getApiParams = () => {
+  // Мемоизированные параметры API для стабильной ссылки
+  const apiParams = React.useMemo(() => {
     if (!activeFilters) return {};
 
     const params: Record<string, string> = {};
 
-    // Маппинг стран на destinations
-    const countryMap: Record<string, string> = {
-      tashkent: "Tashkent",
-      samarkand: "Samarkand",
-      bukhara: "Bukhara",
-      khiva: "Khiva",
-    };
-
-    // Добавляем destination фильтр
+    // Добавляем destination фильтр (маппинг в регион с правильным регистром)
     if (activeFilters.country) {
       params.destination =
-        countryMap[activeFilters.country] || activeFilters.country;
-    }
-
-    // Добавляем тип тура (используем categoryId или search)
-    if (activeFilters.tourType) {
-      // Можно использовать categoryId если есть маппинг, или search для текстового поиска
-      params.search = activeFilters.tourType;
+        COUNTRY_TO_REGION_MAP[activeFilters.country] || activeFilters.country;
     }
 
     // Добавляем даты если они есть в URL параметрах
@@ -117,13 +112,9 @@ const TourListPage: React.FC = () => {
 
     console.log("🔍 Active Filters:", activeFilters);
     console.log("🔍 API Params:", params);
-    console.log(
-      "🔍 URL Search Params:",
-      Object.fromEntries(searchParams.entries()),
-    );
 
     return params;
-  };
+  }, [activeFilters, searchParams]);
 
   const {
     tours: rawTours,
@@ -134,7 +125,7 @@ const TourListPage: React.FC = () => {
     page: currentPage,
     limit: 100, // Загружаем больше для фильтрации на фронте
     accumulate: currentPage > 1,
-    ...getApiParams(),
+    ...apiParams,
   });
 
   // Фильтрация и сортировка на фронтенде
@@ -222,8 +213,10 @@ const TourListPage: React.FC = () => {
     return filtered;
   }, [rawTours, frontendFilters]);
 
-  const handleSearch = () => {
-    setActiveFilters(filters);
+  const handleSearch = (newFilters?: Partial<TourFilters>) => {
+    // Use passed filters directly to avoid async state timing issues
+    const filtersToApply = newFilters ? { ...filters, ...newFilters } : filters;
+    setActiveFilters(filtersToApply);
     setCurrentPage(1);
   };
 
@@ -333,9 +326,6 @@ const TourListPage: React.FC = () => {
                             (tour as any).maxParticipants ??
                             15}{" "}
                           {t("tour.people")}
-                        </p>
-                        <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
-                          {t("home.popular.planIncludes")}
                         </p>
                       </div>
                     </div>
@@ -457,9 +447,6 @@ const TourListPage: React.FC = () => {
                               (tour as any).maxParticipants ??
                               15}{" "}
                             {t("tour.people")}
-                          </p>
-                          <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
-                            {t("home.popular.planIncludes")}
                           </p>
                         </div>
                       </div>
