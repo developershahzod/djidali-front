@@ -386,27 +386,27 @@ const WhyUsPage: React.FC = () => {
             </div>
 
             {/* Statistics */}
-            <div className="flex flex-col md:flex-row gap-[80px] text-white pb-[clamp(40px,5.56vw,80px)]">
+            <div className="grid grid-cols-2 gap-x-[clamp(40px,5.56vw,80px)] gap-y-[clamp(24px,2.78vw,40px)] text-white pb-[clamp(40px,5.56vw,80px)] max-w-[640px]">
               {heroStats.map((stat, index) => (
-                <div key={index} className="w-[304px]">
+                <div key={index}>
                   <div
-                    className="mb-[10px] whitespace-nowrap"
+                    className="mb-[8px] whitespace-nowrap"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-1px",
                       textShadow: "0 2px 15px rgba(0, 0, 0, 0.5)",
                     }}
                   >
-                    <span className="text-[80px] font-normal leading-[80px]">
+                    <span className="text-[clamp(48px,5.56vw,80px)] font-normal leading-[1]">
                       {stat.value}
                     </span>
-                    <span className="text-[50px] font-extralight leading-[80px]">
+                    <span className="text-[clamp(32px,3.47vw,50px)] font-extralight leading-[1]">
                       {" "}
                       {stat.suffix}
                     </span>
                   </div>
                   <p
-                    className="text-[20px] font-light leading-[28px]"
+                    className="text-[clamp(14px,1.39vw,20px)] font-light leading-[1.4]"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-0.4px",

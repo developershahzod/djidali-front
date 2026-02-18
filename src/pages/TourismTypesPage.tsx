@@ -207,10 +207,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Programme für Teams: Aktivitäten, Interaktionsszenarien und Erholung in der Natur. Schlüsselfertige Organisation — Timing, Koordination, Verpflegung.",
       }),
       section1Title: translate({
-        ru: "Программы для команд любого размера",
-        uz: "Har qanday o'lchamdagi jamoalar uchun dasturlar",
-        en: "Programs for Teams of Any Size",
-        de: "Programme für Teams jeder Größe",
+        ru: "Программы для команд",
+        uz: "Jamoalar uchun dasturlar",
+        en: "Programs for Teams",
+        de: "Programme für Teams",
       }),
       section1Description: translate({
         ru: "Разрабатываем индивидуальные программы под ваши цели: от небольших команд до крупных корпоративных мероприятий. Квесты, веревочные курсы, командные челленджи.",
@@ -271,10 +271,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Training von Profis",
       }),
       section1Description: translate({
-        ru: "Наши инструкторы — мастера спорта и опытные тренеры. Они научат вас правильной технике, стойке и прицеливанию, обеспечивая безопасность на каждом этапе.",
-        uz: "Bizning instruktorlarimiz — sport ustalarі va tajribali murabbiylar. Ular sizga to'g'ri texnika, pozitsiya va nishonga olishni o'rgatadi, har bir bosqichda xavfsizlikni ta'minlaydi.",
-        en: "Our instructors are sports masters and experienced coaches. They will teach you proper technique, stance, and aiming, ensuring safety at every stage.",
-        de: "Unsere Instruktoren sind Sportmeister und erfahrene Trainer. Sie bringen Ihnen die richtige Technik, Haltung und Zielerfassung bei und gewährleisten Sicherheit in jeder Phase.",
+        ru: "Наши инструкторы-профессионалы, за плечами которых, имеется многолетний опыт. Они научат вас правильной технике, стойке и прицеливанию, обеспечивая безопасность на каждом этапе.",
+        uz: "Bizning professional instruktorlarimiz ko'p yillik tajribaga ega. Ular sizga to'g'ri texnika, pozitsiya va nishonga olishni o'rgatadi, har bir bosqichda xavfsizlikni ta'minlaydi.",
+        en: "Our professional instructors have many years of experience behind them. They will teach you proper technique, stance, and aiming, ensuring safety at every stage.",
+        de: "Unsere professionellen Instruktoren verfügen über langjährige Erfahrung. Sie bringen Ihnen die richtige Technik, Haltung und Zielerfassung bei und gewährleisten Sicherheit in jeder Phase.",
       }),
       section2Title: translate({
         ru: "Современное оборудование и полигон",
@@ -283,10 +283,10 @@ const TourismTypesPage: React.FC = () => {
         de: "Moderne Ausrüstung und Schießstand",
       }),
       section2Description: translate({
-        ru: "Используем сертифицированное оборудование и боеприпасы. Стрельбище оборудовано по всем стандартам безопасности для комфортных тренировок",
-        uz: "Sertifikatlangan jihozlar va o'q-dorilardan foydalanamiz. Otish maydoni qulay mashg'ulotlar uchun barcha xavfsizlik standartlariga muvofiq jihozlangan",
-        en: "We use certified equipment and ammunition. The shooting range is equipped to all safety standards for comfortable training",
-        de: "Wir verwenden zertifizierte Ausrüstung und Munition. Der Schießstand ist nach allen Sicherheitsstandards für komfortables Training ausgestattet",
+        ru: "Используем сертифицированное оборудование. Стрельбище оборудовано по всем стандартам безопасности для комфортных тренировок",
+        uz: "Sertifikatlangan jihozlardan foydalanamiz. Otish maydoni qulay mashg'ulotlar uchun barcha xavfsizlik standartlariga muvofiq jihozlangan",
+        en: "We use certified equipment. The shooting range is equipped to all safety standards for comfortable training",
+        de: "Wir verwenden zertifizierte Ausrüstung. Der Schießstand ist nach allen Sicherheitsstandards für komfortables Training ausgestattet",
       }),
     },
   });
