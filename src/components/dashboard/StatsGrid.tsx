@@ -92,26 +92,26 @@ const StatsGrid: React.FC<StatsGridProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
           <div
             key={index}
-            className="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all"
+            className="bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
               <div
-                className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center flex-shrink-0`}
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl ${stat.bgColor} flex items-center justify-center flex-shrink-0`}
               >
-                <Icon className={`w-6 h-6 ${stat.color}`} />
+                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${stat.color}`} />
               </div>
-              <div>
-                <p className="text-sm text-gray-500 font-medium">
+              <div className="min-w-0">
+                <p className="text-xs md:text-sm text-gray-500 font-medium truncate">
                   {stat.label}
                 </p>
                 <p
-                  className={`text-2xl font-bold ${stat.isText ? stat.color : "text-gray-900"}`}
+                  className={`text-xl md:text-2xl font-bold ${stat.isText ? stat.color : "text-gray-900"}`}
                 >
                   {stat.value}
                 </p>

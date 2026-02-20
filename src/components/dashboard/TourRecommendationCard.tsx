@@ -10,6 +10,7 @@ interface TourRecommendationCardProps {
   location: string;
   image: string;
   price: number;
+  currency?: string;
   duration: number;
   rating?: number;
   reviewCount?: number;
@@ -23,6 +24,7 @@ const TourRecommendationCard: React.FC<TourRecommendationCardProps> = ({
   location,
   image,
   price,
+  currency = "UZS",
   duration,
   rating,
   reviewCount,
@@ -148,8 +150,12 @@ const TourRecommendationCard: React.FC<TourRecommendationCardProps> = ({
               {translate({ ru: "От", uz: "Dan", en: "From", de: "Ab" })}
             </span>
             <p className="text-lg font-bold text-gray-900">
-              {formatPrice(price)}{" "}
-              <span className="text-sm font-normal text-gray-500">UZS</span>
+              {(() => {
+                const formatted = new Intl.NumberFormat("en-US").format(price);
+                if (currency === 'USD') return `$${formatted}`;
+                if (currency === 'EUR') return `€${formatted}`;
+                return <>{formatted} <span className="text-sm font-normal text-gray-500">UZS</span></>;
+              })()}
             </p>
           </div>
           <button className="flex items-center gap-1 text-sm font-semibold text-[#8f7b49] group-hover:text-[#7a6839] transition-colors">

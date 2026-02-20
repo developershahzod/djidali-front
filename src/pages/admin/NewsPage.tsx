@@ -332,10 +332,11 @@ const AdminNewsPage = () => {
       actions={
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8F6E47] to-[#BFA480] px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#8F6E47] to-[#BFA480] px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
         >
           <Plus className="h-4 w-4" />
-          Добавить новость
+          <span className="hidden sm:inline">Добавить новость</span>
+          <span className="sm:hidden">Новость</span>
         </button>
       }
     >
@@ -353,7 +354,7 @@ const AdminNewsPage = () => {
         </div>
       </div>
 
-      {/* News Table */}
+      {/* News List */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-[#BFA480]/40 border-t-[#8F6E47]" />
@@ -369,52 +370,40 @@ const AdminNewsPage = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-lg">
-          <table className="min-w-full divide-y divide-white/60">
-            <thead className="bg-[#F7F1E6]">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
-                  Новость
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
-                  Статус
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
-                  Дата
-                </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
-                  Действия
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/60 bg-white">
-              {filteredNews.map((article) => (
-                <tr key={article.id} className="hover:bg-[#F7F1E6]/50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      {article.imageUrl ? (
-                        <img
-                          src={getImageUrl(article.imageUrl)}
-                          alt={article.titleRu}
-                          className="h-12 w-12 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F2E5D3]">
-                          <ImageIcon className="h-6 w-6 text-[#BFA480]" />
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-[#2F2A24]">
-                          {article.titleRu || "Без названия"}
-                        </p>
-                        <p className="text-xs text-[#8E7A5E]">{article.slug}</p>
-                      </div>
+        <>
+          {/* Mobile Card Layout */}
+          <div className="space-y-3 md:hidden">
+            {filteredNews.map((article) => (
+              <div
+                key={article.id}
+                className="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  {article.imageUrl ? (
+                    <img
+                      src={getImageUrl(article.imageUrl)}
+                      alt={article.titleRu}
+                      className="h-14 w-14 rounded-xl object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#F2E5D3] flex-shrink-0">
+                      <ImageIcon className="h-6 w-6 text-[#BFA480]" />
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-[#2F2A24] text-sm line-clamp-2">
+                      {article.titleRu || "Без названия"}
+                    </p>
+                    <p className="text-xs text-[#8E7A5E] mt-0.5 truncate">
+                      {article.slug}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F2E5D3]">
+                  <div className="flex items-center gap-2">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
+                        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold",
                         article.isPublished
                           ? "bg-[#E5F4EC] text-[#2F4A3A]"
                           : "bg-[#FEF3C7] text-[#92400E]",
@@ -428,60 +417,155 @@ const AdminNewsPage = () => {
                       />
                       {article.isPublished ? "Опубликовано" : "Черновик"}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#6B5B4C]">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {article.isPublished && article.publishedAt
-                            ? formatDate(article.publishedAt)
-                            : formatDate(article.createdAt)}
-                        </span>
-                      </div>
-                      {article.isPublished && article.publishedAt && (
-                        <span className="text-xs text-[#8E7A5E]">
-                          Опубликовано
-                        </span>
-                      )}
-                      {!article.isPublished && (
-                        <span className="text-xs text-[#8E7A5E]">Создано</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <a
-                        href={`/news/${article.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24]"
-                        title="Просмотр"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </a>
-                      <button
-                        onClick={() => openEditModal(article)}
-                        disabled={isLoadingEdit}
-                        className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24] disabled:opacity-50"
-                        title="Редактировать"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(article.id)}
-                        className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-red-50 hover:text-red-600"
-                        title="Удалить"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                    <span className="text-xs text-[#8E7A5E]">
+                      {article.isPublished && article.publishedAt
+                        ? formatDate(article.publishedAt)
+                        : formatDate(article.createdAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <a
+                      href={`/news/${article.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg p-2 text-[#8E7A5E] hover:bg-[#F2E5D3]"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </a>
+                    <button
+                      onClick={() => openEditModal(article)}
+                      disabled={isLoadingEdit}
+                      className="rounded-lg p-2 text-[#8E7A5E] hover:bg-[#F2E5D3] disabled:opacity-50"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(article.id)}
+                      className="rounded-lg p-2 text-[#8E7A5E] hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-lg">
+            <table className="min-w-full divide-y divide-white/60">
+              <thead className="bg-[#F7F1E6]">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
+                    Новость
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
+                    Статус
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
+                    Дата
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-[#8E7A5E]">
+                    Действия
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-white/60 bg-white">
+                {filteredNews.map((article) => (
+                  <tr key={article.id} className="hover:bg-[#F7F1E6]/50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        {article.imageUrl ? (
+                          <img
+                            src={getImageUrl(article.imageUrl)}
+                            alt={article.titleRu}
+                            className="h-12 w-12 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F2E5D3]">
+                            <ImageIcon className="h-6 w-6 text-[#BFA480]" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium text-[#2F2A24]">
+                            {article.titleRu || "Без названия"}
+                          </p>
+                          <p className="text-xs text-[#8E7A5E]">{article.slug}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
+                          article.isPublished
+                            ? "bg-[#E5F4EC] text-[#2F4A3A]"
+                            : "bg-[#FEF3C7] text-[#92400E]",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            article.isPublished ? "bg-[#2F4A3A]" : "bg-[#92400E]",
+                          )}
+                        />
+                        {article.isPublished ? "Опубликовано" : "Черновик"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#6B5B4C]">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {article.isPublished && article.publishedAt
+                              ? formatDate(article.publishedAt)
+                              : formatDate(article.createdAt)}
+                          </span>
+                        </div>
+                        {article.isPublished && article.publishedAt && (
+                          <span className="text-xs text-[#8E7A5E]">
+                            Опубликовано
+                          </span>
+                        )}
+                        {!article.isPublished && (
+                          <span className="text-xs text-[#8E7A5E]">Создано</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <a
+                          href={`/news/${article.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24]"
+                          title="Просмотр"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </a>
+                        <button
+                          onClick={() => openEditModal(article)}
+                          disabled={isLoadingEdit}
+                          className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-[#F2E5D3] hover:text-[#2F2A24] disabled:opacity-50"
+                          title="Редактировать"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(article.id)}
+                          className="rounded-lg p-2 text-[#8E7A5E] transition-colors hover:bg-red-50 hover:text-red-600"
+                          title="Удалить"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Loading overlay for edit */}

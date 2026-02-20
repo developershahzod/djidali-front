@@ -281,10 +281,10 @@ const Header: React.FC = () => {
                 className="hidden lg:block text-white border border-white hover:bg-white/10 rounded-[100px] px-[16px] py-[12px] transition-all text-[14px] font-semibold uppercase leading-[16px]"
               >
                 {translate({
-                  ru: "Забронировать",
-                  uz: "Bron qilish",
-                  en: "Book",
-                  de: "Buchen",
+                  ru: "Войти",
+                  uz: "Kirish",
+                  en: "Sign In",
+                  de: "Anmelden",
                 })}
               </button>
             )}
@@ -450,10 +450,10 @@ const Header: React.FC = () => {
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {translate({
-                ru: "Забронировать",
-                uz: "Bron qilish",
-                en: "Book",
-                de: "Buchen",
+                ru: "Войти",
+                uz: "Kirish",
+                en: "Sign In",
+                de: "Anmelden",
               })}
               <span className="text-[32px]">→</span>
             </button>

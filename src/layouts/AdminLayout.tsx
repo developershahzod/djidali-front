@@ -22,25 +22,47 @@ interface NavItemProps {
   to: string;
   active?: boolean;
   collapsed?: boolean;
+  comingSoon?: boolean;
 }
 
-const NavItem = ({ icon, label, to, active, collapsed }: NavItemProps) => (
-  <Link
-    to={to}
-    className={cn(
-      "group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded transition-colors",
-      active
-        ? "bg-primary-600 text-white"
-        : "text-slate-300 hover:bg-slate-800 hover:text-white",
-    )}
-    title={collapsed ? label : undefined}
-  >
-    <span className="flex h-5 w-5 items-center justify-center shrink-0">
-      {icon}
-    </span>
-    {!collapsed && <span className="truncate">{label}</span>}
-  </Link>
-);
+const NavItem = ({ icon, label, to, active, collapsed, comingSoon }: NavItemProps) => {
+  if (comingSoon) {
+    return (
+      <div
+        className="group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded text-slate-500 cursor-not-allowed opacity-60"
+        title={collapsed ? `${label} — Coming soon` : undefined}
+      >
+        <span className="flex h-5 w-5 items-center justify-center shrink-0">
+          {icon}
+        </span>
+        {!collapsed && (
+          <>
+            <span className="truncate">{label}</span>
+            <span className="ml-auto text-[10px] uppercase tracking-wider bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">Soon</span>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded transition-colors",
+        active
+          ? "bg-primary-600 text-white"
+          : "text-slate-300 hover:bg-slate-800 hover:text-white",
+      )}
+      title={collapsed ? label : undefined}
+    >
+      <span className="flex h-5 w-5 items-center justify-center shrink-0">
+        {icon}
+      </span>
+      {!collapsed && <span className="truncate">{label}</span>}
+    </Link>
+  );
+};
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -92,6 +114,7 @@ const AdminLayout = ({
       icon: <Settings className="h-5 w-5" />,
       label: t("admin.settings"),
       to: "/admin/settings",
+      comingSoon: true,
     },
   ];
 
@@ -170,6 +193,7 @@ const AdminLayout = ({
               to={item.to}
               active={isActive(item.to)}
               collapsed={collapsed}
+              comingSoon={(item as any).comingSoon}
             />
           ))}
         </nav>

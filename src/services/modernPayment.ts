@@ -15,18 +15,18 @@
  * - FRONTEND_URL (for return redirect)
  */
 
-import { api } from './api';
+import { apiService as api } from "./api";
 
 export interface InitiatePaymentRequest {
   orderId: string;
-  method: 'CLICK';
+  method: "CLICK";
   amount?: number;
 }
 
 export interface InitiatePaymentResponse {
   transactionId: string;
   paymentUrl: string;
-  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED';
+  status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED";
   data: {
     paymentId: string;
     isDuplicate?: boolean;
@@ -35,7 +35,7 @@ export interface InitiatePaymentResponse {
 
 export interface PaymentStatusResponse {
   id: string;
-  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
+  status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED" | "REFUNDED";
   amount: number;
   method: string;
   orderId: string;
@@ -58,17 +58,20 @@ class ModernPaymentService {
    * @param amount - Optional amount override (uses order total if not provided)
    * @returns Payment initiation response with redirect URL
    */
-  async initiate(orderId: string, amount?: number): Promise<InitiatePaymentResponse> {
+  async initiate(
+    orderId: string,
+    amount?: number,
+  ): Promise<InitiatePaymentResponse> {
     try {
       const response = await api.initiateOrderPayment({
         orderId,
-        method: 'CLICK',
+        method: "CLICK",
         amount,
       });
 
       return response;
     } catch (error) {
-      console.error('Modern payment initiation failed:', error);
+      console.error("Modern payment initiation failed:", error);
       throw error;
     }
   }
@@ -95,7 +98,7 @@ class ModernPaymentService {
     if (response.paymentUrl) {
       this.redirectToPayment(response.paymentUrl);
     } else {
-      throw new Error('No payment URL returned from backend');
+      throw new Error("No payment URL returned from backend");
     }
   }
 
@@ -110,7 +113,7 @@ class ModernPaymentService {
       const response = await api.getPaymentStatus(paymentId);
       return response;
     } catch (error) {
-      console.error('Failed to get payment status:', error);
+      console.error("Failed to get payment status:", error);
       throw error;
     }
   }
@@ -126,7 +129,7 @@ class ModernPaymentService {
       const response = await api.getOrderPayments(orderId);
       return response;
     } catch (error) {
-      console.error('Failed to get order payments:', error);
+      console.error("Failed to get order payments:", error);
       throw error;
     }
   }
@@ -140,9 +143,9 @@ class ModernPaymentService {
   async isOrderPaid(orderId: string): Promise<boolean> {
     try {
       const payments = await this.getOrderPayments(orderId);
-      return payments.some(p => p.status === 'SUCCESS');
+      return payments.some((p) => p.status === "SUCCESS");
     } catch (error) {
-      console.error('Failed to check if order is paid:', error);
+      console.error("Failed to check if order is paid:", error);
       return false;
     }
   }
@@ -150,17 +153,19 @@ class ModernPaymentService {
   /**
    * Map backend status to user-friendly display status
    */
-  getDisplayStatus(status: string): 'waiting' | 'confirmed' | 'rejected' | 'error' {
+  getDisplayStatus(
+    status: string,
+  ): "waiting" | "confirmed" | "rejected" | "error" {
     switch (status) {
-      case 'SUCCESS':
-        return 'confirmed';
-      case 'FAILED':
-        return 'rejected';
-      case 'PENDING':
-      case 'PROCESSING':
-        return 'waiting';
+      case "SUCCESS":
+        return "confirmed";
+      case "FAILED":
+        return "rejected";
+      case "PENDING":
+      case "PROCESSING":
+        return "waiting";
       default:
-        return 'error';
+        return "error";
     }
   }
 }

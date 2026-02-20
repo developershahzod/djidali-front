@@ -8,6 +8,7 @@ const NewAboutPage: React.FC = () => {
   const { translate, t } = useLanguage();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+
   const [showAllTeam, setShowAllTeam] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -130,57 +131,7 @@ const NewAboutPage: React.FC = () => {
 
   const currentFeature = whyUsFeatures[currentSlide];
 
-  const teamMembers = [
-    // Hidden temporarily:
-    // { name: t("aboutPage.team.member1.name"), role: t("aboutPage.team.member1.role"), image: "/1.webp" }, // Руслан - Егерь
-    // { name: t("aboutPage.team.member2.name"), role: t("aboutPage.team.member2.role"), image: "/2.webp" }, // Фазлиддин - Егерь
-    // { name: t("aboutPage.team.member3.name"), role: t("aboutPage.team.member3.role"), image: "/3.webp" }, // Азиз - Кинолог
-    // { name: t("aboutPage.team.member4.name"), role: t("aboutPage.team.member4.role"), image: "/4.webp" }, // Нарзулла - Лесник
-    {
-      name: t("aboutPage.team.member5.name"),
-      role: t("aboutPage.team.member5.role"),
-      image: "/5.webp",
-    },
-    {
-      name: t("aboutPage.team.member6.name"),
-      role: t("aboutPage.team.member6.role"),
-      image: "/6.webp",
-    },
-    {
-      name: t("aboutPage.team.member7.name"),
-      role: t("aboutPage.team.member7.role"),
-      image: "/7.webp",
-    },
-    {
-      name: t("aboutPage.team.member8.name"),
-      role: t("aboutPage.team.member8.role"),
-      image: "/8.webp",
-    },
-    {
-      name: t("aboutPage.team.member9.name"),
-      role: t("aboutPage.team.member9.role"),
-      image: "/9.webp",
-    },
-    {
-      name: t("aboutPage.team.member10.name"),
-      role: t("aboutPage.team.member10.role"),
-      image: "/10.webp",
-    },
-    {
-      name: t("aboutPage.team.member11.name"),
-      role: t("aboutPage.team.member11.role"),
-      image: "/11.webp",
-    },
-    {
-      name: t("aboutPage.team.member12.name"),
-      role: t("aboutPage.team.member12.role"),
-      image: "/12.webp",
-    },
-  ];
 
-  const displayedTeamMembers = showAllTeam
-    ? teamMembers
-    : teamMembers.slice(0, 6);
 
   return (
     <div className="bg-[#f4f2ed]">
@@ -646,52 +597,47 @@ const NewAboutPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 w-full">
-          {displayedTeamMembers.map((member, index) => (
-            <div key={index} className="flex flex-col h-full">
-              <div className="w-full aspect-[3/4] overflow-hidden">
-                <img
-                  alt={member.name}
-                  className="w-full h-full object-cover object-top"
-                  src={member.image}
-                />
-              </div>
-              <div className="bg-white border-2 border-[silver] px-[clamp(30px,3.47vw,50px)] py-[clamp(20px,1.94vw,28px)]">
-                <div className="flex flex-col gap-[clamp(8px,0.83vw,12px)] text-[#333333]">
-                  <p
-                    className="text-[clamp(16px,1.53vw,22px)] font-semibold leading-[1.09] tracking-[-0.02em] whitespace-pre"
-                    style={{ fontFamily: "Montserrat, sans-serif" }}
+        {(() => {
+          const allFrames = Array.from({ length: 18 }, (_, i) => i + 7);
+          const visibleFrames = showAllTeam ? allFrames : allFrames.slice(0, 6);
+          return (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(16px,1.67vw,24px)] w-full max-w-[min(1440px,90vw)] mx-auto px-[clamp(30px,3.47vw,50px)]">
+                {visibleFrames.map((frameNum) => (
+                  <div
+                    key={frameNum}
+                    className="rounded-[16px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-white"
                   >
-                    {member.name}
-                  </p>
-                  <p
-                    className="text-[clamp(14px,1.11vw,16px)] font-medium leading-[1] tracking-[-0.02em]"
-                    style={{ fontFamily: "Montserrat, sans-serif" }}
-                  >
-                    {member.role}
-                  </p>
-                </div>
+                    <div className="w-full aspect-[3/4] overflow-hidden">
+                      <img
+                        alt=""
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        src={`/frame-${frameNum}.webp`}
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Show More Button */}
-        {!showAllTeam && teamMembers.length > 6 && (
-          <div className="flex justify-center mt-[clamp(40px,4.17vw,60px)]">
-            <button
-              onClick={() => setShowAllTeam(true)}
-              className="bg-[#8f7b49] hover:bg-[#7a6939] transition-colors rounded-[10px] px-[clamp(40px,3.89vw,56px)] py-[clamp(20px,2.08vw,30px)] h-[clamp(60px,5.56vw,80px)] flex items-center justify-center cursor-pointer"
-            >
-              <p
-                className="text-white text-[clamp(16px,1.39vw,20px)] font-bold leading-[1] tracking-[-0.02em]"
-                style={{ fontFamily: "Montserrat, sans-serif" }}
-              >
-                {t("aboutPage.team.showMore")}
-              </p>
-            </button>
-          </div>
-        )}
+              {!showAllTeam && (
+                <div className="flex justify-center mt-[clamp(40px,4.17vw,60px)]">
+                  <button
+                    onClick={() => setShowAllTeam(true)}
+                    className="bg-[#8f7b49] hover:bg-[#7a6939] transition-colors rounded-[10px] px-[clamp(40px,3.89vw,56px)] py-[clamp(20px,2.08vw,30px)] h-[clamp(60px,5.56vw,80px)] flex items-center justify-center cursor-pointer"
+                  >
+                    <p
+                      className="text-white text-[clamp(16px,1.39vw,20px)] font-bold leading-[1] tracking-[-0.02em]"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      {t("aboutPage.team.showMore")}
+                    </p>
+                  </button>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </section>
 
       {/* Gallery Section */}

@@ -168,18 +168,17 @@ export const usePayments = (
         return modernPaymentService.initiate(orderId, amount);
       } else {
         // Legacy: Direct Click API integration
-        const response = await clickPaymentService.createOrder({
+        const response = await clickPaymentService.createClickOrder(
           orderId,
-          amount: amount || 0,
-          description: `Order ${orderId}`,
-        });
+          amount || 0,
+        );
 
         // Map legacy response to modern format
         return {
-          transactionId: response.transactionId,
+          transactionId: response.orderId,
           paymentUrl: response.paymentUrl,
           status: "PENDING",
-          data: { paymentId: response.transactionId },
+          data: { paymentId: response.orderId },
         };
       }
     },
@@ -194,11 +193,10 @@ export const usePayments = (
       if (USE_BACKEND_PAYMENT) {
         await modernPaymentService.initiateAndRedirect(orderId, amount);
       } else {
-        const response = await clickPaymentService.createOrder({
+        const response = await clickPaymentService.createClickOrder(
           orderId,
-          amount: amount || 0,
-          description: `Order ${orderId}`,
-        });
+          amount || 0,
+        );
         window.location.href = response.paymentUrl;
       }
     },
@@ -294,16 +292,15 @@ export const useClickPayment = () => {
         if (USE_BACKEND_PAYMENT) {
           return await modernPaymentService.initiate(orderId, amount);
         } else {
-          const response = await clickPaymentService.createOrder({
+          const response = await clickPaymentService.createClickOrder(
             orderId,
-            amount: amount || 0,
-            description: `Order ${orderId}`,
-          });
+            amount || 0,
+          );
           return {
-            transactionId: response.transactionId,
+            transactionId: response.orderId,
             paymentUrl: response.paymentUrl,
             status: "PENDING",
-            data: { paymentId: response.transactionId },
+            data: { paymentId: response.orderId },
           };
         }
       } catch (err) {

@@ -110,6 +110,9 @@ const ReviewStep: React.FC = () => {
     if (currency === "USD") {
       return `$${price.toLocaleString()}`;
     }
+    if (currency === "EUR") {
+      return `€${price.toLocaleString()}`;
+    }
     return `${price.toLocaleString()} UZS`;
   };
 

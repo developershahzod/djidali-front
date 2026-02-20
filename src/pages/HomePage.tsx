@@ -414,7 +414,11 @@ const HomePage: React.FC = () => {
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
                       <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em]">
-                        {Number(tour.price || 0).toLocaleString("ru-RU")} UZS
+                        {tour.currency === "USD"
+                          ? `$${Number(tour.price || 0).toLocaleString("en-US")}`
+                          : tour.currency === "EUR"
+                            ? `€${Number(tour.price || 0).toLocaleString("de-DE")}`
+                            : `${Number(tour.price || 0).toLocaleString("ru-RU")} UZS`}
                       </p>
                       <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
                         {t("home.popular.from")}
@@ -539,8 +543,11 @@ const HomePage: React.FC = () => {
                           style={{ fontFamily: "Montserrat, sans-serif" }}
                         >
                           <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
-                            {Number(tour.price || 0).toLocaleString("ru-RU")}{" "}
-                            UZS
+                            {tour.currency === "USD"
+                              ? `$${Number(tour.price || 0).toLocaleString("en-US")}`
+                              : tour.currency === "EUR"
+                                ? `€${Number(tour.price || 0).toLocaleString("de-DE")}`
+                                : `${Number(tour.price || 0).toLocaleString("ru-RU")} UZS`}
                           </p>
                           <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
                             {t("home.popular.from")}
@@ -779,11 +786,11 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Mobile version - Stack vertically */}
-        <div className="flex flex-col gap-6 lg:hidden">
+        <div className="flex flex-col gap-4 px-4 lg:hidden">
           {/* Main card */}
           <div
             onClick={() => navigate("/why-us")}
-            className="w-full min-h-[400px] bg-[#8F7B49] rounded-[20px] p-8 cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl active:scale-98"
+            className="w-full min-h-[280px] bg-[#8F7B49] rounded-[20px] p-6 cursor-pointer transition-all duration-300 hover:brightness-110 hover:shadow-2xl active:scale-98"
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -793,8 +800,8 @@ const HomePage: React.FC = () => {
               }
             }}
           >
-            <div className="w-[80px] h-[80px] bg-[#333333] rounded-[45px] flex items-center justify-center mb-8">
-              <div className="relative w-[40px] h-[40px]">
+            <div className="w-[60px] h-[60px] bg-[#333333] rounded-full flex items-center justify-center mb-6">
+              <div className="relative w-[30px] h-[30px]">
                 <img
                   src="/why-us-icon1.svg"
                   alt=""
@@ -814,13 +821,13 @@ const HomePage: React.FC = () => {
               </div>
             </div>
             <h2
-              className="text-white text-[40px] leading-[48px] tracking-[-1.2px] font-medium mb-4"
+              className="text-white text-[28px] leading-[36px] tracking-[-0.84px] font-medium mb-3"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.whyUs.mainTitle")}
             </h2>
             <p
-              className="text-white text-[16px] leading-[28px] tracking-[-0.48px] font-medium"
+              className="text-white text-[14px] leading-[24px] tracking-[-0.42px] font-medium"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.whyUs.mainDescription")}
@@ -830,7 +837,7 @@ const HomePage: React.FC = () => {
           {/* Image cards */}
           <div
             onClick={() => navigate("/why-us#nature")}
-            className="relative w-full h-[400px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
+            className="relative w-full h-[280px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -847,7 +854,7 @@ const HomePage: React.FC = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p
-              className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]"
+              className="absolute left-6 top-6 text-white text-[24px] leading-[32px] tracking-[-0.48px] font-medium max-w-[80%]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.experience.nature")}
@@ -856,7 +863,7 @@ const HomePage: React.FC = () => {
 
           <div
             onClick={() => navigate("/why-us#team")}
-            className="relative w-full h-[400px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
+            className="relative w-full h-[280px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -869,11 +876,11 @@ const HomePage: React.FC = () => {
             <img
               src="/10.webp"
               alt={t("home.experience.team")}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover object-top"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p
-              className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]"
+              className="absolute left-6 top-6 text-white text-[24px] leading-[32px] tracking-[-0.48px] font-medium max-w-[80%]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.experience.team")}
@@ -882,7 +889,7 @@ const HomePage: React.FC = () => {
 
           <div
             onClick={() => navigate("/why-us#comfort")}
-            className="relative w-full h-[400px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
+            className="relative w-full h-[280px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -899,7 +906,7 @@ const HomePage: React.FC = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p
-              className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]"
+              className="absolute left-6 top-6 text-white text-[24px] leading-[32px] tracking-[-0.48px] font-medium max-w-[80%]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.experience.comfort")}
@@ -908,7 +915,7 @@ const HomePage: React.FC = () => {
 
           <div
             onClick={() => navigate("/why-us#routes")}
-            className="relative w-full h-[400px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
+            className="relative w-full h-[280px] rounded-[20px] overflow-hidden cursor-pointer transition-all duration-300 active:scale-98"
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -925,7 +932,7 @@ const HomePage: React.FC = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.45)] to-transparent"></div>
             <p
-              className="absolute left-8 top-8 text-white text-[32px] leading-[40px] tracking-[-0.64px] font-medium max-w-[80%]"
+              className="absolute left-6 top-6 text-white text-[24px] leading-[32px] tracking-[-0.48px] font-medium max-w-[80%]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               {t("home.experience.routes")}

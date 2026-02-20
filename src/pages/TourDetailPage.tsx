@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getImageUrl, getTourPrimaryImage } from "../utils/imageUtils";
 import { useTour } from "../hooks/useTours";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -32,6 +34,7 @@ const TourDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t, translate, language, pluralize } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const { tour, loading, error } = useTour(id ?? null);
   const [openDays, setOpenDays] = useState<Set<number>>(new Set());
@@ -122,7 +125,7 @@ const TourDetailPage: React.FC = () => {
 
     if (!isAuthenticated) {
       setBookingError(t("tourDetail.booking.errorUnauthorized"));
-      navigate("/login");
+      navigate("/login", { state: { from: location } });
       return;
     }
 
@@ -152,6 +155,7 @@ const TourDetailPage: React.FC = () => {
       participants: { adults, children },
       pricePerPerson,
       duration: tour.duration || 1,
+      currency: (tour as any).currency || "UZS",
       customerName,
       customerPhone,
       notes,
@@ -247,10 +251,19 @@ const TourDetailPage: React.FC = () => {
                       className="text-[clamp(32px,3.47vw,50px)] font-medium leading-[1]"
                       style={{ letterSpacing: "-1px" }}
                     >
-                      {Number(tourPrice).toLocaleString("ru-RU")}{" "}
-                      <span className="text-[clamp(24px,2.78vw,40px)] font-extralight">
-                        UZS
-                      </span>
+                      {(() => {
+                        const currency = (tour as any).currency || "UZS";
+                        if (currency === "USD")
+                          return `$${Number(tourPrice).toLocaleString("en-US")}`;
+                        if (currency === "EUR")
+                          return `€${Number(tourPrice).toLocaleString("de-DE")}`;
+                        return `${Number(tourPrice).toLocaleString("ru-RU")} `;
+                      })()}
+                      {((tour as any).currency || "UZS") === "UZS" && (
+                        <span className="text-[clamp(24px,2.78vw,40px)] font-extralight">
+                          UZS
+                        </span>
+                      )}
                     </div>
                     <div
                       className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4]"
@@ -323,11 +336,11 @@ const TourDetailPage: React.FC = () => {
         {/* Container Section */}
         <section
           id="booking"
-          className="relative bg-white md:h-[394px] px-[clamp(20px,3.47vw,50px)] py-[clamp(30px,4.17vw,60px)]"
+          className="relative bg-white xl:h-[394px] px-[clamp(20px,3.47vw,50px)] py-[clamp(30px,4.17vw,60px)]"
         >
           {/* Tour Details */}
-          <div className="md:absolute md:top-[80px] md:left-[50px] md:right-[50px] flex flex-col md:flex-row justify-between items-start md:items-center max-w-full gap-[20px]">
-            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
+          <div className="xl:absolute xl:top-[80px] xl:left-[50px] xl:right-[50px] flex flex-col md:flex-row justify-between items-start md:items-center max-w-full gap-[20px]">
+            <div className="flex flex-col gap-[10px] w-full xl:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -342,8 +355,8 @@ const TourDetailPage: React.FC = () => {
                 {(tour as any).max_participants ?? tour.maxParticipants ?? 10}
               </div>
             </div>
-            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
-            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
+            <div className="hidden xl:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
+            <div className="flex flex-col gap-[10px] w-full xl:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -359,8 +372,8 @@ const TourDetailPage: React.FC = () => {
                   : t("tourDetail.minAgeValue")}
               </div>
             </div>
-            <div className="hidden md:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
-            <div className="flex flex-col gap-[10px] w-full md:w-[234px]">
+            <div className="hidden xl:block w-[62px] h-[1px] bg-gray-300 rotate-90" />
+            <div className="flex flex-col gap-[10px] w-full xl:w-[234px]">
               <div
                 className="text-[20px] leading-[24px]"
                 style={{ letterSpacing: "-0.4px" }}
@@ -379,7 +392,7 @@ const TourDetailPage: React.FC = () => {
           {/* Booking Form */}
           <form
             onSubmit={handleSubmit}
-            className="md:absolute md:top-[234px] md:left-[50px] md:right-[50px] mt-[30px] md:mt-0"
+            className="xl:absolute xl:top-[234px] xl:left-[50px] xl:right-[50px] mt-[30px] xl:mt-0"
           >
             {bookingError && (
               <div
@@ -390,9 +403,9 @@ const TourDetailPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex flex-col md:flex-row gap-[16px] md:gap-[20px] items-stretch md:items-end flex-wrap">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-row gap-[16px] md:gap-[20px] items-end" style={{ overflow: 'visible' }}>
               {/* Имя */}
-              <div className="flex-1 min-w-[200px]">
+              <div className="xl:flex-1 xl:min-w-[200px]">
                 <label
                   className="block text-[16px] font-medium text-[#333333] mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -414,47 +427,46 @@ const TourDetailPage: React.FC = () => {
               </div>
 
               {/* Телефон */}
-              <div className="flex-1 min-w-[200px]">
+              <div className="xl:flex-1 xl:min-w-[200px] relative z-[100]">
                 <label
                   className="block text-[16px] font-medium text-[#333333] mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
                 >
                   {t("tourDetail.customerPhone")}
                 </label>
-                <input
-                  type="tel"
+                <PhoneInput
+                  defaultCountry="uz"
                   value={customerPhone}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    if (value.length <= 12) {
-                      let formatted = "+998";
-                      if (value.length > 3) {
-                        formatted += " " + value.slice(3, 5);
-                      }
-                      if (value.length > 5) {
-                        formatted += " " + value.slice(5, 8);
-                      }
-                      if (value.length > 8) {
-                        formatted += "-" + value.slice(8, 10);
-                      }
-                      if (value.length > 10) {
-                        formatted += "-" + value.slice(10, 12);
-                      }
-                      setCustomerPhone(formatted);
-                    }
+                  onChange={(phone: string) => setCustomerPhone(phone)}
+                  forceDialCode
+                  inputClassName="phone-input-field"
+                  countrySelectorStyleProps={{
+                    buttonClassName: "phone-country-btn",
                   }}
-                  required
-                  className="w-full h-[60px] md:h-[80px] border-2 border-[#333333] rounded-[10px] px-[20px] text-[18px] md:text-[22px] font-semibold"
-                  style={{
-                    letterSpacing: "-0.44px",
-                    fontFamily: "Montserrat, sans-serif",
-                  }}
-                  placeholder="+998 XX XXX-XX-XX"
+                  style={
+                    {
+                      "--react-international-phone-height":
+                        "clamp(56px, 5vw, 76px)",
+                      "--react-international-phone-border-radius": "0",
+                      "--react-international-phone-border-color": "transparent",
+                      "--react-international-phone-background-color":
+                        "transparent",
+                      "--react-international-phone-text-color": "#333333",
+                      "--react-international-phone-font-size":
+                        "clamp(16px, 1.4vw, 22px)",
+                      "--react-international-phone-flag-width": "28px",
+                      "--react-international-phone-flag-height": "20px",
+                      width: "100%",
+                      fontFamily: "Montserrat, sans-serif",
+                      fontWeight: 600,
+                      letterSpacing: "-0.44px",
+                    } as React.CSSProperties
+                  }
                 />
               </div>
 
               {/* Даты */}
-              <div className="flex-1 min-w-[180px]">
+              <div className="xl:flex-1 xl:min-w-[180px]">
                 <label
                   className="block text-[16px] font-medium text-[#333333] mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -491,7 +503,7 @@ const TourDetailPage: React.FC = () => {
               </div>
 
               {/* Участники */}
-              <div className="flex-1 min-w-[280px] relative">
+              <div className="xl:flex-1 xl:min-w-[280px] relative">
                 <label
                   className="block text-[16px] font-medium text-[#333333] mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -651,7 +663,7 @@ const TourDetailPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={!customerName || !customerPhone}
-                className="w-full md:w-[180px] h-[60px] md:h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[18px] md:text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex-shrink-0"
+                className="w-full md:col-span-2 xl:w-[180px] h-[60px] md:h-[80px] bg-[#8f7b49] text-white rounded-[10px] text-[18px] md:text-[20px] font-bold hover:bg-[#7a6839] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex-shrink-0"
                 style={{
                   letterSpacing: "-0.4px",
                   lineHeight: "20px",

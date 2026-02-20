@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  DollarSign,
   MapPin,
   Plus,
   ShoppingBag,
@@ -15,6 +14,7 @@ import AdminLayout from "../../layouts/AdminLayout";
 import { djidaliApi } from "../../services/djidaliApi";
 import { formatCurrency } from "../../lib/utils";
 import { getImageUrl } from "../../utils/imageUtils";
+import { RevenueCard, OrdersByStatusCard } from "../../components/AdminStats";
 
 interface StatsCardProps {
   title: string;
@@ -64,6 +64,7 @@ interface RecentOrder {
   customer: string;
   date: string;
   amount: number;
+  currency: string;
   status: "pending" | "confirmed" | "completed" | "cancelled";
 }
 
@@ -103,7 +104,8 @@ const getPriceValue = (
 const DashboardPage = () => {
   const { t, language, translate } = useLanguage();
   const [stats, setStats] = useState({
-    totalRevenue: 0,
+    revenueByCurrency: {} as Record<string, number>,
+    ordersByStatus: {} as Record<string, number>,
     totalBookings: 0,
     activeTours: 0,
     newCustomers: 0,
@@ -117,30 +119,42 @@ const DashboardPage = () => {
     const fetchDashboardData = async () => {
       try {
         // Fetch real data from API
-        const [ordersResponse, toursResponse] = await Promise.all([
-          djidaliApi.getAdminOrders({ limit: 5 }),
+        // allOrdersResponse: used for stats (status breakdown, revenue)
+        // recentOrdersResponse: used only for the recent orders table
+        const [allOrdersResponse, toursResponse] = await Promise.all([
+          djidaliApi.getAdminOrders({ limit: 500 }),
           djidaliApi.getTours({ limit: 10 }),
         ]);
 
-        // Calculate stats from real data
-        const orders = ordersResponse.data || [];
+        const orders = allOrdersResponse.data || [];
+        const recentOrders5 = orders.slice(0, 5);
         const tours = toursResponse.data || [];
 
-        // Only count confirmed/completed orders for revenue
-        const confirmedOrders = orders.filter(
-          (order) =>
-            order.status?.toUpperCase() === "CONFIRMED" ||
-            order.status?.toUpperCase() === "COMPLETED",
+        // Count confirmed/fully_paid/completed orders for revenue
+        const paidStatuses = ["CONFIRMED", "FULLY_PAID", "COMPLETED"];
+        const confirmedOrders = orders.filter((order) =>
+          paidStatuses.includes(order.status?.toUpperCase() ?? ""),
         );
-        const totalRevenue = confirmedOrders.reduce(
-          (sum, order) => sum + (order.totalAmount || 0),
-          0,
+        const revenueByCurrency: Record<string, number> = {};
+        confirmedOrders.forEach((order) => {
+          const cur = order.tour?.currency || (order as any).currency || "UZS";
+          revenueByCurrency[cur] =
+            (revenueByCurrency[cur] || 0) + (order.totalAmount || 0);
+        });
+        const ordersByStatus = orders.reduce(
+          (acc, order) => {
+            const s = order.status?.toUpperCase() ?? "PENDING";
+            acc[s] = (acc[s] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>,
         );
         const activeTours = tours.filter((t) => t.status === "ACTIVE").length;
 
         setStats({
-          totalRevenue,
-          totalBookings: ordersResponse.total || orders.length,
+          revenueByCurrency,
+          ordersByStatus,
+          totalBookings: allOrdersResponse.total || orders.length,
           activeTours,
           newCustomers: orders.filter((o) => {
             const orderDate = new Date(o.createdAt);
@@ -150,9 +164,9 @@ const DashboardPage = () => {
           }).length,
         });
 
-        // Transform orders for display
+        // Transform orders for display (only 5 most recent)
         setRecentOrders(
-          orders.slice(0, 5).map((order) => ({
+          recentOrders5.map((order) => ({
             id: order.orderNumber || order.id,
             tourName:
               getLocalizedText(order.tour?.title, language) ||
@@ -172,6 +186,7 @@ const DashboardPage = () => {
                 }),
             date: order.createdAt,
             amount: order.totalAmount || 0,
+            currency: order.tour?.currency || (order as any).currency || "UZS",
             status: (order.status?.toLowerCase() || "pending") as
               | "pending"
               | "confirmed"
@@ -201,7 +216,8 @@ const DashboardPage = () => {
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setStats({
-          totalRevenue: 0,
+          revenueByCurrency: {},
+          ordersByStatus: {},
           totalBookings: 0,
           activeTours: 0,
           newCustomers: 0,
@@ -271,16 +287,8 @@ const DashboardPage = () => {
       }
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title={t("admin.totalRevenue")}
-          value={formatCurrency(stats.totalRevenue)}
-          icon={<DollarSign className="h-6 w-6" />}
-        />
-        <StatsCard
-          title={t("admin.totalBookings")}
-          value={stats.totalBookings}
-          icon={<ShoppingBag className="h-6 w-6" />}
-        />
+        <RevenueCard revenueByCurrency={stats.revenueByCurrency} />
+        <OrdersByStatusCard ordersByStatus={stats.ordersByStatus} />
         <StatsCard
           title={t("admin.activeTours")}
           value={stats.activeTours}
@@ -373,7 +381,7 @@ const DashboardPage = () => {
                             {new Date(order.date).toLocaleDateString()}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {formatCurrency(order.amount)}
+                            {formatCurrency(order.amount, order.currency)}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4">
                             {getStatusBadge(order.status)}

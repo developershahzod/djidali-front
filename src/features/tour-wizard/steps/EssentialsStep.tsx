@@ -364,7 +364,7 @@ const EssentialsStep: React.FC = () => {
             <Select
               value={formData.currency}
               onValueChange={(value) =>
-                updateFormData("currency", value as "UZS" | "USD")
+                updateFormData("currency", value as "UZS" | "USD" | "EUR")
               }
             >
               <SelectTrigger className="w-28 h-12">
@@ -373,6 +373,7 @@ const EssentialsStep: React.FC = () => {
               <SelectContent>
                 <SelectItem value="UZS">🇺🇿 UZS</SelectItem>
                 <SelectItem value="USD">🇺🇸 USD</SelectItem>
+                <SelectItem value="EUR">🇪🇺 EUR</SelectItem>
               </SelectContent>
             </Select>
           </div>

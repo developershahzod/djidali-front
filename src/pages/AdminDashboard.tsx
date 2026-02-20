@@ -10,7 +10,12 @@ import {
   MapPin,
   FolderTree,
   Edit,
+  Download,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import ExcelJS from "exceljs";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
@@ -30,6 +35,7 @@ export interface ExtendedApiTour {
   destination?: string;
   duration?: number;
   price?: number | { amount: number; currency: string };
+  currency?: string;
   status?: string;
   images?: string[];
   category?: {
@@ -346,6 +352,7 @@ const AdminDashboard: React.FC = () => {
 
   const [tours, setTours] = useState<ExtendedApiTour[]>([]);
   const [orders, setOrders] = useState<ApiOrder[]>([]);
+  const [allOrdersForStats, setAllOrdersForStats] = useState<ApiOrder[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [toursLoading, setToursLoading] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -353,6 +360,13 @@ const AdminDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<ApiOrder | null>(null);
   const [showOrderDetail, setShowOrderDetail] = useState(false);
+
+  // Orders pagination & filter
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [ordersTotalPages, setOrdersTotalPages] = useState(1);
+  const [ordersTotal, setOrdersTotal] = useState(0);
+  const [ordersStatusFilter, setOrdersStatusFilter] = useState<string>("");
+  const ORDERS_PER_PAGE = 15;
 
   const [activeTab, setActiveTab] = useState<"tours" | "orders" | "categories">(
     () => getTabFromPath(location.pathname),
@@ -391,7 +405,7 @@ const AdminDashboard: React.FC = () => {
           price:
             typeof tour.price === "object"
               ? tour.price
-              : { amount: tour.price, currency: "UZS" },
+              : { amount: tour.price, currency: tour.currency || "UZS" },
         })),
       );
     } catch (error) {
@@ -404,30 +418,107 @@ const AdminDashboard: React.FC = () => {
   const fetchOrders = useCallback(async () => {
     try {
       setOrdersLoading(true);
+      const params: { page?: number; limit?: number; status?: string } = {
+        page: ordersPage,
+        limit: ORDERS_PER_PAGE,
+      };
+      if (ordersStatusFilter) {
+        params.status = ordersStatusFilter;
+      }
       const response =
         user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
-          ? await djidaliApi.getAdminOrders({ limit: 100 })
-          : await djidaliApi.getOrders({ limit: 100 });
-      console.log(
-        "✅ Orders fetched from API:",
-        response.data?.length || 0,
-        "orders",
-      );
-      if (response.data.length > 0) {
-        console.log("💰 Sample order pricing:", {
-          orderId: response.data[0].id,
-          participants: response.data[0].participants,
-          totalAmount: response.data[0].totalAmount,
-          paidAmount: response.data[0].paidAmount,
-        });
-      }
+          ? await djidaliApi.getAdminOrders(params)
+          : await djidaliApi.getOrders(params);
       setOrders(response.data || []);
+      setOrdersTotal(response.total || response.data?.length || 0);
+      setOrdersTotalPages(
+        response.totalPages ||
+          Math.ceil(
+            (response.total || response.data?.length || 1) / ORDERS_PER_PAGE,
+          ),
+      );
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     } finally {
       setOrdersLoading(false);
     }
+  }, [user?.role, ordersPage, ordersStatusFilter]);
+
+  const fetchAllOrdersForStats = useCallback(async () => {
+    try {
+      const response =
+        user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
+          ? await djidaliApi.getAdminOrders({ limit: 10000 })
+          : await djidaliApi.getOrders({ limit: 10000 });
+      setAllOrdersForStats(response.data || []);
+    } catch (error) {
+      console.error("Failed to fetch all orders for stats:", error);
+    }
   }, [user?.role]);
+
+  // Excel export
+  const handleExportExcel = useCallback(async () => {
+    try {
+      // Fetch all orders matching current filter for export
+      const params: { limit?: number; status?: string } = { limit: 10000 };
+      if (ordersStatusFilter) params.status = ordersStatusFilter;
+      const response =
+        user?.role === "ADMIN" || user?.role === "SALES_MANAGER"
+          ? await djidaliApi.getAdminOrders(params)
+          : await djidaliApi.getOrders(params);
+      const allOrders = response.data || [];
+
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet("Orders");
+      ws.columns = [
+        { header: "Order #", key: "orderNum", width: 15 },
+        { header: "Tour", key: "tour", width: 30 },
+        { header: "Participants", key: "participants", width: 12 },
+        { header: "Amount", key: "amount", width: 12 },
+        { header: "Currency", key: "currency", width: 8 },
+        { header: "Status", key: "status", width: 14 },
+        { header: "Date", key: "date", width: 12 },
+        { header: "Client Name", key: "clientName", width: 20 },
+        { header: "Client Email", key: "clientEmail", width: 25 },
+        { header: "Client Phone", key: "clientPhone", width: 18 },
+      ];
+      allOrders.forEach((order: any) => {
+        ws.addRow({
+          orderNum: order.orderNumber || order.id?.substring(0, 12),
+          tour:
+            typeof order.tour?.title === "object"
+              ? order.tour.title.ru ||
+                order.tour.title.uz ||
+                Object.values(order.tour.title)[0]
+              : order.tour?.title || "N/A",
+          participants: order.participants,
+          amount: order.totalAmount,
+          currency: order.tour?.currency || order.currency || "UZS",
+          status: order.status,
+          date: new Date(order.createdAt).toLocaleDateString("ru-RU"),
+          clientName: order.client
+            ? `${order.client.firstName || ""} ${order.client.lastName || ""}`.trim()
+            : "N/A",
+          clientEmail: order.client?.email || "N/A",
+          clientPhone: order.client?.phoneNumber || "N/A",
+        });
+      });
+
+      const filterLabel = ordersStatusFilter || "all";
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `orders_${filterLabel}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export orders:", error);
+    }
+  }, [user?.role, ordersStatusFilter]);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -447,8 +538,9 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     fetchTours();
     fetchOrders();
+    fetchAllOrdersForStats();
     fetchCategories();
-  }, [fetchTours, fetchCategories, fetchOrders]);
+  }, [fetchTours, fetchCategories, fetchOrders, fetchAllOrdersForStats]);
 
   useEffect(() => {
     if (activeTab === "tours") {
@@ -489,13 +581,7 @@ const AdminDashboard: React.FC = () => {
     newStatus: string,
   ) => {
     try {
-      await djidaliApi.updateOrder(orderId, {
-        status: newStatus as
-          | "PENDING"
-          | "CONFIRMED"
-          | "FULLY_PAID"
-          | "CANCELLED",
-      });
+      await djidaliApi.updateOrderStatus(orderId, newStatus);
       fetchOrders();
       toast.success("Order status updated");
     } catch (error) {
@@ -548,16 +634,36 @@ const AdminDashboard: React.FC = () => {
       <div className="space-y-8">
         <AdminStats
           toursCount={tours.length}
-          ordersCount={orders.length}
+          ordersCount={allOrdersForStats.length}
           categoriesCount={categories.length}
-          totalRevenue={orders
+          ordersByStatus={allOrdersForStats.reduce(
+            (acc, order) => {
+              const s = order.status?.toUpperCase() ?? "PENDING";
+              acc[s] = (acc[s] || 0) + 1;
+              return acc;
+            },
+            {} as Record<string, number>,
+          )}
+          revenueByCurrency={allOrdersForStats
             .filter(
               (order) =>
                 order.status === "FULLY_PAID" ||
                 order.status === "CONFIRMED" ||
                 order.status === "COMPLETED",
             )
-            .reduce((sum, order) => sum + order.totalAmount, 0)}
+            .reduce(
+              (acc, order) => {
+                const currency =
+                  order.tour?.currency ||
+                  order.currency ||
+                  (typeof order.tour?.price === "object" &&
+                    order.tour.price?.currency) ||
+                  "UZS";
+                acc[currency] = (acc[currency] || 0) + order.totalAmount;
+                return acc;
+              },
+              {} as Record<string, number>,
+            )}
         />
 
         {activeTab !== "tours" && (
@@ -617,7 +723,92 @@ const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-                <table className="min-w-full divide-y divide-slate-200">
+                {/* Mobile Card Layout */}
+                <div className="divide-y divide-slate-100 md:hidden">
+                  {tours.map((tour) => (
+                    <div key={tour.id} className="p-4">
+                      <div className="flex items-start gap-3">
+                        {tour.images?.[0] && (
+                          <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                            <img
+                              src={getImageUrl(tour.images[0])}
+                              alt={getTranslated(tour.title)}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 line-clamp-1">
+                            {getTranslated(tour.title)}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {tour.category?.name
+                              ? getTranslated(tour.category.name)
+                              : t("admin.table.noCategory")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-slate-900 tabular-nums">
+                            {(() => {
+                              const currency =
+                                tour.currency ||
+                                (typeof tour.price === "object"
+                                  ? tour.price.currency
+                                  : null) ||
+                                "UZS";
+                              const amount =
+                                typeof tour.price === "object"
+                                  ? tour.price.amount
+                                  : tour.price;
+                              const formatted = amount?.toLocaleString() || "0";
+                              if (currency === "USD") return `$${formatted}`;
+                              if (currency === "EUR") return `€${formatted}`;
+                              return `${formatted} UZS`;
+                            })()}
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${
+                              tour.status === "ACTIVE"
+                                ? "bg-success-50 text-success-700"
+                                : "bg-destructive-50 text-destructive-700"
+                            }`}
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${tour.status === "ACTIVE" ? "bg-success-500" : "bg-destructive-500"}`}
+                            />
+                            {tour.status === "ACTIVE"
+                              ? t("admin.table.active")
+                              : t("admin.table.inactive")}
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {tour._count?.orders || 0} {t("admin.table.orders")}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() =>
+                              navigate(`/admin/tours/edit/${tour.id}`)
+                            }
+                            className="rounded-md p-2 text-slate-600 hover:bg-slate-100"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTour(tour.id)}
+                            className="rounded-md p-2 text-destructive-600 hover:bg-destructive-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table Layout */}
+                <table className="hidden md:table min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
@@ -678,10 +869,22 @@ const AdminDashboard: React.FC = () => {
                           {getTranslated(tour.destination)}
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-slate-900 tabular-nums">
-                          {typeof tour.price === "object"
-                            ? tour.price.amount?.toLocaleString()
-                            : tour.price?.toLocaleString() || "0"}{" "}
-                          UZS
+                          {(() => {
+                            const currency =
+                              tour.currency ||
+                              (typeof tour.price === "object"
+                                ? tour.price.currency
+                                : null) ||
+                              "UZS";
+                            const amount =
+                              typeof tour.price === "object"
+                                ? tour.price.amount
+                                : tour.price;
+                            const formatted = amount?.toLocaleString() || "0";
+                            if (currency === "USD") return `$${formatted}`;
+                            if (currency === "EUR") return `€${formatted}`;
+                            return `${formatted} UZS`;
+                          })()}
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-600">
                           {tour.duration} {t("admin.table.days")}
@@ -775,7 +978,66 @@ const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-                <table className="min-w-full divide-y divide-slate-200">
+                {/* Mobile Card Layout */}
+                <div className="divide-y divide-slate-100 md:hidden">
+                  {categories.map((category) => (
+                    <div key={category.id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {category.icon && (
+                            <span className="text-lg">{category.icon}</span>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-slate-900 line-clamp-1">
+                              {typeof category.name === "string"
+                                ? category.name
+                                : getTranslated(category.name)}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+                              {category.slug}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            onClick={() => handleEditCategory(category)}
+                            className="rounded-md p-1.5 text-slate-600 hover:bg-slate-100"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="rounded-md p-1.5 text-destructive-600 hover:bg-destructive-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${
+                            category.isActive
+                              ? "bg-success-50 text-success-700"
+                              : "bg-destructive-50 text-destructive-700"
+                          }`}
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${category.isActive ? "bg-success-500" : "bg-destructive-500"}`}
+                          />
+                          {category.isActive
+                            ? t("admin.table.active")
+                            : t("admin.table.inactive")}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {t("admin.table.level")} {category.depth}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table Layout */}
+                <table className="hidden md:table min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
@@ -844,7 +1106,7 @@ const AdminDashboard: React.FC = () => {
                             if (!dateValue) return "Invalid Date";
                             try {
                               return new Date(dateValue).toLocaleDateString(
-                                "uz-UZ",
+                                "ru-RU",
                                 {
                                   year: "numeric",
                                   month: "short",
@@ -885,14 +1147,48 @@ const AdminDashboard: React.FC = () => {
 
         {activeTab === "orders" && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900">
-                {t("admin.orders.title")}
-              </h2>
-              <p className="text-sm text-slate-500 mt-1 flex items-center space-x-1">
-                <span className="inline-block w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                <span>{t("admin.orders.dataLoading")}</span>
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  {t("admin.orders.title")}
+                  <span className="ml-2 text-sm font-normal text-slate-400">
+                    ({ordersTotal})
+                  </span>
+                </h2>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Status Filter */}
+                <div className="relative">
+                  <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <select
+                    value={ordersStatusFilter}
+                    onChange={(e) => {
+                      setOrdersStatusFilter(e.target.value);
+                      setOrdersPage(1);
+                    }}
+                    className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none cursor-pointer"
+                  >
+                    <option value="">
+                      {language === "ru" ? "Все статусы" : "All statuses"}
+                    </option>
+                    <option value="PENDING">Pending</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="FULLY_PAID">Fully Paid</option>
+                    <option value="PARTIALLY_PAID">Partially Paid</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="REFUNDED">Refunded</option>
+                  </select>
+                </div>
+                {/* Export Button */}
+                <button
+                  onClick={handleExportExcel}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Excel
+                </button>
+              </div>
             </div>
 
             {ordersLoading ? (
@@ -909,7 +1205,87 @@ const AdminDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-                <table className="min-w-full divide-y divide-slate-200">
+                {/* Mobile Card Layout */}
+                <div className="divide-y divide-slate-100 md:hidden">
+                  {orders.map((order) => {
+                    const currency =
+                      order.tour?.currency ||
+                      order.currency ||
+                      (typeof order.tour?.price === "object" &&
+                        order.tour.price?.currency) ||
+                      "UZS";
+                    const formatted = order.totalAmount.toLocaleString();
+                    const priceDisplay =
+                      currency === "USD"
+                        ? `$${formatted}`
+                        : currency === "EUR"
+                          ? `€${formatted}`
+                          : `${formatted} UZS`;
+
+                    return (
+                      <div key={order.id} className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 truncate">
+                              #{order.orderNumber || order.id.substring(0, 12)}
+                            </p>
+                            <p className="text-xs text-slate-500 mt-0.5 truncate">
+                              {order.tour?.title || "N/A"}
+                            </p>
+                          </div>
+                          <p className="text-sm font-semibold text-slate-900 tabular-nums whitespace-nowrap">
+                            {priceDisplay}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={order.status}
+                              onChange={(e) =>
+                                handleUpdateOrderStatus(
+                                  order.id,
+                                  e.target.value,
+                                )
+                              }
+                              className={`text-xs font-medium rounded-md px-2 py-1 border-0 cursor-pointer ${
+                                order.status === "FULLY_PAID"
+                                  ? "bg-success-50 text-success-700"
+                                  : order.status === "CONFIRMED"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : order.status === "PENDING"
+                                      ? "bg-warning-50 text-warning-700"
+                                      : "bg-destructive-50 text-destructive-700"
+                              }`}
+                            >
+                              <option value="PENDING">PENDING</option>
+                              <option value="CONFIRMED">CONFIRMED</option>
+                              <option value="FULLY_PAID">FULLY_PAID</option>
+                              <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                            <span className="text-xs text-slate-400">
+                              {new Date(order.createdAt).toLocaleDateString(
+                                "ru-RU",
+                                { day: "numeric", month: "short" },
+                              )}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowOrderDetail(true);
+                            }}
+                            className="rounded-md p-2 text-slate-500 hover:bg-slate-100"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop Table Layout */}
+                <table className="hidden md:table min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -953,7 +1329,19 @@ const AdminDashboard: React.FC = () => {
                           {order.participants}
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-slate-900 tabular-nums">
-                          {order.totalAmount.toLocaleString()} UZS
+                          {(() => {
+                            const currency =
+                              order.tour?.currency ||
+                              order.currency ||
+                              (typeof order.tour?.price === "object" &&
+                                order.tour.price?.currency) ||
+                              "UZS";
+                            const formatted =
+                              order.totalAmount.toLocaleString();
+                            if (currency === "USD") return `$${formatted}`;
+                            if (currency === "EUR") return `€${formatted}`;
+                            return `${formatted} UZS`;
+                          })()}
                         </td>
                         <td className="px-4 py-3">
                           <select
@@ -979,7 +1367,7 @@ const AdminDashboard: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-500 tabular-nums">
                           {new Date(order.createdAt).toLocaleDateString(
-                            "uz-UZ",
+                            "ru-RU",
                             {
                               year: "numeric",
                               month: "short",
@@ -1003,6 +1391,65 @@ const AdminDashboard: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+
+                {/* Pagination Controls */}
+                {ordersTotalPages > 1 && (
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/50">
+                    <p className="text-sm text-slate-600">
+                      {language === "ru"
+                        ? `Стр. ${ordersPage} из ${ordersTotalPages} (${ordersTotal} заказов)`
+                        : `Page ${ordersPage} of ${ordersTotalPages} (${ordersTotal} orders)`}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
+                        disabled={ordersPage <= 1}
+                        className="p-2 rounded-lg text-slate-600 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      {Array.from(
+                        { length: Math.min(5, ordersTotalPages) },
+                        (_, i) => {
+                          let pageNum: number;
+                          if (ordersTotalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (ordersPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (ordersPage >= ordersTotalPages - 2) {
+                            pageNum = ordersTotalPages - 4 + i;
+                          } else {
+                            pageNum = ordersPage - 2 + i;
+                          }
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => setOrdersPage(pageNum)}
+                              className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                                ordersPage === pageNum
+                                  ? "bg-primary-600 text-white shadow-sm"
+                                  : "text-slate-600 hover:bg-slate-200"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        },
+                      )}
+                      <button
+                        onClick={() =>
+                          setOrdersPage((p) =>
+                            Math.min(ordersTotalPages, p + 1),
+                          )
+                        }
+                        disabled={ordersPage >= ordersTotalPages}
+                        className="p-2 rounded-lg text-slate-600 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

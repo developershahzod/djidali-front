@@ -39,7 +39,7 @@ export const essentialsStepSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   duration: z.number().min(1, "Duration must be at least 1 day"),
   price: z.number().min(0, "Price must be positive"),
-  currency: z.enum(["UZS", "USD"]),
+  currency: z.enum(["UZS", "USD", "EUR"]),
   status: z.enum([
     "ACTIVE",
     "INACTIVE",
@@ -140,7 +140,7 @@ export const tourWizardSchema = z.object({
   categoryId: z.string(),
   duration: z.number(),
   price: z.number(),
-  currency: z.enum(["UZS", "USD"]),
+  currency: z.enum(["UZS", "USD", "EUR"]),
   status: z.enum([
     "ACTIVE",
     "INACTIVE",

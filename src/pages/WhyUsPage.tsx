@@ -70,9 +70,9 @@ const WhyUsPage: React.FC = () => {
       case "routes":
         return (
           <>
-            <section id="routes" className="mb-[60px]">
+            <section className="mb-10 md:mb-[60px]">
               <h2
-                className="text-[60px] font-medium leading-[1] text-[#333333] mb-[40px]"
+                className="text-3xl md:text-5xl lg:text-[60px] font-medium leading-[1.1] text-[#333333] mb-6 md:mb-[40px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.03em",
@@ -81,7 +81,7 @@ const WhyUsPage: React.FC = () => {
                 {t("whyUs.section1.title")}
               </h2>
               <div
-                className="text-[24px] font-normal leading-[1.67] text-[#333333]"
+                className="text-base md:text-xl lg:text-[24px] font-normal leading-[1.67] text-[#333333]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.02em",
@@ -126,8 +126,8 @@ const WhyUsPage: React.FC = () => {
               </div>
             </section>
 
-            <section className="mb-[60px]">
-              <div className="relative h-[500px] w-full rounded-t-[20px] overflow-hidden">
+            <section className="mb-10 md:mb-[60px]">
+              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-t-[20px] overflow-hidden">
                 <img
                   src="/whyus-routes.webp"
                   alt={t("whyUs.gallery.altForestPath")}
@@ -135,14 +135,14 @@ const WhyUsPage: React.FC = () => {
                 />
               </div>
               <div className="flex">
-                <div className="relative w-1/2 h-[586px] overflow-hidden rounded-bl-[20px]">
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-bl-[20px]">
                   <img
                     src="/whyus-nature.webp"
                     alt={t("whyUs.gallery.altRiverValley")}
                     className="absolute w-full h-full object-cover"
                   />
                 </div>
-                <div className="relative w-1/2 h-[586px] overflow-hidden rounded-br-[20px]">
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-br-[20px]">
                   <img
                     src="/whyus-comfort.webp"
                     alt={t("whyUs.gallery.altMountain")}
@@ -157,9 +157,9 @@ const WhyUsPage: React.FC = () => {
       case "nature":
         return (
           <>
-            <section className="mb-[60px]">
+            <section className="mb-10 md:mb-[60px]">
               <h2
-                className="text-[60px] font-medium leading-[1] text-[#333333] mb-[40px]"
+                className="text-3xl md:text-5xl lg:text-[60px] font-medium leading-[1.1] text-[#333333] mb-6 md:mb-[40px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.03em",
@@ -168,7 +168,7 @@ const WhyUsPage: React.FC = () => {
                 Знакомство с первозданной природой
               </h2>
               <div
-                className="text-[24px] font-normal leading-[1.67] text-[#333333]"
+                className="text-base md:text-xl lg:text-[24px] font-normal leading-[1.67] text-[#333333]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.02em",
@@ -204,8 +204,8 @@ const WhyUsPage: React.FC = () => {
               </div>
             </section>
 
-            <section className="mb-[60px]">
-              <div className="relative h-[500px] w-full rounded-[20px] overflow-hidden">
+            <section className="mb-10 md:mb-[60px]">
+              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-[20px] overflow-hidden">
                 <img
                   src="/whyus-nature.webp"
                   alt={t("whyUs.gallery.altRiverValley")}
@@ -219,9 +219,9 @@ const WhyUsPage: React.FC = () => {
       case "comfort":
         return (
           <>
-            <section id="comfort" className="mb-[60px]">
+            <section id="comfort" className="mb-10 md:mb-[60px]">
               <h2
-                className="text-[60px] font-medium leading-[1] text-[#333333] mb-[40px]"
+                className="text-3xl md:text-5xl lg:text-[60px] font-medium leading-[1.1] text-[#333333] mb-6 md:mb-[40px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.03em",
@@ -230,7 +230,7 @@ const WhyUsPage: React.FC = () => {
                 Комфортное проживание
               </h2>
               <div
-                className="text-[24px] font-normal leading-[1.67] text-[#333333]"
+                className="text-base md:text-xl lg:text-[24px] font-normal leading-[1.67] text-[#333333]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.02em",
@@ -265,8 +265,8 @@ const WhyUsPage: React.FC = () => {
               </div>
             </section>
 
-            <section className="mb-[60px]">
-              <div className="relative h-[500px] w-full rounded-[20px] overflow-hidden">
+            <section className="mb-10 md:mb-[60px]">
+              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-[20px] overflow-hidden">
                 <img
                   src="/whyus-comfort.webp"
                   alt="Комфортное проживание"
@@ -280,9 +280,9 @@ const WhyUsPage: React.FC = () => {
       case "team":
         return (
           <>
-            <section id="team" className="mb-[60px]">
+            <section id="team" className="mb-10 md:mb-[60px]">
               <h2
-                className="text-[60px] font-medium leading-[1] text-[#333333] mb-[40px]"
+                className="text-3xl md:text-5xl lg:text-[60px] font-medium leading-[1.1] text-[#333333] mb-6 md:mb-[40px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.03em",
@@ -291,7 +291,7 @@ const WhyUsPage: React.FC = () => {
                 Команда специалистов
               </h2>
               <div
-                className="text-[24px] font-normal leading-[1.67] text-[#333333]"
+                className="text-base md:text-xl lg:text-[24px] font-normal leading-[1.67] text-[#333333]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.02em",
@@ -327,7 +327,7 @@ const WhyUsPage: React.FC = () => {
               </div>
             </section>
 
-            <section className="mb-[60px]">
+            <section className="mb-10 md:mb-[60px]">
               <div className="w-full rounded-[20px] overflow-hidden">
                 <img
                   src="/whyus-team.webp"
@@ -346,7 +346,7 @@ const WhyUsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#1C160D]">
-      <header className="relative h-screen overflow-hidden flex flex-col">
+      <header className="relative h-[80vh] md:h-screen overflow-hidden flex flex-col">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img
@@ -359,12 +359,12 @@ const WhyUsPage: React.FC = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 h-full px-[50px]">
+        <div className="relative z-10 h-full px-5 md:px-[50px]">
           <div className="max-w-[1340px] mx-auto h-full flex flex-col">
             {/* Title and Description */}
-            <div className="mt-[210px] mb-auto">
+            <div className="mt-28 md:mt-[210px] mb-auto">
               <h1
-                className="text-[90px] font-medium leading-[100px] mb-[20px] text-white max-w-[1340px]"
+                className="text-4xl md:text-6xl lg:text-[90px] font-medium leading-[1.1] md:leading-[100px] mb-4 md:mb-[20px] text-white max-w-[1340px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-2.7px",
@@ -374,7 +374,7 @@ const WhyUsPage: React.FC = () => {
                 {t("whyUs.hero.title")}
               </h1>
               <p
-                className="text-[32px] font-normal leading-[40px] opacity-90 whitespace-pre-wrap text-white max-w-[1340px]"
+                className="text-lg md:text-2xl lg:text-[32px] font-normal leading-[1.4] md:leading-[40px] opacity-90 whitespace-pre-wrap text-white max-w-[1340px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.96px",
@@ -386,27 +386,27 @@ const WhyUsPage: React.FC = () => {
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-2 gap-x-[clamp(40px,5.56vw,80px)] gap-y-[clamp(24px,2.78vw,40px)] text-white pb-[clamp(40px,5.56vw,80px)] max-w-[640px]">
+            <div className="grid grid-cols-2 gap-x-6 md:gap-x-[clamp(40px,5.56vw,80px)] gap-y-4 md:gap-y-[clamp(24px,2.78vw,40px)] text-white pb-8 md:pb-[clamp(40px,5.56vw,80px)] max-w-[640px]">
               {heroStats.map((stat, index) => (
                 <div key={index}>
                   <div
-                    className="mb-[8px] whitespace-nowrap"
+                    className="mb-1 md:mb-[8px] whitespace-nowrap"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-1px",
                       textShadow: "0 2px 15px rgba(0, 0, 0, 0.5)",
                     }}
                   >
-                    <span className="text-[clamp(48px,5.56vw,80px)] font-normal leading-[1]">
+                    <span className="text-4xl md:text-[clamp(48px,5.56vw,80px)] font-normal leading-[1]">
                       {stat.value}
                     </span>
-                    <span className="text-[clamp(32px,3.47vw,50px)] font-extralight leading-[1]">
+                    <span className="text-2xl md:text-[clamp(32px,3.47vw,50px)] font-extralight leading-[1]">
                       {" "}
                       {stat.suffix}
                     </span>
                   </div>
                   <p
-                    className="text-[clamp(14px,1.39vw,20px)] font-light leading-[1.4]"
+                    className="text-xs md:text-[clamp(14px,1.39vw,20px)] font-light leading-[1.4]"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       letterSpacing: "-0.4px",
@@ -425,94 +425,133 @@ const WhyUsPage: React.FC = () => {
       {/* Category Navigation */}
       <section
         ref={categoryNavRef}
-        className="bg-[#F5F5F0] mt-[80px] px-[50px]"
+        className="bg-[#F5F5F0] mt-10 md:mt-[80px] px-4 md:px-[50px]"
       >
-        <div className="flex items-center h-[80px] max-w-[1340px] mx-auto">
-          {/* Уникальные маршруты */}
-          <button
-            onClick={() => setActiveCategory("routes")}
-            className={`${
-              activeCategory === "routes" ? "bg-[#8F7B49]" : "bg-transparent"
-            } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
-          >
-            <p
-              className={`font-semibold text-[22px] leading-[24px] text-center ${
-                activeCategory === "routes" ? "text-white" : "text-[#333333]"
-              }`}
-              style={{
-                fontFamily: "Montserrat, sans-serif",
-                letterSpacing: "-0.44px",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: t("whyUs.categories.routes").replace(/\n/g, "<br />"),
-              }}
-            />
-          </button>
-          {/* Знакомство с первозданной природой */}
-          <button
-            onClick={() => setActiveCategory("nature")}
-            className={`${
-              activeCategory === "nature" ? "bg-[#8F7B49]" : "bg-transparent"
-            } rounded-[10px] flex items-center justify-center w-[380px] h-full cursor-pointer transition-colors`}
-          >
-            <p
-              className={`font-semibold text-[22px] leading-[24px] text-center ${
-                activeCategory === "nature" ? "text-white" : "text-[#333333]"
-              }`}
-              style={{
-                fontFamily: "Montserrat, sans-serif",
-                letterSpacing: "-0.44px",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: t("whyUs.categories.nature").replace(/\n/g, "<br />"),
-              }}
-            />
-          </button>
-          {/* Комфортное проживание */}
-          <button
-            onClick={() => setActiveCategory("comfort")}
-            className={`${
-              activeCategory === "comfort" ? "bg-[#8F7B49]" : "bg-transparent"
-            } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
-          >
-            <p
-              className={`font-semibold text-[22px] leading-[24px] text-center ${
-                activeCategory === "comfort" ? "text-white" : "text-[#333333]"
-              }`}
-              style={{
-                fontFamily: "Montserrat, sans-serif",
-                letterSpacing: "-0.44px",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: t("whyUs.categories.comfort").replace(/\n/g, "<br />"),
-              }}
-            />
-          </button>
-          {/* Команда специалистов */}
-          <button
-            onClick={() => setActiveCategory("team")}
-            className={`${
-              activeCategory === "team" ? "bg-[#8F7B49]" : "bg-transparent"
-            } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
-          >
-            <p
-              className={`font-semibold text-[22px] leading-[24px] text-center ${
-                activeCategory === "team" ? "text-white" : "text-[#333333]"
-              }`}
-              style={{
-                fontFamily: "Montserrat, sans-serif",
-                letterSpacing: "-0.44px",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: t("whyUs.categories.team").replace(/\n/g, "<br />"),
-              }}
-            />
-          </button>
+        <div className="max-w-[1340px] mx-auto">
+          {/* Mobile: 2x2 grid */}
+          <div className="grid grid-cols-2 gap-2 md:hidden">
+            {(
+              [
+                { key: "routes" as CategoryType, label: t("whyUs.categories.routes") },
+                { key: "nature" as CategoryType, label: t("whyUs.categories.nature") },
+                { key: "comfort" as CategoryType, label: t("whyUs.categories.comfort") },
+                { key: "team" as CategoryType, label: t("whyUs.categories.team") },
+              ] as const
+            ).map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className={`${
+                  activeCategory === cat.key
+                    ? "bg-[#8F7B49] text-white shadow-md"
+                    : "bg-white text-[#333333] border border-gray-200"
+                } rounded-xl px-3 py-4 flex items-center justify-center cursor-pointer transition-all`}
+              >
+                <p
+                  className="font-semibold text-[13px] leading-[18px] text-center"
+                  style={{
+                    fontFamily: "Montserrat, sans-serif",
+                    letterSpacing: "-0.3px",
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: cat.label.replace(/\n/g, "<br />"),
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop: horizontal row */}
+          <div className="hidden md:flex items-center h-[80px]">
+            <button
+              onClick={() => setActiveCategory("routes")}
+              className={`${
+                activeCategory === "routes" ? "bg-[#8F7B49]" : "bg-transparent"
+              } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
+            >
+              <p
+                className={`font-semibold text-lg lg:text-[22px] leading-[24px] text-center ${
+                  activeCategory === "routes" ? "text-white" : "text-[#333333]"
+                }`}
+                style={{
+                  fontFamily: "Montserrat, sans-serif",
+                  letterSpacing: "-0.44px",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: t("whyUs.categories.routes").replace(/\n/g, "<br />"),
+                }}
+              />
+            </button>
+            <button
+              onClick={() => setActiveCategory("nature")}
+              className={`${
+                activeCategory === "nature" ? "bg-[#8F7B49]" : "bg-transparent"
+              } rounded-[10px] flex items-center justify-center w-[380px] h-full cursor-pointer transition-colors`}
+            >
+              <p
+                className={`font-semibold text-lg lg:text-[22px] leading-[24px] text-center ${
+                  activeCategory === "nature" ? "text-white" : "text-[#333333]"
+                }`}
+                style={{
+                  fontFamily: "Montserrat, sans-serif",
+                  letterSpacing: "-0.44px",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: t("whyUs.categories.nature").replace(/\n/g, "<br />"),
+                }}
+              />
+            </button>
+            <button
+              onClick={() => setActiveCategory("comfort")}
+              className={`${
+                activeCategory === "comfort"
+                  ? "bg-[#8F7B49]"
+                  : "bg-transparent"
+              } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
+            >
+              <p
+                className={`font-semibold text-lg lg:text-[22px] leading-[24px] text-center ${
+                  activeCategory === "comfort"
+                    ? "text-white"
+                    : "text-[#333333]"
+                }`}
+                style={{
+                  fontFamily: "Montserrat, sans-serif",
+                  letterSpacing: "-0.44px",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: t("whyUs.categories.comfort").replace(
+                    /\n/g,
+                    "<br />",
+                  ),
+                }}
+              />
+            </button>
+            <button
+              onClick={() => setActiveCategory("team")}
+              className={`${
+                activeCategory === "team" ? "bg-[#8F7B49]" : "bg-transparent"
+              } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
+            >
+              <p
+                className={`font-semibold text-lg lg:text-[22px] leading-[24px] text-center ${
+                  activeCategory === "team" ? "text-white" : "text-[#333333]"
+                }`}
+                style={{
+                  fontFamily: "Montserrat, sans-serif",
+                  letterSpacing: "-0.44px",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: t("whyUs.categories.team").replace(/\n/g, "<br />"),
+                }}
+              />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="bg-[#F5F5F0] mt-[60px] px-[50px] pb-[60px]">
+      <main className="bg-[#F5F5F0] mt-8 md:mt-[60px] px-5 md:px-[50px] pb-10 md:pb-[60px]">
         <div className="max-w-[1340px] mx-auto">{renderContent()}</div>
       </main>
       <ScrollToTopButton />

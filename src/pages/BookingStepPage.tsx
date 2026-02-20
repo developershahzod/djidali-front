@@ -148,6 +148,8 @@ const BookingStepPage: React.FC = () => {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [tour, setTour] = useState<any>(null);
   const [tourLoading, setTourLoading] = useState(true);
+  const [tourCurrency, setTourCurrency] = useState<string>("UZS");
+  const [bookingSubmitted, setBookingSubmitted] = useState(false);
 
   // Parse booking data from location state with proper null handling
   const rawBookingData = location.state?.bookingData;
@@ -243,8 +245,16 @@ const BookingStepPage: React.FC = () => {
         de: "Preis auf Anfrage",
       });
     }
+    if (tourCurrency === "USD") {
+      return `$${new Intl.NumberFormat("en-US").format(price)}`;
+    }
+    if (tourCurrency === "EUR") {
+      return `€${new Intl.NumberFormat("de-DE").format(price)}`;
+    }
     return new Intl.NumberFormat("ru-RU").format(price) + " UZS";
   };
+
+  const isForeignCurrency = tourCurrency === "USD" || tourCurrency === "EUR";
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -270,6 +280,9 @@ const BookingStepPage: React.FC = () => {
         setTourLoading(true);
         const tourData = await djidaliApi.getTour(tourId);
         setTour(tourData);
+        if (tourData.currency) {
+          setTourCurrency(tourData.currency);
+        }
       } catch (err) {
         console.error("Failed to fetch tour:", err);
         setError(
@@ -349,6 +362,15 @@ const BookingStepPage: React.FC = () => {
       }
     : bookingData;
 
+  // Set currency from rawBookingData or tour
+  React.useEffect(() => {
+    if (rawBookingData?.currency) {
+      setTourCurrency(rawBookingData.currency);
+    } else if (tour?.currency) {
+      setTourCurrency(tour.currency);
+    }
+  }, [rawBookingData, tour]);
+
   // Calculate totals - no hardcoded fees (backend will handle discounts/fees)
   const totalParticipants =
     displayData.participants.adults + displayData.participants.children;
@@ -396,8 +418,22 @@ const BookingStepPage: React.FC = () => {
         const firstName = nameParts[0] || "";
         const lastName = nameParts.slice(1).join(" ") || firstName;
 
+        // Ensure tourId is a valid UUID - the backend requires UUID format
+        let resolvedTourId = tourId || displayData.tourId;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        if (!uuidRegex.test(resolvedTourId)) {
+          // tourId is not a UUID (might be numeric) - fetch tour to get UUID
+          try {
+            const tourData = await djidaliApi.getTour(resolvedTourId);
+            resolvedTourId = tourData.id?.toString() || tourData.uuid || resolvedTourId;
+          } catch {
+            console.warn("Could not resolve tour UUID, using original tourId");
+          }
+        }
+
         const response = await apiService.createPublicBooking({
-          tourId: tourId || displayData.tourId,
+          tourId: resolvedTourId,
           participants: totalParticipants,
           notes: specialRequests || undefined,
           clientInfo: {
@@ -409,7 +445,14 @@ const BookingStepPage: React.FC = () => {
         });
 
         setOrderId(response.order.id);
-        setCurrentStep(2);
+
+        // For foreign currency orders, show confirmation immediately
+        if (isForeignCurrency) {
+          setBookingSubmitted(true);
+          setCurrentStep(2);
+        } else {
+          setCurrentStep(2);
+        }
       } catch (err: any) {
         console.error("Failed to create booking:", err);
         setError(
@@ -425,7 +468,13 @@ const BookingStepPage: React.FC = () => {
         setIsLoading(false);
       }
     } else {
-      // Step 2: Payment via Click
+      // Step 2: For foreign currency, just navigate home
+      if (isForeignCurrency) {
+        navigate("/");
+        return;
+      }
+
+      // Step 2: Payment via Click (UZS only)
       if (!orderId) {
         setError(
           translate({
@@ -759,9 +808,85 @@ const BookingStepPage: React.FC = () => {
                   </span>
                 </button>
               </>
+            ) : isForeignCurrency ? (
+              <>
+                {/* Foreign Currency Confirmation */}
+                <div className="text-center py-6">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 12L11 14L15 10" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="12" r="9" stroke="#22C55E" strokeWidth="2"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-semibold text-[#333333] mb-3">
+                    {translate({
+                      ru: "Заявка принята!",
+                      uz: "Ariza qabul qilindi!",
+                      en: "Request Submitted!",
+                      de: "Anfrage eingereicht!",
+                    })}
+                  </h2>
+                  <p className="text-[#666666] mb-8 max-w-md mx-auto">
+                    {translate({
+                      ru: "Наш менеджер свяжется с вами в течение 24 часов для оформления оплаты и подтверждения бронирования.",
+                      uz: "Menejerimiz 24 soat ichida siz bilan bog'lanib, to'lovni rasmiylashtiradi.",
+                      en: "Our manager will contact you within 24 hours to arrange payment and confirm your booking.",
+                      de: "Unser Manager wird sich innerhalb von 24 Stunden mit Ihnen in Verbindung setzen.",
+                    })}
+                  </p>
+
+                  {/* Contact Cards */}
+                  <div className="space-y-3 mb-6">
+                    <a
+                      href="tel:+998944708844"
+                      className="flex items-center gap-4 p-4 bg-[#F9F8F5] rounded-xl hover:bg-[#F0EDE5] transition-colors"
+                    >
+                      <div className="w-12 h-12 bg-[#8F7B49]/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xl">📞</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm text-[#666666]">
+                          {translate({
+                            ru: "Телефон",
+                            uz: "Telefon",
+                            en: "Phone",
+                            de: "Telefon",
+                          })}
+                        </p>
+                        <p className="font-semibold text-[#333333]">+998 94 470 88 44</p>
+                      </div>
+                    </a>
+                    <a
+                      href="https://t.me/djidali_travel"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 p-4 bg-[#F9F8F5] rounded-xl hover:bg-[#F0EDE5] transition-colors"
+                    >
+                      <div className="w-12 h-12 bg-[#229ED9]/10 rounded-lg flex items-center justify-center">
+                        <span className="text-xl">✈️</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm text-[#666666]">Telegram</p>
+                        <p className="font-semibold text-[#333333]">@djidali_travel</p>
+                      </div>
+                    </a>
+                  </div>
+
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <p className="text-sm text-amber-800">
+                      {translate({
+                        ru: "💡 Ваш заказ уже создан и виден в личном кабинете со статусом \"В ожидании\"",
+                        uz: "💡 Buyurtmangiz yaratildi va shaxsiy kabinetda \"Kutilmoqda\" holati bilan ko'rinadi",
+                        en: "💡 Your order has been created and is visible in your account with \"Pending\" status",
+                        de: "💡 Ihre Bestellung wurde erstellt und ist in Ihrem Konto mit dem Status \"Ausstehend\" sichtbar",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </>
             ) : (
               <>
-                {/* Payment Step */}
+                {/* Payment Step - Click (UZS only) */}
                 <h2 className="text-xl font-semibold text-[#333333] mb-6">
                   {translate({
                     ru: "Способ оплаты",
@@ -771,7 +896,7 @@ const BookingStepPage: React.FC = () => {
                   })}
                 </h2>
 
-                {/* Click Payment - Only available option */}
+                {/* Click Payment - Only available for UZS */}
                 <div className="mb-6">
                   <div className="w-full h-16 border-2 border-[#8F7B49] bg-[#8F7B49]/5 rounded-xl px-4 flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#00A3E0] rounded-lg flex items-center justify-center">
@@ -813,6 +938,13 @@ const BookingStepPage: React.FC = () => {
                       de: "Verarbeitung...",
                     })}
                   </span>
+                ) : currentStep === 2 && isForeignCurrency ? (
+                  translate({
+                    ru: "На главную",
+                    uz: "Bosh sahifaga",
+                    en: "Go to Home",
+                    de: "Zur Startseite",
+                  })
                 ) : currentStep === 2 ? (
                   translate({
                     ru: "Оплатить через Click",

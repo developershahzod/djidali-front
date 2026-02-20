@@ -418,3 +418,43 @@
   display: grid;
   grid-template-columns: repeat(7, var(--rdp-cell-size));
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE ADAPTATIONS (< 768px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .date-picker-calendar {
+    /* Shrink cells to fit single-month calendar on phone screens */
+    --rdp-cell-size: 38px;
+  }
+
+  /* Remove the outer padding that combined with -52px buttons overflows */
+  .date-picker-calendar .rdp-months {
+    padding: 0 4px;
+  }
+
+  /* Move navigation buttons inside the caption row instead of hanging outside */
+  .date-picker-calendar .rdp-button_previous {
+    left: 0;
+  }
+
+  .date-picker-calendar .rdp-button_next {
+    right: 0;
+  }
+
+  /* Slightly smaller touch target on mobile (still meets 36px minimum) */
+  .date-picker-calendar .rdp-button_previous,
+  .date-picker-calendar .rdp-button_next {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  /* Smaller day button to match reduced cell size */
+  .date-picker-calendar .rdp-day_button {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+}

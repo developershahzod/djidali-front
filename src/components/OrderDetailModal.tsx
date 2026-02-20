@@ -42,12 +42,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 }) => {
   const { language } = useLanguage();
   const [paymentStatus, setPaymentStatus] = useState<
-    "waiting" | "confirmed" | "rejected" | "error" | null
+    "waiting" | "confirmed" | "rejected" | "error" | "no_record" | null
   >(null);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
+  const skipPaymentCheck = order?.status === "CANCELLED" || (order?.status as string) === "EXPIRED";
+
   useEffect(() => {
-    if (isOpen && order) {
+    if (isOpen && order && !skipPaymentCheck) {
       checkPaymentStatus();
     }
   }, [isOpen, order]);
@@ -60,6 +62,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
       setPaymentStatus(status);
     } catch (error) {
       console.error("Payment status check failed:", error);
+      setPaymentStatus("no_record");
     } finally {
       setIsCheckingPayment(false);
     }
@@ -85,20 +88,28 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   const getStatusText = (status: string) => {
     switch (status) {
       case "FULLY_PAID":
-        return "To'liq to'langan";
+        return "Полностью оплачен";
       case "CONFIRMED":
-        return "Tasdiqlangan";
+        return "Подтверждён";
       case "PENDING":
-        return "Kutilmoqda";
+        return "Ожидание";
       case "CANCELLED":
-        return "Bekor qilingan";
+        return "Отменён";
+      case "PARTIALLY_PAID":
+        return "Частично оплачен";
+      case "COMPLETED":
+        return "Завершён";
+      case "REFUNDED":
+        return "Возвращён";
+      case "EXPIRED":
+        return "Истёк";
       default:
         return status;
     }
   };
 
   const getPaymentStatusColor = (
-    status: "waiting" | "confirmed" | "rejected",
+    status: "waiting" | "confirmed" | "rejected" | "error" | "no_record",
   ) => {
     switch (status) {
       case "confirmed":
@@ -109,21 +120,25 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         return "bg-red-100 text-red-800 border-red-300";
       case "error":
         return "bg-red-100 text-red-800 border-red-300";
+      case "no_record":
+        return "bg-gray-100 text-gray-600 border-gray-300";
     }
   };
 
   const getPaymentStatusText = (
-    status: "waiting" | "confirmed" | "rejected",
+    status: "waiting" | "confirmed" | "rejected" | "error" | "no_record",
   ) => {
     switch (status) {
       case "confirmed":
-        return "To'langan";
+        return "Оплачено";
       case "waiting":
-        return "Kutilmoqda";
+        return "Ожидание оплаты";
       case "rejected":
-        return "bg-red-100 text-red-800 border-red-300";
+        return "Отклонено";
       case "error":
-        return "Rad etilgan";
+        return "Ошибка";
+      case "no_record":
+        return "Нет данных оплаты";
     }
   };
 
@@ -132,7 +147,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
       <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <div>
-            <h3 className="text-xl font-bold">Buyurtma tafsilotlari</h3>
+            <h3 className="text-xl font-bold">Детали заказа</h3>
             <p className="text-sm text-gray-500">
               #{order.id.substring(0, 8).toUpperCase()}
             </p>
@@ -148,7 +163,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-1">Status</h4>
+              <h4 className="text-sm font-medium text-gray-500 mb-1">Статус</h4>
               <span
                 className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(order.status)}`}
               >
@@ -157,10 +172,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
             <div className="text-right">
               <h4 className="text-sm font-medium text-gray-500 mb-1">
-                Yaratilgan sana
+                Дата создания
               </h4>
               <p className="text-sm text-gray-900">
-                {new Date(order.createdAt).toLocaleDateString("uz-UZ", {
+                {new Date(order.createdAt).toLocaleDateString("ru-RU", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -174,7 +189,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           {order.tour && (
             <div className="border border-gray-200 rounded-lg p-4">
               <h4 className="text-sm font-medium text-gray-500 mb-3">
-                Tur ma'lumotlari
+                Информация о туре
               </h4>
               <div className="flex items-start space-x-4">
                 {order.tour.images && order.tour.images[0] && (
@@ -197,7 +212,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>{order.tour.duration} kun</span>
+                      <span>{order.tour.duration} дн.</span>
                     </div>
                   </div>
                 </div>
@@ -208,7 +223,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           {order.user && (
             <div className="border border-gray-200 rounded-lg p-4">
               <h4 className="text-sm font-medium text-gray-500 mb-3">
-                Mijoz ma'lumotlari
+                Данные клиента
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center space-x-2">
@@ -227,32 +242,32 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
           <div className="border border-gray-200 rounded-lg p-4">
             <h4 className="text-sm font-medium text-gray-500 mb-3">
-              To'lov ma'lumotlari
+              Платёжная информация
             </h4>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="w-4 h-4" />
-                  <span>Ishtirokchilar soni:</span>
+                  <span>Кол-во участников:</span>
                 </div>
                 <span className="font-medium text-gray-900">
-                  {order.participants} kishi
+                  {order.participants} чел.
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <DollarSign className="w-4 h-4" />
-                  <span>Umumiy summa:</span>
+                  <span>Общая сумма:</span>
                 </div>
                 <span className="text-lg font-bold text-emerald-600">
                   {order.totalAmount.toLocaleString()} UZS
                 </span>
               </div>
-              {paymentStatus && (
+              {!skipPaymentCheck && paymentStatus && (
                 <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <CreditCard className="w-4 h-4" />
-                    <span>To'lov holati:</span>
+                    <span>Статус оплаты:</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span
@@ -264,7 +279,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       onClick={checkPaymentStatus}
                       disabled={isCheckingPayment}
                       className="p-1 hover:bg-gray-100 rounded transition-colors"
-                      title="Yangilash"
+                      title="Обновить"
                     >
                       <RefreshCw
                         className={`w-4 h-4 text-gray-500 ${isCheckingPayment ? "animate-spin" : ""}`}
@@ -279,15 +294,15 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <h5 className="font-medium text-gray-700 mb-1">Buyurtma ID</h5>
+                <h5 className="font-medium text-gray-700 mb-1">ID заказа</h5>
                 <p className="text-gray-600 font-mono">
                   #{order.id.substring(0, 16)}
                 </p>
               </div>
               <div>
-                <h5 className="font-medium text-gray-700 mb-1">Yangilangan</h5>
+                <h5 className="font-medium text-gray-700 mb-1">Обновлено</h5>
                 <p className="text-gray-600">
-                  {new Date(order.updatedAt).toLocaleDateString("uz-UZ", {
+                  {new Date(order.updatedAt).toLocaleDateString("ru-RU", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
@@ -303,7 +318,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
           >
-            Yopish
+            Закрыть
           </button>
         </div>
       </div>

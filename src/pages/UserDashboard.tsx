@@ -12,7 +12,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { djidaliApi, ApiOrder } from "../services/djidaliApi";
 import { clickPaymentService } from "../services/legacyClickPayment";
+import { useClickPayment } from "../hooks/usePayments";
 import { getImageUrl } from "../utils/imageUtils";
+import { formatCurrency } from "../lib/utils";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import StatsGrid from "../components/dashboard/StatsGrid";
 import EmptyStateRecommendations from "../components/dashboard/EmptyStateRecommendations";
@@ -30,6 +32,41 @@ const UserDashboard: React.FC = () => {
   const [checkingPayment, setCheckingPayment] = useState<
     Record<string, boolean>
   >({});
+  const { initiateAndRedirect: payNow } = useClickPayment();
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const [now, setNow] = useState(Date.now());
+
+  // Tick every second for expiration countdown (only when pending orders exist)
+  useEffect(() => {
+    const hasPending = orders.some((o) => o.status === "PENDING");
+    if (!hasPending) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [orders]);
+
+  const getTimeRemaining = (expiresAt?: string) => {
+    if (!expiresAt) return null;
+    const diff = new Date(expiresAt).getTime() - now;
+    if (diff <= 0)
+      return {
+        text: translate({
+          ru: "Истекло",
+          uz: "Muddati tugagan",
+          en: "Expired",
+          de: "Abgelaufen",
+        }),
+        urgent: true,
+        expired: true,
+      };
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return {
+      text: `${pad(minutes)}:${pad(seconds)}`,
+      urgent: minutes < 5,
+      expired: false,
+    };
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -88,6 +125,24 @@ const UserDashboard: React.FC = () => {
       setPaymentStatuses((prev) => ({ ...prev, [orderId]: "error" }));
     } finally {
       setCheckingPayment((prev) => ({ ...prev, [orderId]: false }));
+    }
+  };
+
+  const handlePayNow = async (
+    e: React.MouseEvent,
+    orderId: string,
+    amount: number,
+  ) => {
+    e.stopPropagation();
+    setPayingOrderId(orderId);
+    try {
+      const redirected = await payNow(orderId, amount);
+      if (!redirected) {
+        setPayingOrderId(null);
+      }
+    } catch (error) {
+      console.error("Payment initiation failed:", error);
+      setPayingOrderId(null);
     }
   };
 
@@ -152,8 +207,7 @@ const UserDashboard: React.FC = () => {
     };
   };
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("uz-UZ").format(price);
+
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -249,7 +303,7 @@ const UserDashboard: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
           {/* Stats Grid */}
           <StatsGrid
             ordersCount={orders.length}
@@ -287,13 +341,10 @@ const UserDashboard: React.FC = () => {
                   </div>
                   <div className="grid gap-4">
                     {activeOrders.map((order) => (
-                      <div
-                        key={order.id}
-                        className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all"
-                      >
-                        <div className="flex flex-col md:flex-row">
+                      <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all">
+                      <div className="flex flex-col md:flex-row">
                           {/* Tour Image */}
-                          <div className="md:w-64 lg:w-72 h-48 md:h-auto relative overflow-hidden flex-shrink-0">
+                          <div className="md:w-64 lg:w-72 h-40 md:h-auto relative overflow-hidden flex-shrink-0">
                             <img
                               src={getImageUrl(getTourImage(order.tour))}
                               alt={getTourTitle(order.tour)}
@@ -310,10 +361,10 @@ const UserDashboard: React.FC = () => {
                           </div>
 
                           {/* Order Details */}
-                          <div className="flex-1 p-6">
-                            <div className="mb-4">
+                          <div className="flex-1 p-4 md:p-6">
+                            <div className="mb-3 md:mb-4">
                               <h3
-                                className="text-xl font-semibold text-gray-900 mb-2 hover:text-[#8f7b49] transition-colors cursor-pointer"
+                                className="text-base md:text-xl font-semibold text-gray-900 mb-1.5 md:mb-2 hover:text-[#8f7b49] transition-colors cursor-pointer line-clamp-1"
                                 onClick={() =>
                                   navigate(`/tour/${order.tourId}`)
                                 }
@@ -378,10 +429,10 @@ const UserDashboard: React.FC = () => {
                                   })}
                                 </p>
                                 <p className="font-bold text-gray-900 mt-0.5">
-                                  {formatPrice(order.totalAmount)}{" "}
-                                  <span className="font-normal text-gray-500">
-                                    UZS
-                                  </span>
+                                  {formatCurrency(
+                                    order.totalAmount,
+                                    order.tour?.currency || order.currency || "UZS"
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -515,12 +566,12 @@ const UserDashboard: React.FC = () => {
                         <div
                           key={order.id}
                           onClick={() => navigate(`/tour/${order.tourId}`)}
-                          className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer"
+                          className="bg-white rounded-xl border border-gray-100 p-3 md:p-4 flex items-center gap-3 md:gap-4 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer"
                         >
                           <img
                             src={getImageUrl(getTourImage(order.tour))}
                             alt={getTourTitle(order.tour)}
-                            className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                            className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl object-cover flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-gray-900 truncate">
@@ -536,6 +587,36 @@ const UserDashboard: React.FC = () => {
                                 de: "Reisende",
                               })}
                             </p>
+                            {order.status === "PENDING" &&
+                              (() => {
+                                const remaining = getTimeRemaining(
+                                  order.expiresAt,
+                                );
+                                if (!remaining) return null;
+                                return (
+                                  <div
+                                    className={`flex items-center gap-1 mt-1 text-xs font-medium ${
+                                      remaining.expired
+                                        ? "text-red-600"
+                                        : remaining.urgent
+                                          ? "text-red-500"
+                                          : "text-amber-600"
+                                    }`}
+                                  >
+                                    <Clock className="w-3 h-3" />
+                                    <span>
+                                      {remaining.expired
+                                        ? remaining.text
+                                        : `${translate({
+                                            ru: "Осталось",
+                                            uz: "Qoldi",
+                                            en: "Expires in",
+                                            de: "Läuft ab in",
+                                          })} ${remaining.text}`}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
                           </div>
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${getStatusConfig(order.status).bg} ${getStatusConfig(order.status).color}`}
@@ -543,12 +624,54 @@ const UserDashboard: React.FC = () => {
                             {getStatusConfig(order.status).label}
                           </span>
                           <p className="font-bold text-gray-900 hidden sm:block whitespace-nowrap">
-                            {formatPrice(order.totalAmount)}{" "}
-                            <span className="font-normal text-gray-400 text-sm">
-                              UZS
-                            </span>
+                            {formatCurrency(
+                              order.totalAmount,
+                              order.tour?.currency || order.currency || "UZS"
+                            )}
                           </p>
-                          <ChevronRight className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                          {order.status === "PENDING" &&
+                          (!order.tour?.currency ||
+                            order.tour.currency === "UZS") ? (
+                            <button
+                              onClick={(e) =>
+                                handlePayNow(e, order.id, order.totalAmount)
+                              }
+                              disabled={
+                                payingOrderId === order.id ||
+                                getTimeRemaining(order.expiresAt)?.expired ===
+                                  true
+                              }
+                              className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+                                getTimeRemaining(order.expiresAt)?.expired
+                                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                  : "bg-[#8f7b49] text-white hover:bg-[#7a6839]"
+                              }`}
+                            >
+                              {payingOrderId === order.id ? (
+                                <>
+                                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                  {translate({
+                                    ru: "Загрузка...",
+                                    uz: "Yuklanmoqda...",
+                                    en: "Loading...",
+                                    de: "Laden...",
+                                  })}
+                                </>
+                              ) : (
+                                <>
+                                  <CreditCard className="w-3.5 h-3.5" />
+                                  {translate({
+                                    ru: "Оплатить",
+                                    uz: "To'lash",
+                                    en: "Pay Now",
+                                    de: "Jetzt zahlen",
+                                  })}
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                          )}
                         </div>
                       ))}
                   </div>

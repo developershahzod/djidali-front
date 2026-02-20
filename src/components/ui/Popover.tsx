@@ -56,6 +56,9 @@ export function Popover({
         left = rect.right + scrollX;
       }
 
+      // Clamp to viewport so popover never overflows left edge
+      left = Math.max(scrollX + 8, left);
+
       setPosition({
         top: rect.bottom + scrollY + 8,
         left,
@@ -114,6 +117,9 @@ export function Popover({
           left = rect.right + scrollX;
         }
 
+        // Clamp to viewport so popover never overflows left edge
+        left = Math.max(scrollX + 8, left);
+
         setPosition({
           top: rect.bottom + scrollY + 8,
           left,
@@ -152,6 +158,7 @@ export function Popover({
               : "none",
         transformOrigin,
         zIndex: 99999,
+        maxWidth: "calc(100vw - 16px)",
       }}
       className={cn(
         "bg-white rounded-xl shadow-2xl border border-gray-100",

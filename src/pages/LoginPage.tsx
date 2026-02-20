@@ -10,7 +10,7 @@ import {
   ShieldAlert,
   User,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -22,6 +22,8 @@ const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as any)?.from?.pathname;
   const { t, translate } = useLanguage();
   const { login, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -139,7 +141,7 @@ const LoginPage: React.FC = () => {
         ) {
           navigate("/admin");
         } else {
-          navigate("/dashboard");
+          navigate(redirectTo || "/dashboard");
         }
       } else {
         if (formData.password !== formData.confirmPassword) {
@@ -190,7 +192,7 @@ const LoginPage: React.FC = () => {
         ) {
           navigate("/admin");
         } else {
-          navigate("/dashboard");
+          navigate(redirectTo || "/dashboard");
         }
       }
     } catch (err: any) {

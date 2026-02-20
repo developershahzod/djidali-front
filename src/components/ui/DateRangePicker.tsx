@@ -41,10 +41,19 @@ export function DateRangePicker({
   const { language, translate } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>(value);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
 
   useEffect(() => {
     setRange(value);
   }, [value]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const locale = localeMap[language as keyof typeof localeMap] || ru;
 
@@ -134,7 +143,7 @@ export function DateRangePicker({
         </div>
       }
     >
-      <div className="p-5 px-8">
+      <div className={isMobile ? "p-3 px-3" : "p-5 px-8"}>
         {/* Instruction header */}
         <div className="mb-4 pb-3 border-b border-gray-100">
           <p className="text-sm font-medium text-gray-700">
@@ -174,7 +183,7 @@ export function DateRangePicker({
             mode="range"
             selected={range}
             onSelect={handleSelect}
-            numberOfMonths={numberOfMonths}
+            numberOfMonths={isMobile ? 1 : numberOfMonths}
             locale={locale}
             disabled={{ before: new Date() }}
             showOutsideDays={false}

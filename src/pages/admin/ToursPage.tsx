@@ -428,7 +428,101 @@ const ToursPage = () => {
         </div>
       ) : (
         <div className="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-lg">
-          <div className="overflow-x-auto">
+          {/* Mobile Card Layout */}
+          <div className="divide-y divide-gray-100 md:hidden">
+            {paginatedTours.length > 0 ? (
+              paginatedTours.map((tour) => (
+                <div key={tour.id} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary-500 flex-shrink-0"
+                      checked={selectedTours.has(tour.id)}
+                      onChange={() => handleSelectTour(tour.id)}
+                    />
+                    <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                      <img
+                        className="h-full w-full object-cover"
+                        src={
+                          tour.images?.[0]
+                            ? getImageUrl(tour.images[0])
+                            : "https://via.placeholder.com/48"
+                        }
+                        alt={getLocalizedText(tour.title, language)}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">
+                        {getLocalizedText(tour.title, language) || "Untitled Tour"}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                          <Calendar className="h-3 w-3" />
+                          {tour.startDate && tour.endDate ? (
+                            <>
+                              {formatDate(tour.startDate, "MMM d")} - {formatDate(tour.endDate, "MMM d")}
+                            </>
+                          ) : tour.dates && tour.dates.length > 0 ? (
+                            <>
+                              {formatDate(tour.dates[0].start_date, "MMM d")} - {formatDate(tour.dates[0].end_date, "MMM d")}
+                            </>
+                          ) : (
+                            "No dates"
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-50 ml-7">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white tabular-nums">
+                        {formatCurrency(
+                          getPriceValue(tour.price),
+                          getPriceCurrency(tour.price, tour.currency),
+                        )}
+                      </span>
+                      {getStatusBadge(tour.status || "draft")}
+                      <span className="text-xs text-gray-500">
+                        {tour._count?.orders || 0} bookings
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() =>
+                          handleToggleVisibility(tour.id, tour.isHidden || false)
+                        }
+                        className={cn(
+                          "p-1.5 rounded-md transition-colors",
+                          tour.isHidden
+                            ? "text-red-500 hover:bg-red-50"
+                            : "text-green-500 hover:bg-green-50",
+                        )}
+                      >
+                        {tour.isHidden ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                      <Link
+                        to={`/admin/tours/edit/${tour.id}`}
+                        className="p-1.5 rounded-md text-primary hover:bg-primary/10"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-6 py-12 text-center text-sm text-gray-500">
+                No tours found. Try adjusting your search or filters.
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>

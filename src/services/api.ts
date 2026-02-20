@@ -236,14 +236,74 @@ export interface Statistics {
 class ApiService {
   private baseURL = API_BASE_URL;
   private token: string | null = null;
+  private refreshing = false;
+  private refreshPromise: Promise<void> | null = null;
 
   constructor() {
     this.token = localStorage.getItem("auth_token");
   }
 
+  private async tryRefreshToken(): Promise<void> {
+    if (this.refreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshing = true;
+    this.refreshPromise = (async () => {
+      try {
+        const refreshToken = localStorage.getItem("refresh_token");
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
+
+        const response = await fetch(`${this.baseURL}/auth/refresh`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${refreshToken}`,
+          },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Token refresh failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.token = data.accessToken || data.access_token;
+        localStorage.setItem("auth_token", this.token!);
+        if (data.refreshToken || data.refresh_token) {
+          localStorage.setItem(
+            "refresh_token",
+            data.refreshToken || data.refresh_token,
+          );
+        }
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+      } catch (error) {
+        this.clearAuth();
+        throw error;
+      } finally {
+        this.refreshing = false;
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
+  private clearAuth(): void {
+    this.token = null;
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    _retried = false,
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
 
@@ -264,8 +324,18 @@ class ApiService {
       });
 
       if (!response.ok) {
+        if (response.status === 401 && !_retried) {
+          try {
+            await this.tryRefreshToken();
+            return this.request<T>(endpoint, options, true);
+          } catch {
+            this.clearAuth();
+            throw new Error("Authentication required");
+          }
+        }
+
         if (response.status === 401) {
-          this.logout();
+          this.clearAuth();
           throw new Error("Authentication required");
         }
 
@@ -317,15 +387,7 @@ class ApiService {
   }
 
   async logout(): Promise<void> {
-    try {
-      await this.request("/auth/logout", { method: "POST" });
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      this.token = null;
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("user");
-    }
+    this.clearAuth();
   }
 
   async refreshToken(): Promise<LoginResponse> {

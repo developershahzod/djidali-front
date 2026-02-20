@@ -369,6 +369,7 @@ const TourEditModal: React.FC<TourEditModalProps> = ({
                   >
                     <option value="UZS">UZS</option>
                     <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
                   </select>
                 </div>
               </div>

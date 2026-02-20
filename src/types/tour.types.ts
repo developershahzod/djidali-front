@@ -143,6 +143,7 @@ export interface LaravelTourResponse {
   description: string;
   short_description?: string;
   price: number;
+  currency?: string;
   duration: number;
   max_participants: number;
   current_participants?: number;

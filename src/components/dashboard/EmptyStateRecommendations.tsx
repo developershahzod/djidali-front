@@ -22,6 +22,7 @@ interface Tour {
   location?: string;
   images?: (string | { url?: string; imageUrl?: string })[];
   price?: number | { amount: number };
+  currency?: string;
   duration?: number;
   rating?: number;
   reviewCount?: number;
@@ -207,6 +208,7 @@ const EmptyStateRecommendations: React.FC<EmptyStateRecommendationsProps> = ({
                 }
                 image={getTourImage(tour)}
                 price={getTourPrice(tour)}
+                currency={tour.currency || "UZS"}
                 duration={tour.duration || 1}
                 rating={tour.rating}
                 reviewCount={tour.reviewCount}

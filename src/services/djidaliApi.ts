@@ -105,7 +105,8 @@ export interface ApiOrder {
   participants: number;
   totalAmount: number;
   paidAmount?: number;
-  status: "PENDING" | "CONFIRMED" | "FULLY_PAID" | "CANCELLED";
+  status: "PENDING" | "CONFIRMED" | "FULLY_PAID" | "CANCELLED" | "COMPLETED";
+  currency?: string;
   notes?: string;
   imageUrls?: string[];
   lastActivityAt?: string;
@@ -757,6 +758,17 @@ class DjidaliApiService {
     return this.request<ApiOrder>(`/orders/${id}`, {
       method: "PUT",
       body: JSON.stringify(orderData),
+    });
+  }
+
+  async updateOrderStatus(
+    id: string,
+    status: string,
+    comment?: string,
+  ): Promise<ApiOrder> {
+    return this.request<ApiOrder>(`/orders/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, ...(comment ? { comment } : {}) }),
     });
   }
 
