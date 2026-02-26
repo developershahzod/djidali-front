@@ -48,7 +48,7 @@ const HeroSection: React.FC = () => {
       {/* Title - positioned at ~25% from top, consistent across devices */}
       <div className="absolute top-[25%] sm:top-[25%] md:top-[25%] lg:top-[25%] left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-[32px] sm:text-[38px] md:text-[48px] lg:text-[64px] xl:text-[80px] leading-[1.1] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
+          <h1 className="text-[32px] md:text-[clamp(38px,5vw,80px)] leading-[1.1] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
             {translate({
               ru: "Дальверзин - уникальное пространство для Вашего отдыха в Узбекистане",
               uz: "Dalverzin - O'zbekistonda dam olishingiz uchun noyob makon",
@@ -62,7 +62,7 @@ const HeroSection: React.FC = () => {
       {/* Form container - full width on mobile/tablet */}
       <div className="relative z-10 w-full h-full flex flex-col justify-end pb-6 sm:pb-8 md:pb-10 lg:pb-[60px] px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-[1400px] mx-auto w-full">
-          <div className="rounded-[16px] sm:rounded-[20px] shadow-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="rounded-[16px] sm:rounded-[20px] shadow-2xl grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
             {/* Куда (Destination) */}
             <div className="bg-white rounded-xl p-3 sm:p-[clamp(10px,0.83vw,12px)]">
               <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
@@ -203,7 +203,7 @@ const HeroSection: React.FC = () => {
             {/* Search Button - spans full width on mobile, single col on tablet */}
             <button
               onClick={handleSearch}
-              className="sm:col-span-2 md:col-span-1 lg:col-span-1 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-6 py-4 sm:py-3 rounded-xl text-[15px] sm:text-[14px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center"
+              className="col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-6 py-4 sm:py-3 rounded-xl text-[15px] sm:text-[14px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center"
             >
               {translate({
                 ru: "Найти туры",

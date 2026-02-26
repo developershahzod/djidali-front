@@ -479,7 +479,7 @@ function Hero({ searchQuery, onSearchChange, newsCount }: HeroProps) {
       </div>
 
       {/* Title */}
-      <div className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[40px] md:leading-[70px] lg:leading-[100px] left-[20px] md:left-[50px] text-[32px] md:text-[60px] lg:text-[90px] text-white top-[100px] md:top-[150px] lg:top-[190px] tracking-[-1.2px] md:tracking-[-2px] lg:tracking-[-2.7px] max-w-[calc(100%-40px)] md:w-[900px] lg:w-[1340px]">
+      <div className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[1.2] left-[20px] md:left-[50px] text-[32px] md:text-[clamp(40px,5.5vw,90px)] text-white top-[100px] md:top-[clamp(120px,20%,190px)] tracking-[-1.2px] md:tracking-[-2.7px] max-w-[calc(100%-40px)] md:w-[900px] lg:w-[1340px]">
         <p className="mb-0">
           {translate({
             ru: "Наши интересные",

@@ -403,7 +403,10 @@ const TourDetailPage: React.FC = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-row gap-[16px] md:gap-[20px] items-end" style={{ overflow: 'visible' }}>
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-row gap-[16px] md:gap-[20px] items-end"
+              style={{ overflow: "visible" }}
+            >
               {/* Имя */}
               <div className="xl:flex-1 xl:min-w-[200px]">
                 <label
@@ -679,7 +682,7 @@ const TourDetailPage: React.FC = () => {
         {/* About Section */}
         <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
           <h2
-            className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
+            className="text-3xl md:text-[clamp(36px,4.17vw,60px)] font-medium text-[#333333] leading-[1.1] mb-6 md:mb-[40px]"
             style={{ letterSpacing: "-1.8px" }}
           >
             {t("tourDetail.aboutTour")}
@@ -766,7 +769,7 @@ const TourDetailPage: React.FC = () => {
         {galleryImages.length > 0 && (
           <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
             <h2
-              className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
+              className="text-3xl md:text-[clamp(36px,4.17vw,60px)] font-medium text-[#333333] leading-[1.1] mb-6 md:mb-[40px]"
               style={{ letterSpacing: "-1.8px" }}
             >
               {t("tourDetail.momentsFromTour")}
@@ -782,7 +785,7 @@ const TourDetailPage: React.FC = () => {
         {itineraryItems.length > 0 && (
           <section className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto">
             <h2
-              className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
+              className="text-3xl md:text-[clamp(36px,4.17vw,60px)] font-medium text-[#333333] leading-[1.1] mb-6 md:mb-[40px]"
               style={{ letterSpacing: "-1.8px" }}
             >
               {t("tourDetail.tourProgram")}
@@ -974,7 +977,7 @@ const TourDetailPage: React.FC = () => {
           className="px-[clamp(20px,3.47vw,50px)] py-[clamp(40px,5.56vw,80px)] max-w-[1440px] mx-auto"
         >
           <h2
-            className="text-[60px] font-medium text-[#333333] leading-[60px] mb-[40px]"
+            className="text-3xl md:text-[clamp(36px,4.17vw,60px)] font-medium text-[#333333] leading-[1.1] mb-6 md:mb-[40px]"
             style={{ letterSpacing: "-1.8px" }}
           >
             {t("tourDetail.locationTitle")}

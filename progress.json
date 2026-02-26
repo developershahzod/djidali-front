@@ -1,0 +1,54 @@
+{
+  "audit": "Responsive hero/layout overflow audit for low-res screens",
+  "pattern": "h-screen with fixed margins/fonts causing overflow on 1366x768",
+  "pages": [
+    {
+      "file": "src/components/HeroSection.tsx",
+      "status": "done",
+      "issue": "h-screen with breakpoint-stepped fonts instead of clamp()",
+      "severity": "low",
+      "notes": "Fixed: title font to clamp(38px,5vw,80px)"
+    },
+    {
+      "file": "src/components/TourListHero.tsx",
+      "status": "ok",
+      "issue": "Already safe",
+      "severity": "none",
+      "notes": "Uses clamp() extensively, justify-end positioning."
+    },
+    {
+      "file": "src/pages/NewAboutPage.tsx",
+      "status": "ok",
+      "issue": "Already safe",
+      "severity": "none",
+      "notes": "Uses clamp() for all fonts, absolute bottom positioning."
+    },
+    {
+      "file": "src/pages/NewsPage.tsx",
+      "status": "done",
+      "issue": "Fixed absolute pixel positions + breakpoint fonts in hero",
+      "severity": "medium",
+      "notes": "Fixed: title font to clamp(), top position to clamp(), leading to relative"
+    },
+    {
+      "file": "src/pages/NewsDetailPage.tsx",
+      "status": "ok",
+      "issue": "Bottom-anchored hero text",
+      "severity": "none",
+      "notes": "Bottom positioning is resilient. No fix needed."
+    },
+    {
+      "file": "src/pages/TourDetailPage.tsx",
+      "status": "done",
+      "issue": "4x section headings text-[60px] with ZERO responsive scaling",
+      "severity": "high",
+      "notes": "Fixed: all 4 headings to text-3xl md:text-[clamp(36px,4.17vw,60px)]"
+    },
+    {
+      "file": "src/pages/WhyUsPage.tsx",
+      "status": "done",
+      "issue": "h-screen with fixed mt-[210px] and breakpoint-only fonts",
+      "notes": "Fixed: clamp() fonts, justify-center, grid-cols-3 stats"
+    }
+  ]
+}
