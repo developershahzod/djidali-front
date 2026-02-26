@@ -359,12 +359,12 @@ const WhyUsPage: React.FC = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 h-full px-5 md:px-[50px]">
-          <div className="max-w-[1340px] mx-auto h-full flex flex-col">
+        <div className="relative z-10 h-full px-5 md:px-[50px] pt-20 md:pt-24">
+          <div className="max-w-[1340px] mx-auto h-full flex flex-col justify-center">
             {/* Title and Description */}
-            <div className="mt-28 md:mt-[210px] mb-auto">
+            <div className="mb-6 md:mb-10">
               <h1
-                className="text-4xl md:text-6xl lg:text-[90px] font-medium leading-[1.1] md:leading-[100px] mb-4 md:mb-[20px] text-white max-w-[1340px]"
+                className="text-4xl md:text-[clamp(40px,5.5vw,90px)] font-medium leading-[1.1] mb-4 md:mb-[20px] text-white max-w-[1340px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-2.7px",
@@ -374,7 +374,7 @@ const WhyUsPage: React.FC = () => {
                 {t("whyUs.hero.title")}
               </h1>
               <p
-                className="text-lg md:text-2xl lg:text-[32px] font-normal leading-[1.4] md:leading-[40px] opacity-90 whitespace-pre-wrap text-white max-w-[1340px]"
+                className="text-lg md:text-[clamp(20px,2.2vw,32px)] font-normal leading-[1.4] opacity-90 whitespace-pre-wrap text-white max-w-[1340px]"
                 style={{
                   fontFamily: "Montserrat, sans-serif",
                   letterSpacing: "-0.96px",
@@ -386,7 +386,7 @@ const WhyUsPage: React.FC = () => {
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-2 gap-x-6 md:gap-x-[clamp(40px,5.56vw,80px)] gap-y-4 md:gap-y-[clamp(24px,2.78vw,40px)] text-white pb-8 md:pb-[clamp(40px,5.56vw,80px)] max-w-[640px]">
+            <div className="grid grid-cols-3 gap-x-6 md:gap-x-[clamp(40px,5.56vw,80px)] gap-y-4 md:gap-y-[clamp(24px,2.78vw,40px)] text-white max-w-[640px]">
               {heroStats.map((stat, index) => (
                 <div key={index}>
                   <div
@@ -432,10 +432,22 @@ const WhyUsPage: React.FC = () => {
           <div className="grid grid-cols-2 gap-2 md:hidden">
             {(
               [
-                { key: "routes" as CategoryType, label: t("whyUs.categories.routes") },
-                { key: "nature" as CategoryType, label: t("whyUs.categories.nature") },
-                { key: "comfort" as CategoryType, label: t("whyUs.categories.comfort") },
-                { key: "team" as CategoryType, label: t("whyUs.categories.team") },
+                {
+                  key: "routes" as CategoryType,
+                  label: t("whyUs.categories.routes"),
+                },
+                {
+                  key: "nature" as CategoryType,
+                  label: t("whyUs.categories.nature"),
+                },
+                {
+                  key: "comfort" as CategoryType,
+                  label: t("whyUs.categories.comfort"),
+                },
+                {
+                  key: "team" as CategoryType,
+                  label: t("whyUs.categories.team"),
+                },
               ] as const
             ).map((cat) => (
               <button
@@ -504,16 +516,12 @@ const WhyUsPage: React.FC = () => {
             <button
               onClick={() => setActiveCategory("comfort")}
               className={`${
-                activeCategory === "comfort"
-                  ? "bg-[#8F7B49]"
-                  : "bg-transparent"
+                activeCategory === "comfort" ? "bg-[#8F7B49]" : "bg-transparent"
               } rounded-[10px] flex items-center justify-center w-[320px] h-full cursor-pointer transition-colors`}
             >
               <p
                 className={`font-semibold text-lg lg:text-[22px] leading-[24px] text-center ${
-                  activeCategory === "comfort"
-                    ? "text-white"
-                    : "text-[#333333]"
+                  activeCategory === "comfort" ? "text-white" : "text-[#333333]"
                 }`}
                 style={{
                   fontFamily: "Montserrat, sans-serif",
