@@ -9,7 +9,6 @@ import {
   defaultTourWizardData,
 } from "../../features/tour-wizard/types";
 import { Loader2 } from "lucide-react";
-import { AxiosError } from "axios";
 
 // User-friendly field name mappings
 const fieldLabels: Record<string, string> = {
@@ -44,61 +43,56 @@ const fieldLabels: Record<string, string> = {
 
 // Parse validation errors from API response into user-friendly messages
 const parseValidationErrors = (error: unknown): string[] => {
-  if (!(error instanceof AxiosError)) return [];
+  if (!(error instanceof Error)) return [];
 
-  const response = error.response?.data;
-  if (!response) return [];
+  const msg = error.message;
+  if (!msg) return [];
 
-  // Handle NestJS validation error format: { message: string[] }
-  const messages = response.message;
-  if (!Array.isArray(messages)) return [];
+  // NestJS returns message as array; fetch API joins it with ","
+  // Try to split and detect validation messages
+  const parts = msg.split(",").map((s) => s.trim()).filter(Boolean);
 
-  return messages.map((msg: string) => {
-    // Parse messages like "inclusions.0.uz must be longer than or equal to 1 characters"
-    // or "title must be a string"
+  // Heuristic: validation messages usually mention field names and constraints
+  const isValidationError = parts.some(
+    (p) =>
+      p.includes("must be") ||
+      p.includes("should not") ||
+      p.includes("is not valid") ||
+      p.includes("must match") ||
+      p.includes("must be longer"),
+  );
 
-    // Extract field path (e.g., "inclusions.0.uz" or "title")
-    const fieldMatch = msg.match(/^([a-zA-Z0-9_.]+)\s/);
-    if (!fieldMatch) return msg;
+  if (!isValidationError) return [];
+
+  return parts.map((rawMsg) => {
+    const fieldMatch = rawMsg.match(/^([a-zA-Z0-9_.]+)\s/);
+    if (!fieldMatch) return rawMsg;
 
     const fieldPath = fieldMatch[1];
     const pathParts = fieldPath.split(".");
 
-    // Build user-friendly field name
     let friendlyField = "";
     for (const part of pathParts) {
-      // Skip array indices (numbers)
       if (/^\d+$/.test(part)) continue;
-
       const label = fieldLabels[part];
       if (label) {
         friendlyField = friendlyField ? `${friendlyField} - ${label}` : label;
       }
     }
 
-    if (!friendlyField) {
-      friendlyField = fieldPath;
-    }
+    if (!friendlyField) friendlyField = fieldPath;
 
-    // Simplify the error message
     if (
-      msg.includes("must be longer than or equal to") ||
-      msg.includes("should not be empty")
+      rawMsg.includes("must be longer than or equal to") ||
+      rawMsg.includes("should not be empty")
     ) {
       return `Please fill in the "${friendlyField}" field`;
     }
-    if (msg.includes("must be a string")) {
-      return `"${friendlyField}" must be text`;
-    }
-    if (msg.includes("must be a number")) {
-      return `"${friendlyField}" must be a number`;
-    }
-    if (msg.includes("must be a valid")) {
-      return `Please enter a valid ${friendlyField.toLowerCase()}`;
-    }
+    if (rawMsg.includes("must be a string")) return `"${friendlyField}" must be text`;
+    if (rawMsg.includes("must be a number")) return `"${friendlyField}" must be a number`;
+    if (rawMsg.includes("must be a valid")) return `Please enter a valid ${friendlyField.toLowerCase()}`;
 
-    // Default: show original message with friendly field name
-    return `${friendlyField}: ${msg.replace(fieldPath, "").trim()}`;
+    return `${friendlyField}: ${rawMsg.replace(fieldPath, "").trim()}`;
   });
 };
 
@@ -300,12 +294,26 @@ const TourWizardPage: React.FC = () => {
       latitude: tourExt.latitude ?? null,
       longitude: tourExt.longitude ?? null,
       duration: tour.duration || 1,
-      price: typeof tour.price === "number" ? tour.price : 0,
-      currency: tourExt.currency || "UZS",
+      price:
+        typeof tour.price === "object" && tour.price !== null
+          ? (tour.price as { amount: number; currency: string }).amount
+          : typeof tour.price === "number"
+            ? tour.price
+            : 0,
+      currency: (
+        tourExt.currency ||
+        (typeof tour.price === "object" && tour.price !== null
+          ? (tour.price as { amount: number; currency: string }).currency
+          : undefined) ||
+        "UZS"
+      ) as "UZS" | "USD" | "EUR",
       maxParticipants: tour.maxParticipants || 10,
       startDate: formatDate(tour.startDate),
       endDate: formatDate(tour.endDate),
-      status: (tour.status as "ACTIVE" | "INACTIVE") || "ACTIVE",
+      status:
+        tour.status === "ACTIVE" || tour.status === "INACTIVE"
+          ? tour.status
+          : "INACTIVE",
       categoryId: tourExt.categoryId || tourExt.category?.id || "",
       images: tour.images || [],
       itinerary:
@@ -408,7 +416,7 @@ const TourWizardPage: React.FC = () => {
         ? new Date(formData.startDate).toISOString()
         : "",
       endDate: formData.endDate ? new Date(formData.endDate).toISOString() : "",
-      status: formData.status,
+      status: formData.status as "ACTIVE" | "INACTIVE",
       categoryId: formData.categoryId,
 
       // Arrays
@@ -453,7 +461,10 @@ const TourWizardPage: React.FC = () => {
       } else {
         toast.error({
           title: "Error",
-          message: "Failed to save tour. Please try again.",
+          message:
+            error instanceof Error && error.message
+              ? error.message
+              : "Failed to save tour. Please try again.",
         });
       }
       throw error;

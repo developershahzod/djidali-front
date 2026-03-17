@@ -396,7 +396,7 @@ export const useTourWizardStore = create<TourWizardState & TourWizardActions>()(
       },
     }),
     {
-      name: "tour_draft_v1",
+      name: "tour_draft_v2",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         formData: state.formData,

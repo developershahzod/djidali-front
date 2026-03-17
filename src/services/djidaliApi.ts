@@ -353,13 +353,15 @@ class DjidaliApiService {
       }
 
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage =
-        errorData.message ||
-        (Array.isArray(errorData.errors)
-          ? errorData.errors
-              .map((e: any) => Object.values(e.constraints || {}).join(", "))
-              .join("; ")
-          : `HTTP error! status: ${response.status}`);
+      const rawMessage = errorData.message;
+      const errorMessage = Array.isArray(rawMessage)
+        ? rawMessage.join(", ")
+        : rawMessage ||
+          (Array.isArray(errorData.errors)
+            ? errorData.errors
+                .map((e: any) => Object.values(e.constraints || {}).join(", "))
+                .join("; ")
+            : `HTTP error! status: ${response.status}`);
 
       // Create error with preserved data for CAPTCHA handling
       const error = new Error(errorMessage) as Error & {
@@ -459,6 +461,13 @@ class DjidaliApiService {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     localStorage.removeItem("djidali_user");
+    
+    // Notify AuthContext to log out the user from the UI
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("djidali:auth-change", { detail: null })
+      );
+    }
   }
 
   private async refreshAccessToken(): Promise<void> {
