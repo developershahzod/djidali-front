@@ -25,7 +25,14 @@ interface NavItemProps {
   comingSoon?: boolean;
 }
 
-const NavItem = ({ icon, label, to, active, collapsed, comingSoon }: NavItemProps) => {
+const NavItem = ({
+  icon,
+  label,
+  to,
+  active,
+  collapsed,
+  comingSoon,
+}: NavItemProps) => {
   if (comingSoon) {
     return (
       <div
@@ -38,7 +45,9 @@ const NavItem = ({ icon, label, to, active, collapsed, comingSoon }: NavItemProp
         {!collapsed && (
           <>
             <span className="truncate">{label}</span>
-            <span className="ml-auto text-[10px] uppercase tracking-wider bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">Soon</span>
+            <span className="ml-auto text-[10px] uppercase tracking-wider bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">
+              Soon
+            </span>
           </>
         )}
       </div>
@@ -129,11 +138,11 @@ const AdminLayout = ({
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-[calc(100vh-2rem)] bg-slate-50">
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"
+          className="fixed top-8 bottom-0 left-0 right-0 z-40 bg-slate-900/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -141,7 +150,7 @@ const AdminLayout = ({
       {/* Sidebar - Enterprise Navy */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col bg-navy-900 transition-all duration-200 lg:relative",
+          "fixed top-8 bottom-0 left-0 z-50 flex flex-col bg-navy-900 transition-all duration-200 lg:relative lg:top-0",
           collapsed ? "w-16" : "w-60",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}

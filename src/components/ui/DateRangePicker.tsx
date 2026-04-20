@@ -41,16 +41,15 @@ export function DateRangePicker({
   const { language, translate } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>(value);
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== "undefined" && window.innerWidth < 768,
-  );
+  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
     setRange(value);
   }, [value]);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 850);
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -98,7 +97,7 @@ export function DateRangePicker({
       open={isOpen}
       onOpenChange={setIsOpen}
       align="start"
-      className="date-picker-popover p-0 min-w-max overflow-visible"
+      className="date-picker-popover p-0"
       trigger={
         <div className={cn("bg-white rounded-xl cursor-pointer", className)}>
           {label && (
@@ -178,7 +177,7 @@ export function DateRangePicker({
         </div>
 
         {/* Calendar with padding for navigation buttons */}
-        <div className="date-picker-calendar overflow-visible">
+        <div className="date-picker-calendar">
           <DayPicker
             mode="range"
             selected={range}

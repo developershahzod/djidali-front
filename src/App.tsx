@@ -6,6 +6,7 @@ import { ConfirmProvider } from "./contexts/ConfirmContext";
 import { useAuth } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/Header";
+import TestModeBanner from "./components/TestModeBanner";
 import HomePage from "./pages/HomePage";
 import TourListPage from "./pages/TourListPage";
 import TourDetailPage from "./pages/TourDetailPage";
@@ -66,7 +67,8 @@ function App() {
         <ConfirmProvider>
           <LanguageProvider>
             <DocumentTitleUpdater />
-            <div className="min-h-screen bg-[#F5F5F0]">
+            <TestModeBanner />
+            <div className="min-h-screen bg-[#F5F5F0] pt-8">
               <ScrollToTopOnRouteChange />
               {!isAdminPage &&
                 !isBookingStepPage &&

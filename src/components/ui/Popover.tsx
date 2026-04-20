@@ -66,6 +66,45 @@ export function Popover({
     }
   }, [isOpen, align]);
 
+  // Clamp both edges after popover renders
+  // Uses requestAnimationFrame to ensure content is fully painted before measuring
+  useEffect(() => {
+    if (isOpen && popoverRef.current) {
+      const frame = requestAnimationFrame(() => {
+        if (!popoverRef.current) return;
+        const el = popoverRef.current;
+        // scrollWidth is immune to CSS transform animations (zoom-in-95)
+        const naturalWidth = el.scrollWidth;
+        const scrollX = window.scrollX;
+
+        // Convert CSS left (document coords) to viewport coords
+        const viewportLeft = position.left - scrollX;
+
+        // Calculate visual edges accounting for align transform
+        let visualLeft = viewportLeft;
+        if (align === "center") visualLeft -= naturalWidth / 2;
+        if (align === "end") visualLeft -= naturalWidth;
+        const visualRight = visualLeft + naturalWidth;
+
+        let adjustment = 0;
+
+        // Right overflow
+        if (visualRight > window.innerWidth - 8) {
+          adjustment = -(visualRight - window.innerWidth + 8);
+        }
+        // Left overflow (takes priority to keep content readable)
+        if (visualLeft + adjustment < 8) {
+          adjustment = 8 - visualLeft;
+        }
+
+        if (adjustment !== 0) {
+          setPosition((prev) => ({ ...prev, left: prev.left + adjustment }));
+        }
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [isOpen, position.top, align]);
+
   // Close on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -117,8 +156,13 @@ export function Popover({
           left = rect.right + scrollX;
         }
 
-        // Clamp to viewport so popover never overflows left edge
+        // Clamp to viewport edges
         left = Math.max(scrollX + 8, left);
+        if (popoverRef.current) {
+          const popoverWidth = popoverRef.current.offsetWidth;
+          const maxLeft = window.innerWidth + scrollX - 8 - popoverWidth;
+          left = Math.min(left, Math.max(scrollX + 8, maxLeft));
+        }
 
         setPosition({
           top: rect.bottom + scrollY + 8,

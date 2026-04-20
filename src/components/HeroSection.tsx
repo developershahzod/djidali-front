@@ -17,6 +17,13 @@ const HeroSection: React.FC = () => {
   const [adults, setAdults] = useState(2);
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
 
+  const heroTitle = translate({
+    ru: "Дальверзин - уникальное пространство для Вашего отдыха в Узбекистане",
+    uz: "Dalverzin - O'zbekistonda dam olishingiz uchun noyob makon",
+    en: "Dalverzin - A unique space for your relaxation in Uzbekistan",
+    de: "Dalverzin - Ein einzigartiger Ort für Ihre Erholung in Usbekistan",
+  });
+
   const handleSearch = () => {
     const params = new URLSearchParams({
       destination,
@@ -42,176 +49,187 @@ const HeroSection: React.FC = () => {
           backgroundImage: `url('/banner.webp')`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/20 to-black/65"></div>
       </div>
 
-      {/* Title - positioned at ~25% from top, consistent across devices */}
-      <div className="absolute top-[25%] sm:top-[25%] md:top-[25%] lg:top-[25%] left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
+      {/* Title — mobile: visually centered, desktop: 25% from top */}
+      <div className="absolute top-[38%] -translate-y-1/2 sm:top-[35%] md:top-[25%] md:translate-y-0 left-0 right-0 z-10 px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-[32px] md:text-[clamp(38px,5vw,80px)] leading-[1.1] font-light text-white tracking-tight max-w-[90%] md:max-w-[70%]">
-            {translate({
-              ru: "Дальверзин - уникальное пространство для Вашего отдыха в Узбекистане",
-              uz: "Dalverzin - O'zbekistonda dam olishingiz uchun noyob makon",
-              en: "Dalverzin - A unique space for your relaxation in Uzbekistan",
-              de: "Dalverzin - Ein einzigartiger Ort für Ihre Erholung in Usbekistan",
-            })}
+          <h1 className="text-[26px] sm:text-[30px] md:text-[clamp(38px,5vw,80px)] leading-[1.15] md:leading-[1.1] font-light text-white tracking-tight md:max-w-[70%]">
+            {heroTitle}
           </h1>
         </div>
       </div>
 
-      {/* Form container - full width on mobile/tablet */}
+      {/* Bottom content — search form */}
       <div className="relative z-10 w-full h-full flex flex-col justify-end pb-6 sm:pb-8 md:pb-10 lg:pb-[60px] px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="max-w-[1400px] mx-auto w-full">
-          <div className="rounded-[16px] sm:rounded-[20px] shadow-2xl grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
-            {/* Куда (Destination) */}
-            <div className="bg-white rounded-xl p-3 sm:p-[clamp(10px,0.83vw,12px)]">
-              <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
-                {translate({
-                  ru: "Куда",
-                  uz: "Qayerga",
-                  en: "Where",
-                  de: "Wohin",
+          {/* Search form — frosted glass card on mobile, individual cards on desktop */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-1.5 shadow-lg md:bg-transparent md:backdrop-blur-none md:p-0 md:rounded-none md:shadow-none">
+            <div className="shadow-none md:shadow-2xl rounded-none md:rounded-[20px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5 md:gap-4">
+              {/* Куда (Destination) */}
+              <div className="bg-white rounded-xl p-2.5 sm:p-3 md:p-[clamp(10px,0.83vw,12px)]">
+                <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
+                  {translate({
+                    ru: "Куда",
+                    uz: "Qayerga",
+                    en: "Where",
+                    de: "Wohin",
+                  })}
+                </label>
+                <select
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
+                >
+                  <option value="">
+                    {translate({
+                      ru: "Выберите",
+                      uz: "Tanlang",
+                      en: "Select",
+                      de: "Wählen",
+                    })}
+                  </option>
+                  <option value="tashkent">
+                    {translate({
+                      ru: "Ташкент",
+                      uz: "Toshkent",
+                      en: "Tashkent",
+                      de: "Taschkent",
+                    })}
+                  </option>
+                  <option value="samarkand">
+                    {translate({
+                      ru: "Самарканд",
+                      uz: "Samarqand",
+                      en: "Samarkand",
+                      de: "Samarkand",
+                    })}
+                  </option>
+                  <option value="bukhara">
+                    {translate({
+                      ru: "Бухара",
+                      uz: "Buxoro",
+                      en: "Bukhara",
+                      de: "Buchara",
+                    })}
+                  </option>
+                  <option value="khiva">
+                    {translate({
+                      ru: "Хива",
+                      uz: "Xiva",
+                      en: "Khiva",
+                      de: "Chiwa",
+                    })}
+                  </option>
+                  <option value="dalverzin">
+                    {translate({
+                      ru: "Дальверзин",
+                      uz: "Dalverzin",
+                      en: "Dalverzin",
+                      de: "Dalverzin",
+                    })}
+                  </option>
+                </select>
+              </div>
+
+              {/* Тип тура (Tour Type) */}
+              <div className="bg-white rounded-xl p-2.5 sm:p-3 md:p-[clamp(10px,0.83vw,12px)]">
+                <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
+                  {translate({
+                    ru: "Тип тура",
+                    uz: "Tur turi",
+                    en: "Tour Type",
+                    de: "Tourtyp",
+                  })}
+                </label>
+                <select
+                  value={tourType}
+                  onChange={(e) => setTourType(e.target.value)}
+                  className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
+                >
+                  <option value="individual">
+                    {translate({
+                      ru: "Индивидуальный",
+                      uz: "Individual",
+                      en: "Individual",
+                      de: "Individuell",
+                    })}
+                  </option>
+                  <option value="group">
+                    {translate({
+                      ru: "Групповой",
+                      uz: "Guruh",
+                      en: "Group",
+                      de: "Gruppe",
+                    })}
+                  </option>
+                  <option value="family">
+                    {translate({
+                      ru: "Семейный",
+                      uz: "Oilaviy",
+                      en: "Family",
+                      de: "Familie",
+                    })}
+                  </option>
+                </select>
+              </div>
+
+              {/* Дата (Date Range) */}
+              <DateRangePicker
+                value={dateRange}
+                onChange={setDateRange}
+                label={translate({
+                  ru: "Дата",
+                  uz: "Sana",
+                  en: "Date",
+                  de: "Datum",
                 })}
-              </label>
-              <select
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
-              >
-                <option value="">
-                  {translate({
-                    ru: "Выберите",
-                    uz: "Tanlang",
-                    en: "Select",
-                    de: "Wählen",
-                  })}
-                </option>
-                <option value="tashkent">
-                  {translate({
-                    ru: "Ташкент",
-                    uz: "Toshkent",
-                    en: "Tashkent",
-                    de: "Taschkent",
-                  })}
-                </option>
-                <option value="samarkand">
-                  {translate({
-                    ru: "Самарканд",
-                    uz: "Samarqand",
-                    en: "Samarkand",
-                    de: "Samarkand",
-                  })}
-                </option>
-                <option value="bukhara">
-                  {translate({
-                    ru: "Бухара",
-                    uz: "Buxoro",
-                    en: "Bukhara",
-                    de: "Buchara",
-                  })}
-                </option>
-                <option value="khiva">
-                  {translate({
-                    ru: "Хива",
-                    uz: "Xiva",
-                    en: "Khiva",
-                    de: "Chiwa",
-                  })}
-                </option>
-                <option value="dalverzin">
-                  {translate({
-                    ru: "Дальверзин",
-                    uz: "Dalverzin",
-                    en: "Dalverzin",
-                    de: "Dalverzin",
-                  })}
-                </option>
-              </select>
-            </div>
+                className="p-2.5 sm:p-3 md:p-[clamp(10px,0.83vw,12px)]"
+              />
 
-            {/* Тип тура (Tour Type) */}
-            <div className="bg-white rounded-xl p-3 sm:p-[clamp(10px,0.83vw,12px)]">
-              <label className="block text-[10px] sm:text-[11px] text-gray-500 mb-0.5 ml-1 font-normal uppercase tracking-wide">
-                {translate({
-                  ru: "Тип тура",
-                  uz: "Tur turi",
-                  en: "Tour Type",
-                  de: "Tourtyp",
+              {/* Участники (Guests) */}
+              <GuestSelector
+                adults={adults}
+                childrenAges={childrenAges}
+                onAdultsChange={setAdults}
+                onChildrenChange={setChildrenAges}
+                label={translate({
+                  ru: "Участники",
+                  uz: "Ishtirokchilar",
+                  en: "Guests",
+                  de: "Gäste",
                 })}
-              </label>
-              <select
-                value={tourType}
-                onChange={(e) => setTourType(e.target.value)}
-                className="w-full bg-white text-gray-900 text-[14px] sm:text-[15px] font-medium outline-none focus:border-[#8B7355] transition-colors cursor-pointer"
+                className="p-2.5 sm:p-3 md:p-[clamp(10px,0.83vw,12px)]"
+                maxGuests={9}
+              />
+
+              {/* Search Button */}
+              <button
+                onClick={handleSearch}
+                className="col-span-2 md:col-span-1 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-6 py-3.5 sm:py-3 rounded-xl text-[14px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
               >
-                <option value="individual">
-                  {translate({
-                    ru: "Индивидуальный",
-                    uz: "Individual",
-                    en: "Individual",
-                    de: "Individuell",
-                  })}
-                </option>
-                <option value="group">
-                  {translate({
-                    ru: "Групповой",
-                    uz: "Guruh",
-                    en: "Group",
-                    de: "Gruppe",
-                  })}
-                </option>
-                <option value="family">
-                  {translate({
-                    ru: "Семейный",
-                    uz: "Oilaviy",
-                    en: "Family",
-                    de: "Familie",
-                  })}
-                </option>
-              </select>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {translate({
+                  ru: "Найти туры",
+                  uz: "Turlarni topish",
+                  en: "Find Tours",
+                  de: "Touren finden",
+                })}
+              </button>
             </div>
-
-            {/* Дата (Date Range) */}
-            <DateRangePicker
-              value={dateRange}
-              onChange={setDateRange}
-              label={translate({
-                ru: "Дата",
-                uz: "Sana",
-                en: "Date",
-                de: "Datum",
-              })}
-              className="p-3 sm:p-[clamp(10px,0.83vw,12px)]"
-            />
-
-            {/* Участники (Guests) - New GuestSelector */}
-            <GuestSelector
-              adults={adults}
-              childrenAges={childrenAges}
-              onAdultsChange={setAdults}
-              onChildrenChange={setChildrenAges}
-              label={translate({
-                ru: "Участники",
-                uz: "Ishtirokchilar",
-                en: "Guests",
-                de: "Gäste",
-              })}
-              className="p-3 sm:p-[clamp(10px,0.83vw,12px)]"
-              maxGuests={9}
-            />
-
-            {/* Search Button - spans full width on mobile, single col on tablet */}
-            <button
-              onClick={handleSearch}
-              className="col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1 bg-[#8B7355] hover:bg-[#7A6349] text-white font-medium px-6 py-4 sm:py-3 rounded-xl text-[15px] sm:text-[14px] transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl flex items-center justify-center"
-            >
-              {translate({
-                ru: "Найти туры",
-                uz: "Turlarni topish",
-                en: "Find Tours",
-                de: "Touren finden",
-              })}
-            </button>
           </div>
         </div>
       </div>

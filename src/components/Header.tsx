@@ -126,7 +126,7 @@ const Header: React.FC = () => {
     <>
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 pt-4 px-4"
+        className="fixed top-8 left-0 right-0 z-50 pt-4 px-4"
       >
         <div className="backdrop-blur-sm bg-[rgba(51,51,51,0.1)] rounded-[16px] px-[32px] py-[12px] shadow-lg max-w-[1440px] mx-auto flex justify-between items-center text-white">
           {/* Hamburger Menu Button - Mobile Only */}

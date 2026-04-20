@@ -420,13 +420,15 @@ const BookingStepPage: React.FC = () => {
 
         // Ensure tourId is a valid UUID - the backend requires UUID format
         let resolvedTourId = tourId || displayData.tourId;
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const uuidRegex =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
         if (!uuidRegex.test(resolvedTourId)) {
           // tourId is not a UUID (might be numeric) - fetch tour to get UUID
           try {
             const tourData = await djidaliApi.getTour(resolvedTourId);
-            resolvedTourId = tourData.id?.toString() || tourData.uuid || resolvedTourId;
+            resolvedTourId =
+              tourData.id?.toString() || tourData.uuid || resolvedTourId;
           } catch {
             console.warn("Could not resolve tour UUID, using original tourId");
           }
@@ -541,7 +543,7 @@ const BookingStepPage: React.FC = () => {
       style={{ fontFamily: "Montserrat, sans-serif" }}
     >
       {/* Simple Back Button Header */}
-      <header className="sticky top-0 z-50 bg-[#F4F2ED]/95 backdrop-blur-sm border-b border-[#E5E0D5]">
+      <header className="sticky top-8 z-50 bg-[#F4F2ED]/95 backdrop-blur-sm border-b border-[#E5E0D5]">
         <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={handleBack}
@@ -814,8 +816,20 @@ const BookingStepPage: React.FC = () => {
                 <div className="text-center py-6">
                   <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 12L11 14L15 10" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="12" r="9" stroke="#22C55E" strokeWidth="2"/>
+                      <path
+                        d="M9 12L11 14L15 10"
+                        stroke="#22C55E"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="#22C55E"
+                        strokeWidth="2"
+                      />
                     </svg>
                   </div>
                   <h2 className="text-2xl font-semibold text-[#333333] mb-3">
@@ -853,7 +867,9 @@ const BookingStepPage: React.FC = () => {
                             de: "Telefon",
                           })}
                         </p>
-                        <p className="font-semibold text-[#333333]">+998 94 470 88 44</p>
+                        <p className="font-semibold text-[#333333]">
+                          +998 94 470 88 44
+                        </p>
                       </div>
                     </a>
                     <a
@@ -867,7 +883,9 @@ const BookingStepPage: React.FC = () => {
                       </div>
                       <div className="text-left">
                         <p className="text-sm text-[#666666]">Telegram</p>
-                        <p className="font-semibold text-[#333333]">@djidali_travel</p>
+                        <p className="font-semibold text-[#333333]">
+                          @djidali_travel
+                        </p>
                       </div>
                     </a>
                   </div>
@@ -875,10 +893,10 @@ const BookingStepPage: React.FC = () => {
                   <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
                     <p className="text-sm text-amber-800">
                       {translate({
-                        ru: "💡 Ваш заказ уже создан и виден в личном кабинете со статусом \"В ожидании\"",
-                        uz: "💡 Buyurtmangiz yaratildi va shaxsiy kabinetda \"Kutilmoqda\" holati bilan ko'rinadi",
-                        en: "💡 Your order has been created and is visible in your account with \"Pending\" status",
-                        de: "💡 Ihre Bestellung wurde erstellt und ist in Ihrem Konto mit dem Status \"Ausstehend\" sichtbar",
+                        ru: '💡 Ваш заказ уже создан и виден в личном кабинете со статусом "В ожидании"',
+                        uz: '💡 Buyurtmangiz yaratildi va shaxsiy kabinetda "Kutilmoqda" holati bilan ko\'rinadi',
+                        en: '💡 Your order has been created and is visible in your account with "Pending" status',
+                        de: '💡 Ihre Bestellung wurde erstellt und ist in Ihrem Konto mit dem Status "Ausstehend" sichtbar',
                       })}
                     </p>
                   </div>
