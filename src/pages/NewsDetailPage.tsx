@@ -306,7 +306,7 @@ function _Footer() {
           </p>
           <div className="flex gap-16">
             <p className="font-['Montserrat:Medium',sans-serif] font-medium text-[#333333] text-[35px] tracking-[-0.7px]">
-              +998(94)470-88-44
+              +998 00 000 00 00
             </p>
             <p className="font-['Montserrat:Medium',sans-serif] font-medium text-[#333333] text-[35px] tracking-[-0.7px]">
               hello@djidali.uz

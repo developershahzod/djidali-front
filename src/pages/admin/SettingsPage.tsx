@@ -60,7 +60,7 @@ const initialSiteSettings: SiteSettings = {
   siteName: "Djidali Travel",
   siteDescription: "Eco-tourism and adventure travel in Uzbekistan",
   contactEmail: "info@djidali.uz",
-  contactPhone: "+998 90 123 45 67",
+  contactPhone: "+998 00 000 00 00",
   address: "Tashkent, Uzbekistan",
   socialLinks: {
     telegram: "https://t.me/djidali",

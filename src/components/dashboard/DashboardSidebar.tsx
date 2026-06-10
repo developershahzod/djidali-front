@@ -235,11 +235,11 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             {/* Contact Info Cards */}
             <div className="space-y-2">
               <a
-                href="tel:+998944708844"
+                href="tel:+998000000000"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
               >
                 <Phone className="w-5 h-5 text-gray-400" />
-                <span className="flex-1 text-left">+998 (94) 470-88-44</span>
+                <span className="flex-1 text-left">+998 00 000 00 00</span>
               </a>
 
               <a

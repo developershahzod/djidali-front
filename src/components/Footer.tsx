@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
               className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
-              +998(94)470-88-44
+              +998 00 000 00 00
             </p>
             <p
               className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333]"

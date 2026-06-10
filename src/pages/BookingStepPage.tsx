@@ -852,7 +852,7 @@ const BookingStepPage: React.FC = () => {
                   {/* Contact Cards */}
                   <div className="space-y-3 mb-6">
                     <a
-                      href="tel:+998944708844"
+                      href="tel:+998000000000"
                       className="flex items-center gap-4 p-4 bg-[#F9F8F5] rounded-xl hover:bg-[#F0EDE5] transition-colors"
                     >
                       <div className="w-12 h-12 bg-[#8F7B49]/10 rounded-lg flex items-center justify-center">
@@ -868,7 +868,7 @@ const BookingStepPage: React.FC = () => {
                           })}
                         </p>
                         <p className="font-semibold text-[#333333]">
-                          +998 94 470 88 44
+                          +998 00 000 00 00
                         </p>
                       </div>
                     </a>
