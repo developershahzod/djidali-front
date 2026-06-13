@@ -904,9 +904,18 @@ const TourDetailPage: React.FC = () => {
                         className="text-white text-[clamp(40px,3.47vw,50px)] font-semibold"
                         style={{ letterSpacing: "-1px" }}
                       >
-                        {Number(tourPrice).toLocaleString("ru-RU")}
+                        {(() => {
+                          const currency = (tour as any).currency || "UZS";
+                          if (currency === "USD")
+                            return `$${Number(tourPrice).toLocaleString("en-US")}`;
+                          if (currency === "EUR")
+                            return `€${Number(tourPrice).toLocaleString("de-DE")}`;
+                          return Number(tourPrice).toLocaleString("ru-RU");
+                        })()}
                       </span>
-                      <span className="text-white/70 text-[20px]">UZS</span>
+                      {((tour as any).currency || "UZS") === "UZS" && (
+                        <span className="text-white/70 text-[20px]">UZS</span>
+                      )}
                     </div>
                   </div>
 

@@ -21,3 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Incoming assets dropped for processing (originals, not for the repo)
+_inbox/

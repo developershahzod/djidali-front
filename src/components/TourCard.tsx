@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Tour } from "../services/api";
 import { getTourPrimaryImage } from "../utils/imageUtils";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatTourPrice } from "../lib/utils";
 
 interface TourCardProps {
   tour: Tour;
@@ -58,12 +59,8 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onSelect }) => {
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div className="items-baseline gap-2 mb-0">
               <span className="text-[2rem] font-normal text-gray-900">
-                {(
-                  (typeof tour.price === "object" && tour.price) ||
-                  (typeof tour.price === "number" ? tour.price : 350000)
-                ).toLocaleString()}
+                {formatTourPrice(tour)}
               </span>
-              <span className="text-base text-gray-500 font-light">UZS</span>
               <div className="text-sm text-gray-400 font-light mb-6">От</div>
             </div>
 

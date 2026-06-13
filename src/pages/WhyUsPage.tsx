@@ -205,12 +205,28 @@ const WhyUsPage: React.FC = () => {
             </section>
 
             <section className="mb-10 md:mb-[60px]">
-              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-[20px] overflow-hidden">
+              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-t-[20px] overflow-hidden">
                 <img
                   src="/whyus-nature.webp"
                   alt={t("whyUs.gallery.altRiverValley")}
                   className="absolute w-full h-full object-cover"
                 />
+              </div>
+              <div className="flex">
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-bl-[20px]">
+                  <img
+                    src="/whyus-nature-vert-1.webp"
+                    alt={t("whyUs.gallery.altRiverValley")}
+                    className="absolute w-full h-full object-cover"
+                  />
+                </div>
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-br-[20px]">
+                  <img
+                    src="/whyus-nature-vert-2.webp"
+                    alt={t("whyUs.gallery.altRiverValley")}
+                    className="absolute w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </section>
           </>
@@ -266,12 +282,28 @@ const WhyUsPage: React.FC = () => {
             </section>
 
             <section className="mb-10 md:mb-[60px]">
-              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-[20px] overflow-hidden">
+              <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-t-[20px] overflow-hidden">
                 <img
                   src="/whyus-comfort.webp"
                   alt="Комфортное проживание"
                   className="absolute w-full h-full object-cover"
                 />
+              </div>
+              <div className="flex">
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-bl-[20px]">
+                  <img
+                    src="/whyus-comfort-vert-1.webp"
+                    alt="Комфортное проживание"
+                    className="absolute w-full h-full object-cover"
+                  />
+                </div>
+                <div className="relative w-1/2 h-[200px] md:h-[400px] lg:h-[586px] overflow-hidden rounded-br-[20px]">
+                  <img
+                    src="/whyus-comfort-vert-2.webp"
+                    alt="Комфортное проживание"
+                    className="absolute w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </section>
           </>

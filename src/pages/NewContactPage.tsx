@@ -94,12 +94,13 @@ const NewContactPage: React.FC = () => {
             >
               {t("contactPage.form.phone")}
             </p>
-            <p
-              className="text-[clamp(20px,2.43vw,35px)] font-medium leading-[100%] tracking-[-0.7px] text-[#333333]"
+            <a
+              href="tel:+998000000000"
+              className="text-[clamp(20px,2.43vw,35px)] font-medium leading-[100%] tracking-[-0.7px] text-[#333333] hover:text-[#8f7b49] transition-colors"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               +998 00 000 00 00
-            </p>
+            </a>
           </div>
         </div>
       </header>
@@ -377,12 +378,13 @@ const NewContactPage: React.FC = () => {
               >
                 {t("contactPage.info.email")}
               </p>
-              <p
-                className="text-[clamp(28px,3.13vw,45px)] font-medium leading-[1.2] tracking-[-1.35px] text-[#333333]"
+              <a
+                href={`mailto:${t("contactPage.info.emailValue")}`}
+                className="text-[clamp(28px,3.13vw,45px)] font-medium leading-[1.2] tracking-[-1.35px] text-[#333333] hover:text-[#8f7b49] transition-colors"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 {t("contactPage.info.emailValue")}
-              </p>
+              </a>
             </div>
           </div>
         </div>

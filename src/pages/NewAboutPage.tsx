@@ -44,7 +44,7 @@ const NewAboutPage: React.FC = () => {
           de: "Es gibt keine künstlich geschaffenen Landschaften oder überlastete Infrastruktur - nur Stille, saubere Luft und ein lebendiges Ökosystem in seiner ursprünglichen Schönheit.",
         }),
       ],
-      image: "/why-us-comfort.webp",
+      image: "/about-feature-nature.webp",
       highlight: translate({
         ru: "Знакомство с первозданной природой",
         uz: "Dastlabki tabiat bilan tanishuv",
@@ -90,7 +90,7 @@ const NewAboutPage: React.FC = () => {
           de: "Wir haben individuellen Komfort auf dem Gelände durchdacht: Ruhezonen, Verpflegung nach Programm und klares Timing.",
         }),
       ],
-      image: "/why-us-comfort.webp",
+      image: "/about-feature-comfort.webp",
       highlight: translate({
         ru: "Комфорт в гармонии с природой",
         uz: "Tabiat bilan uyg'unlikdagi qulaylik",
@@ -649,13 +649,6 @@ const NewAboutPage: React.FC = () => {
           >
             {t("aboutPage.gallery.title")}
           </h2>
-          <p
-            className="text-[clamp(16px,1.39vw,20px)] font-light leading-[1.4] text-[#333333] text-left md:text-right tracking-[-0.02em]"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            <span className="font-bold">14</span>
-            <span> {t("aboutPage.gallery.available")}</span>
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[48.96%_51.04%] md:grid-rows-[clamp(300px,31.25vw,450px)_clamp(300px,31.25vw,450px)_clamp(450px,48.61vw,700px)] gap-0 w-full">

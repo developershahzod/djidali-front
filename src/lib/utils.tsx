@@ -26,6 +26,38 @@ export function formatCurrency(
   }).format(amount);
 }
 
+/**
+ * A tour's price can come from the API either as a plain number or as a
+ * `{ amount, currency }` object. These helpers normalise both shapes so price
+ * and currency are displayed consistently everywhere (home, tour list, detail).
+ */
+export function getTourPriceAmount(tour: any): number {
+  const price = tour?.price;
+  const amount =
+    typeof price === "object" && price !== null ? price.amount : price;
+  return Number(amount) || 0;
+}
+
+export function getTourCurrency(tour: any): string {
+  const price = tour?.price;
+  const fromPrice =
+    typeof price === "object" && price !== null ? price.currency : undefined;
+  return fromPrice || tour?.currency || "UZS";
+}
+
+/**
+ * Formats a tour's "from" price using the tour's own currency.
+ * USD/EUR use a leading symbol, UZS keeps the trailing code — matching the
+ * existing design on the home page so all screens stay in sync.
+ */
+export function formatTourPrice(tour: any): string {
+  const amount = getTourPriceAmount(tour);
+  const currency = getTourCurrency(tour);
+  if (currency === "USD") return `$${amount.toLocaleString("en-US")}`;
+  if (currency === "EUR") return `€${amount.toLocaleString("de-DE")}`;
+  return `${amount.toLocaleString("ru-RU")} UZS`;
+}
+
 export function formatDate(
   date: string | Date | null | undefined,
   formatStr: string = "MMM d, yyyy",

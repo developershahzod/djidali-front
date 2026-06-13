@@ -6,6 +6,7 @@ import { getTourPrimaryImage } from "../utils/imageUtils";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTours } from "../hooks/useTours";
 import ScrollToTopButton from "../components/ScrollToTopButton";
+import { formatTourPrice } from "../lib/utils";
 
 export interface TourFilters {
   country: string;
@@ -298,12 +299,7 @@ const TourListPage: React.FC = () => {
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
                       <p className="font-medium leading-[1.35] text-[clamp(18px,1.94vw,28px)] tracking-[-0.02em]">
-                        {Number(
-                          (typeof tour.price === "object"
-                            ? (tour.price as any)?.amount
-                            : tour.price) || 0,
-                        ).toLocaleString("ru-RU")}{" "}
-                        UZS
+                        {formatTourPrice(tour)}
                       </p>
                       <p className="font-medium leading-[1] text-[clamp(12px,1.11vw,16px)] tracking-[-0.02em]">
                         {t("tour.from")}
@@ -422,12 +418,7 @@ const TourListPage: React.FC = () => {
                           style={{ fontFamily: "Montserrat, sans-serif" }}
                         >
                           <p className="font-medium leading-[1.4] text-[20px] tracking-[-0.4px]">
-                            {Number(
-                              (typeof tour.price === "object"
-                                ? (tour.price as any)?.amount
-                                : tour.price) || 0,
-                            ).toLocaleString("ru-RU")}{" "}
-                            UZS
+                            {formatTourPrice(tour)}
                           </p>
                           <p className="font-medium leading-[1] text-[14px] tracking-[-0.28px]">
                             {t("tour.from")}

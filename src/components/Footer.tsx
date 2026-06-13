@@ -23,18 +23,20 @@ const Footer: React.FC = () => {
             })}
           </p>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-8 lg:gap-[80px]">
-            <p
-              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333]"
+            <a
+              href="tel:+998000000000"
+              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333] hover:text-[#8F7B49] transition-colors"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               +998 00 000 00 00
-            </p>
-            <p
-              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333]"
+            </a>
+            <a
+              href="mailto:land@djidali.uz"
+              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333] hover:text-[#8F7B49] transition-colors"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
-              hello@djidali.uz
-            </p>
+              land@djidali.uz
+            </a>
           </div>
         </div>
 
@@ -307,7 +309,8 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom row */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* lg:pr keeps the copyright clear of the fixed scroll-to-top button */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:pr-[100px]">
           {/* Our contacts link */}
           <button
             onClick={() => navigate("/contact")}
