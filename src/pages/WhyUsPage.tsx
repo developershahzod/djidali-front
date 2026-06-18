@@ -129,7 +129,7 @@ const WhyUsPage: React.FC = () => {
             <section className="mb-10 md:mb-[60px]">
               <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full rounded-t-[20px] overflow-hidden">
                 <img
-                  src="/whyus-routes.webp"
+                  src="/whyus-routes.webp?v=2"
                   alt={t("whyUs.gallery.altForestPath")}
                   className="absolute w-full h-full object-cover"
                 />

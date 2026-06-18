@@ -167,7 +167,7 @@ function HeroSection({ title, backgroundImage, onBack }: HeroSectionProps) {
       <div aria-hidden="true" className="absolute inset-0">
         <img
           alt=""
-          className="absolute object-cover size-full"
+          className="absolute object-cover object-top size-full"
           src={backgroundImage}
         />
         <div className="absolute bg-[rgba(0,0,0,0.5)] inset-0" />
