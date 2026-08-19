@@ -658,7 +658,7 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/about-gallery-1.webp"
+                src="/about-gallery-1.webp?v=2"
               />
             </div>
           </div>
@@ -669,24 +669,19 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/about-gallery-2.webp"
+                src="/about-gallery-2.webp?v=2"
               />
             </div>
           </div>
 
-          {/* Heart Container - LEFT COLUMN, row 3 */}
-          <div className="relative bg-[#8f7b49] min-h-[300px] md:min-h-0">
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[clamp(180px,17.36vw,250px)] h-[clamp(180px,17.36vw,250px)] overflow-hidden">
-              <div
-                className="absolute"
-                style={{ inset: "19.23% 16.06% 19.24% 16.06%" }}
-              >
-                <img
-                  alt=""
-                  className="w-full h-full"
-                  src="/about-icon-heart.svg"
-                />
-              </div>
+          {/* Butterfly - LEFT COLUMN, row 3 */}
+          <div className="relative overflow-hidden min-h-[300px] md:min-h-0">
+            <div className="absolute inset-0">
+              <img
+                alt=""
+                className="w-full h-full object-cover"
+                src="/about-gallery-4.webp"
+              />
             </div>
           </div>
 
@@ -732,7 +727,7 @@ const NewAboutPage: React.FC = () => {
               <img
                 alt=""
                 className="w-full h-full object-cover"
-                src="/about-gallery-3.webp"
+                src="/about-gallery-3.webp?v=2"
               />
             </div>
           </div>

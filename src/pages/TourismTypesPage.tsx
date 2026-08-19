@@ -71,8 +71,8 @@ const TourismTypesPage: React.FC = () => {
       bannerImage: "/ecotourism-banner.webp",
       images: {
         top: "/ecotourism-1.webp",
-        topLeft: "/ecotourism-2.webp",
-        topRight: "/ecotourism-3.webp",
+        topLeft: "/ecotourism-2.webp?v=2",
+        topRight: "/ecotourism-3.webp?v=2",
         bottomLeft: "/ecotourism-4.webp",
         bottomRight: "/ecotourism-5.webp",
       },
