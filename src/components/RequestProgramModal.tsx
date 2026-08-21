@@ -124,12 +124,14 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Request failed");
+        throw new Error(data.message || "Request failed");
       }
 
       setStatus("success");
-      setServerMessage(t("requestModal.successMessage"));
+      setServerMessage(data.message || t("requestModal.successMessage"));
 
       // Reset form after success
       setTimeout(() => {
@@ -145,9 +147,11 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
         setStatus("idle");
         onClose();
       }, 3000);
-    } catch {
+    } catch (error) {
       setStatus("error");
-      setServerMessage(t("requestModal.errorMessage"));
+      setServerMessage(
+        error instanceof Error ? error.message : t("requestModal.errorMessage"),
+      );
     }
   };
 
