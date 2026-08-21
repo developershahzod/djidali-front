@@ -411,8 +411,48 @@ const translations = {
     "whyUs.categories.comfort": "Comfortable\naccommodation",
     "whyUs.categories.team": "Team of\nspecialists",
     "whyUs.section1.title": "Discover unique itineraries",
-    "whyUs.section2.text1":
-      "DJIDALI routes are suitable for both individual walks and group tours.",
+    "whyUs.section1.text1":
+      "We are not just a location on the map. We are a space where nature comes alive, where rest gains meaning, and where impressions stay in your heart forever!",
+    "whyUs.section1.text2":
+      "Uzbekistan's unique nature: thousands of hectares of pristine forests, steppes, and reservoirs. Here every season has its own beauty, and every day is filled with the breath of the living world.",
+    "whyUs.section1.text3":
+      "A variety of activities: from leisurely walks and agro-tours to sport shooting and hunting routes. Choose a getaway to match your mood - active, contemplative, or heartfelt.",
+    "whyUs.section1.text4":
+      "Professionalism and safety: experienced rangers, qualified instructors, and thoughtful organization - we take care of your comfort and safety at every step.",
+    "whyUs.section1.text5":
+      "An eco-friendly approach and love for the land: we respect nature and help others feel its strength and beauty. Every route, every project we create is designed with care for the environment.",
+    "whyUs.section1.text6":
+      "An atmosphere of comfort and genuine hospitality: we don't just offer services - we invite you into an atmosphere you'll want to stay in. A warm welcome, thoughtful attention, and true relaxation await you here.",
+    "whyUs.section1.text7":
+      "The perfect place for everyone: a family weekend, a corporate retreat, a romantic adventure, or a solo escape into silence - we have a format for every occasion.",
+    "whyUs.nature.title": "Discovering Pristine Nature",
+    "whyUs.nature.text1":
+      "Discovering pristine nature is what makes our style of getaway truly valuable and unforgettable. Within the forest hunting grounds, you won't find artificially created landscapes or overbuilt infrastructure - only real nature, preserved in its natural state.",
+    "whyUs.nature.text2":
+      "Our guests get a rare chance to observe forest life without distortion: clean air, picturesque landscapes, untouched stretches of forest and water. This is not just a walk - it's a return to your roots, to a silence that only nature can offer.",
+    "whyUs.nature.text3":
+      "We carefully preserve the ecological balance, making sure every visit leaves behind only impressions, not traces of interference. Here you can see how natural processes work, how species interact, and what a real forest looks like, living by its own laws.",
+    "whyUs.nature.text4":
+      "This kind of encounter fills your journey with special meaning and helps you rethink your relationship with the world around you. It's an experience that will stay with you for a long time!",
+    "whyUs.comfort.title": "Comfortable Accommodation",
+    "whyUs.comfort.text1":
+      "Comfortable accommodation is an important part of our approach to organizing a complete, high-quality getaway. We strive to create conditions where nature and comfort are in harmony, allowing guests to relax, recharge, and feel as cozy as possible.",
+    "whyUs.comfort.text2":
+      "The forest hunting grounds offer accommodation options to suit a range of preferences and standards: from secluded cabins to cozy guest rooms for family groups. All facilities are equipped with the necessary modern amenities, including sanitary areas, electricity, and space for rest and storing belongings.",
+    "whyUs.comfort.text3":
+      "Every detail of the accommodation is designed with the needs of today's guest in mind, without excessive urbanization. We preserve an atmosphere of natural calm while still delivering a high level of service.",
+    "whyUs.comfort.text4":
+      "This style of accommodation lets you enjoy nature without having to sacrifice the comfort you're used to. It's the perfect balance between the wild outdoors and the conditions you're accustomed to.",
+    "whyUs.team.title": "A Team of Specialists",
+    "whyUs.team.text1":
+      "Our team is the foundation of the trust and quality we bring to every aspect of our work. It's made up of specialists with deep knowledge, hands-on experience, and a genuine love of nature. We don't just organize leisure time - we create meaningful, safe, and truly memorable ways to spend time outdoors.",
+    "whyUs.team.text2":
+      "Our team includes professional guides, biologists and ornithologists, foresters and rangers, instructors, and more. Each of them is an expert in their field who not only accompanies guests but also shares knowledge, revealing the unique features of the landscapes, ecosystems, and behavior patterns of wild animals.",
+    "whyUs.team.text3":
+      "Thanks to their work, you can feel confident and free as you immerse yourself in the atmosphere of pristine nature. We know how to find the right approach for every audience - from families with children to corporate groups, from first-time travelers to experienced naturalists.",
+    "whyUs.team.text4":
+      "Teamwork and professionalism are what make your getaway with us truly special!",
+    
     "whyUs.gallery.altForestPath": "Forest trail",
     "whyUs.gallery.altMountain": "Mountain landscape",
     "whyUs.gallery.altCanyon": "Canyon trail",
@@ -1106,12 +1146,12 @@ const translations = {
     "userDashboard.orders.emptyDesc": "Start an unforgettable journey and create memories that will stay with you!",
     "whyUs.hero.description": "DJIDALI brings together nature, comfort, and expertise to create journeys that stay with you",
     "whyUs.hero.title": "We are where nature speaks first",
-    "whyUs.section1.text1": "Our itineraries are designed for those who want to reconnect with nature without unnecessary fuss.",
-    "whyUs.section1.text2": "Every tour is carefully planned, combining comfort and an environmentally responsible approach with the chance to experience wildlife in its pristine beauty.",
-    "whyUs.section1.text3": "Walk the same trails as local rangers and see the landscape through the eyes of those who know it intimately.",
-    "whyUs.section2.text2": "Choose easy routes for a relaxing break or more active programs with an adventurous edge.",
-    "whyUs.section3.text": "Every journey is a chance to feel the rhythm of Uzbekistan, breathe fresh air, and return home with a sense of freedom",
-    "whyUs.section3.title": "DJIDALI is more than a collection of routes - it is an encounter with living nature",
+    
+    
+    
+    
+    
+    
     "wizard.add": "Add",
     "wizard.cancel": "Cancel",
     "wizard.delete": "Delete",
@@ -1551,19 +1591,53 @@ const translations = {
     "whyUs.categories.team": "Команда\nспециалистов",
     "whyUs.section1.title": "Откройте для себя уникальные маршруты",
     "whyUs.section1.text1":
-      "Наши маршруты созданы для тех, кто ищет соединение с природой без лишней суеты.",
+      "Мы - не просто локация на карте. Мы - пространство, где природа оживает, отдых наполняется смыслом, а впечатления остаются в сердце навсегда!",
     "whyUs.section1.text2":
-      "Каждый тур — это тщательно продуманное путешествие, где комфорт и экологичный подход сочетаются с возможностью увидеть дикую природу в её первозданной красоте.",
+      "Уникальная природа Узбекистана: тысячи гектаров первозданных лесов, степей и водоемов. Здесь каждый сезон по-своему прекрасен, а каждый день наполнен дыханием живого мира.",
     "whyUs.section1.text3":
-      "Вы сможете пройти по тропам, по которым ходят местные егеря, и увидеть мир глазами тех, кто его действительно чувствует.",
-    "whyUs.section2.text1":
-      "Маршруты DJIDALI подходят как для индивидуальных прогулок, так и для групповых туров.",
-    "whyUs.section2.text2":
-      "Вы можете выбрать лёгкие маршруты для спокойного отдыха или более насыщенные программы с элементами приключений.",
-    "whyUs.section3.title":
-      "DJIDALI — это не просто маршруты, а встречи с живой природой",
-    "whyUs.section3.text":
-      "Каждое путешествие — возможность почувствовать ритм Узбекистана, вдохнуть свежий воздух и оставить в сердце ощущение свободы",
+      "Разнообразие активностей: от неспешных прогулок и агро туров до стендовой стрельбы и охотничьих маршрутов. Выбирайте отдых под настроение - активный, созерцательный или душевный.",
+    "whyUs.section1.text4":
+      "Профессионализм и безопасность: опытные егеря, квалифицированные инструкторы, грамотная организация - мы позаботимся о Вашем комфорте и безопасности на каждом шагу.",
+    "whyUs.section1.text5":
+      "Экологичный подход и любовь к земле: мы уважаем природу и помогаем другим прочувствовать ее силу и красоту. Каждый наш маршрут, каждый проект - создан с заботой об окружающей среде.",
+    "whyUs.section1.text6":
+      "Атмосфера уюта и искреннего гостеприимства: мы не предлагаем просто услуги - мы приглашаем в атмосферу, где Вам захочется остаться надолго. Здесь вас ждет теплый прием, всестороннее внимание и настоящий душевный отдых.",
+    "whyUs.section1.text7":
+      "Идеальное место для всех категорий: семейный уикенд, корпоративный выезд, романтическое приключение или одиночное погружение в тишину — у нас найдётся формат для каждого.",
+    "whyUs.nature.title": "Знакомство с первозданной природой",
+    "whyUs.nature.text1":
+      "Знакомство с первозданной природой - это то, что делает наш формат отдыха по-настоящему ценным и незабываемым. На территории лесоохотничьего хозяйства вы не найдете искусственно созданных пейзажей или перегруженной инфраструктуры - только настоящая природа, сохранённая в своем естественном виде.",
+    "whyUs.nature.text2":
+      "Наши гости получают редкую возможность наблюдать за жизнью леса без искажений: чистый воздух, живописные ландшафты, нетронутые участки леса и водоемов. Это не просто прогулка - это возвращение к истокам, к тишине, которую может подарить только природа.",
+    "whyUs.nature.text3":
+      "Мы тщательно сохраняем экологический баланс, следим за тем, чтобы каждый визит оставлял после себя только впечатления, а не следы вмешательства. Здесь можно увидеть, как функционируют природные процессы, как взаимодействуют виды, как выглядит настоящий лес, живущий по своим законам.",
+    "whyUs.nature.text4":
+      "Такое знакомство наполняет особым смыслом и помогает пересмотреть отношение к окружающему миру. Это опыт, который останется с вами надолго!",
+    "whyUs.comfort.title": "Комфортное проживание",
+    "whyUs.comfort.text1":
+      "Комфортное проживание - важная часть нашего подхода к организации полноценного и качественного отдыха. Мы стремимся создать условия, в которых природа и удобство гармоничны друг с другом, позволяя гостям расслабиться, восстановиться и чувствовать себя максимально уютно.",
+    "whyUs.comfort.text2":
+      "На территории лесоохотничьего хозяйства предусмотрены варианты размещения, соответствующие различным предпочтениям и стандартам: от уединённых домиков до уютных гостевых помещений для семейных групп. Все объекты оборудованы необходимыми современными удобствами, включая санитарные зоны, электричество, места для отдыха и хранения вещей и т.д.",
+    "whyUs.comfort.text3":
+      "Каждая деталь в организации проживания продумана с учётом потребностей современного гостя, но без излишней урбанизации. Мы сохраняем атмосферу природного спокойствия, обеспечивая при этом высокий уровень сервиса.",
+    "whyUs.comfort.text4":
+      "Такой формат размещения позволяет наслаждаться природой без необходимости жертвовать привычным комфортом. Это идеальный баланс между дикой средой и условиями, к которым вы привыкли.",
+    "whyUs.team.title": "Команда специалистов",
+    "whyUs.team.text1":
+      "Наша команда - это основа доверия и качества, с которыми мы подходим к каждому аспекту работы. Здесь трудятся специалисты с глубокими знаниями, практическим опытом и искренней любовью к природе. Мы не просто организуем досуг - мы создаем содержательные, безопасные и по-настоящему запоминающиеся форматы пребывания на природе.",
+    "whyUs.team.text2":
+      "В составе команды - профессиональные гиды, биологи и орнитологи, лесники и егеря, инструкторы и т.д. Каждый из них - специалист в своей области, который не только сопровождает гостей, но и делится знаниями, раскрывает уникальные особенности ландшафтов, экосистем и поведенческих моделей диких животных.",
+    "whyUs.team.text3":
+      "Благодаря их работе вы можете чувствовать себя уверенно и свободно, погружаясь в атмосферу первозданной природы. Мы умеем находить подход к различной аудитории - от семей с детьми до корпоративных групп, от начинающих туристов до опытных натуралистов.",
+    "whyUs.team.text4":
+      "Слаженность команды и профессионализм - вот что делает ваш отдых с нами особенным!",
+    
+    
+    
+    
+    
+    
+    
     "whyUs.gallery.altForestPath": "Лесная тропа",
     "whyUs.gallery.altMountain": "Горный пейзаж",
     "whyUs.gallery.altCanyon": "Тропа в ущелье",
@@ -2711,19 +2785,53 @@ const translations = {
     "whyUs.categories.team": "Mutaxassislar\njamoasi",
     "whyUs.section1.title": "Noyob marshrutlarni kashf eting",
     "whyUs.section1.text1":
-      "Marshrutlarimiz ortiqcha shovqinsiz tabiat bilan aloqani izlaydiganlar uchun yaratilgan.",
+      "Biz shunchaki xaritadagi joy emasmiz. Biz - tabiat jonlanadigan, dam olish ma'noga to'ladigan va taassurotlar abadiy yurakda qoladigan makonmiz!",
     "whyUs.section1.text2":
-      "Har bir tur — bu puxta rejalashtirilgan sayohat, bu yerda qulaylik va ekologik yondashuv yovvoyi tabiatni asl goʻzalligida koʻrish imkoniyati bilan uyg'unlashadi.",
+      "O'zbekistonning noyob tabiati: minglab gektar bokira o'rmonlar, dashtlar va suv havzalari. Bu yerda har bir fasl o'ziga xos go'zal, har bir kun esa jonli olam nafasi bilan to'lgan.",
     "whyUs.section1.text3":
-      "Mahalliy qorovullar yuradigan yoʻllardan oʻtib, dunyoni haqiqatan his qiladiganlar koʻzi bilan koʻrasiz.",
-    "whyUs.section2.text1":
-      "DJIDALI marshrutlari ham individual sayrlar, ham guruh sayohatlari uchun mos keladi.",
-    "whyUs.section2.text2":
-      "Siz tinch dam olish uchun oson marshrutlar yoki sarguzasht elementlari bilan toʻldirilgan dasturlarni tanlashingiz mumkin.",
-    "whyUs.section3.title":
-      "DJIDALI — bu shunchaki marshrutlar emas, balki jonli tabiat bilan uchrashuvdir",
-    "whyUs.section3.text":
-      "Har bir sayohat — Oʻzbekiston ritmini his qilish, toza havo bilan nafas olish va qalbingizda erkinlik hissi bilan ketish imkoniyati",
+      "Faoliyat turlarining xilma-xilligi: shoshilmasdan sayr qilishdan va agroturlardan tortib, nishonga otish va ov marshrutlarigacha. Kayfiyatingizga mos dam olishni tanlang - faol, tafakkurga to'la yoki qalbga yaqin.",
+    "whyUs.section1.text4":
+      "Professionallik va xavfsizlik: tajribali o'rmonchilar, malakali instruktorlar, puxta tashkilot - biz har bir qadamda qulayligingiz va xavfsizligingiz haqida g'amxo'rlik qilamiz.",
+    "whyUs.section1.text5":
+      "Ekologik yondashuv va yerga muhabbat: biz tabiatni hurmat qilamiz va boshqalarga uning kuchi va go'zalligini his qilishga yordam beramiz. Har bir marshrutimiz, har bir loyihamiz atrof-muhitga g'amxo'rlik bilan yaratilgan.",
+    "whyUs.section1.text6":
+      "Qulaylik va samimiy mehmondo'stlik muhiti: biz shunchaki xizmat taklif qilmaymiz - biz sizni uzoq vaqt qolgingiz keladigan muhitga taklif qilamiz. Bu yerda sizni iliq kutib olish, har tomonlama e'tibor va haqiqiy ruhiy dam olish kutmoqda.",
+    "whyUs.section1.text7":
+      "Barcha toifalar uchun ideal joy: oilaviy dam olish kunlari, korporativ safar, romantik sarguzasht yoki sukunatga yolg'iz sho'ng'ish - bizda har kim uchun format topiladi.",
+    "whyUs.nature.title": "Bokira tabiat bilan tanishuv",
+    "whyUs.nature.text1":
+      "Bokira tabiat bilan tanishuv - bu bizning dam olish formatimizni haqiqatan ham qadrli va unutilmas qiladigan narsadir. O'rmon-ov xo'jaligi hududida siz sun'iy yaratilgan manzaralar yoki ortiqcha infratuzilmani topa olmaysiz - faqat o'z tabiiy ko'rinishida saqlanib qolgan haqiqiy tabiat.",
+    "whyUs.nature.text2":
+      "Mehmonlarimiz o'rmon hayotini hech qanday buzilishsiz kuzatishning noyob imkoniyatiga ega bo'lishadi: toza havo, manzarali landshaftlar, o'rmon va suv havzalarining bokira qismlari. Bu shunchaki sayr emas - bu ildizlarga, faqat tabiat bera oladigan sukunatga qaytishdir.",
+    "whyUs.nature.text3":
+      "Biz ekologik muvozanatni ehtiyotkorlik bilan saqlaymiz va har bir tashrif faqat taassurotlarni qoldirib, aralashuv izlarini qoldirmasligiga e'tibor beramiz. Bu yerda tabiiy jarayonlar qanday ishlashini, turlar bir-biri bilan qanday ta'sirlashishini, o'z qonunlari bilan yashaydigan haqiqiy o'rmon qanday ko'rinishini kuzatish mumkin.",
+    "whyUs.nature.text4":
+      "Bunday tanishuv alohida ma'no bilan to'ladi va atrofdagi dunyoga bo'lgan munosabatni qayta ko'rib chiqishga yordam beradi. Bu uzoq vaqt siz bilan qoladigan tajriba!",
+    "whyUs.comfort.title": "Qulay turar joy",
+    "whyUs.comfort.text1":
+      "Qulay turar joy - bu to'liq va sifatli dam olishni tashkil etishga bo'lgan yondashuvimizning muhim qismidir. Biz tabiat va qulaylik bir-biriga uyg'un bo'lgan sharoitlarni yaratishga intilamiz, bu esa mehmonlarga dam olish, kuch to'plash va o'zini iloji boricha qulay his qilish imkonini beradi.",
+    "whyUs.comfort.text2":
+      "O'rmon-ov xo'jaligi hududida turli xil didlar va standartlarga mos keladigan turar joy variantlari mavjud: yakka uylardan tortib oilaviy guruhlar uchun qulay mehmon xonalarigacha. Barcha ob'ektlar zarur zamonaviy qulayliklar bilan jihozlangan, jumladan sanitariya zonalari, elektr, dam olish va buyumlarni saqlash uchun joylar.",
+    "whyUs.comfort.text3":
+      "Turar joyni tashkil etishdagi har bir detal zamonaviy mehmon ehtiyojlarini hisobga olgan holda, ammo ortiqcha urbanizatsiyasiz o'ylab chiqilgan. Biz tabiiy osoyishtalik muhitini saqlagan holda yuqori darajadagi xizmatni ta'minlaymiz.",
+    "whyUs.comfort.text4":
+      "Bunday turar joy formati odatiy qulaylikdan voz kechmasdan tabiatdan bahramand bo'lish imkonini beradi. Bu yovvoyi muhit va sizga tanish bo'lgan sharoitlar o'rtasidagi ideal muvozanatdir.",
+    "whyUs.team.title": "Mutaxassislar jamoasi",
+    "whyUs.team.text1":
+      "Bizning jamoamiz - bu ishimizning har bir jihatiga yondashuvimizdagi ishonch va sifatning asosidir. Bu yerda chuqur bilim, amaliy tajriba va tabiatga samimiy muhabbatga ega mutaxassislar mehnat qiladi. Biz shunchaki dam olishni tashkil qilmaymiz - biz tabiatda bo'lishning mazmunli, xavfsiz va haqiqatan ham unutilmas formatlarini yaratamiz.",
+    "whyUs.team.text2":
+      "Jamoa tarkibida professional gidlar, biologlar va ornitologlar, o'rmonchilar va ovchilar, instruktorlar va boshqalar bor. Ularning har biri o'z sohasining mutaxassisi bo'lib, nafaqat mehmonlarni kuzatib boradi, balki bilim almashadi, landshaftlar, ekotizimlar va yovvoyi hayvonlarning xulq-atvor xususiyatlarini ochib beradi.",
+    "whyUs.team.text3":
+      "Ularning mehnati tufayli siz bokira tabiat muhitiga sho'ng'ib, o'zingizni ishonchli va erkin his qilishingiz mumkin. Biz turli auditoriyaga - bolali oilalardan korporativ guruhlargacha, yangi sayohatchilardan tajribali tabiatshunoslargacha - yondashuv topa olamiz.",
+    "whyUs.team.text4":
+      "Jamoaning ahilligi va professionalligi - bizning huzurimizdagi dam olishingizni alohida qiladigan narsa!",
+    
+    
+    
+    
+    
+    
+    
     "whyUs.gallery.altForestPath": "O‘rmon so‘qmog‘i",
     "whyUs.gallery.altMountain": "Tog‘ manzarasi",
     "whyUs.gallery.altCanyon": "Kanyon yo‘li",
@@ -3877,19 +3985,53 @@ const translations = {
     "whyUs.categories.team": "Team von\nSpezialisten",
     "whyUs.section1.title": "Entdecken Sie einzigartige Routen",
     "whyUs.section1.text1":
-      "Unsere Routen sind für alle gedacht, die ohne unnötige Hektik wieder Nähe zur Natur finden möchten.",
+      "Wir sind nicht nur ein Ort auf der Landkarte. Wir sind ein Raum, in dem die Natur lebendig wird, Erholung an Bedeutung gewinnt und Eindrücke für immer im Herzen bleiben!",
     "whyUs.section1.text2":
-      "Jede Tour wird sorgfältig geplant und verbindet Komfort und einen umweltbewussten Ansatz mit der Möglichkeit, Wildtiere in ihrer ursprünglichen Schönheit zu erleben.",
+      "Die einzigartige Natur Usbekistans: Tausende Hektar unberührter Wälder, Steppen und Gewässer. Hier ist jede Jahreszeit auf ihre Weise wunderschön, und jeder Tag ist erfüllt vom Atem der lebendigen Welt.",
     "whyUs.section1.text3":
-      "Gehen Sie auf denselben Wegen wie die örtlichen Ranger und entdecken Sie die Landschaft aus der Perspektive der Menschen, die sie besonders gut kennen.",
-    "whyUs.section2.text1":
-      "DJIDALI-Routen eignen sich sowohl für individuelle Wanderungen als auch für Gruppentouren.",
-    "whyUs.section2.text2":
-      "Wählen Sie leichte Routen für eine entspannte Auszeit oder aktivere Programme mit einem Hauch Abenteuer.",
-    "whyUs.section3.title":
-      "DJIDALI ist mehr als eine Sammlung von Routen - es ist eine Begegnung mit lebendiger Natur",
-    "whyUs.section3.text":
-      "Jede Reise ist eine Gelegenheit, den Rhythmus Usbekistans zu spüren, frische Luft zu atmen und mit einem Gefühl von Freiheit nach Hause zurückzukehren",
+      "Vielfältige Aktivitäten: von gemütlichen Spaziergängen und Agrotouren bis hin zum Sportschießen und Jagdrouten. Wählen Sie die Erholung, die zu Ihrer Stimmung passt - aktiv, beschaulich oder herzlich.",
+    "whyUs.section1.text4":
+      "Professionalität und Sicherheit: erfahrene Ranger, qualifizierte Instruktoren, durchdachte Organisation - wir kümmern uns bei jedem Schritt um Ihren Komfort und Ihre Sicherheit.",
+    "whyUs.section1.text5":
+      "Ein umweltbewusster Ansatz und Liebe zur Natur: Wir respektieren die Natur und helfen anderen, ihre Kraft und Schönheit zu spüren. Jede unserer Routen, jedes Projekt ist mit Rücksicht auf die Umwelt gestaltet.",
+    "whyUs.section1.text6":
+      "Eine Atmosphäre der Geborgenheit und aufrichtiger Gastfreundschaft: Wir bieten nicht nur Dienstleistungen an - wir laden Sie in eine Atmosphäre ein, in der Sie gerne länger verweilen möchten. Ein herzlicher Empfang, aufmerksame Betreuung und echte Erholung erwarten Sie hier.",
+    "whyUs.section1.text7":
+      "Der ideale Ort für jeden Anlass: ein Familienwochenende, ein Firmenausflug, ein romantisches Abenteuer oder ein Rückzug in die Stille - bei uns findet sich das passende Format für jeden.",
+    "whyUs.nature.title": "Begegnung mit unberührter Natur",
+    "whyUs.nature.text1":
+      "Die Begegnung mit unberührter Natur ist es, was unsere Art der Erholung wirklich wertvoll und unvergesslich macht. Auf dem Gelände des Forst- und Jagdreviers finden Sie keine künstlich geschaffenen Landschaften oder überladene Infrastruktur - nur echte Natur, bewahrt in ihrem natürlichen Zustand.",
+    "whyUs.nature.text2":
+      "Unsere Gäste erhalten die seltene Gelegenheit, das Leben des Waldes unverfälscht zu beobachten: saubere Luft, malerische Landschaften, unberührte Wald- und Wasserflächen. Das ist kein gewöhnlicher Spaziergang - es ist eine Rückkehr zu den Wurzeln, zu einer Stille, die nur die Natur schenken kann.",
+    "whyUs.nature.text3":
+      "Wir bewahren sorgfältig das ökologische Gleichgewicht und achten darauf, dass jeder Besuch nur Eindrücke, aber keine Spuren des Eingreifens hinterlässt. Hier lässt sich beobachten, wie natürliche Prozesse ablaufen, wie Arten miteinander interagieren und wie ein echter Wald aussieht, der nach seinen eigenen Gesetzen lebt.",
+    "whyUs.nature.text4":
+      "Eine solche Begegnung erfüllt die Reise mit besonderer Bedeutung und hilft dabei, die Beziehung zur Welt um uns herum zu überdenken. Es ist eine Erfahrung, die noch lange bei Ihnen bleiben wird!",
+    "whyUs.comfort.title": "Komfortable Unterkunft",
+    "whyUs.comfort.text1":
+      "Komfortable Unterkunft ist ein wichtiger Bestandteil unseres Ansatzes für einen vollwertigen und hochwertigen Urlaub. Wir sind bestrebt, Bedingungen zu schaffen, in denen Natur und Komfort miteinander harmonieren, damit sich unsere Gäste entspannen, erholen und rundum wohlfühlen können.",
+    "whyUs.comfort.text2":
+      "Auf dem Gelände des Forst- und Jagdreviers stehen Unterkünfte für unterschiedliche Vorlieben und Ansprüche zur Verfügung: von abgeschiedenen Hütten bis hin zu gemütlichen Gästezimmern für Familiengruppen. Alle Unterkünfte sind mit den notwendigen modernen Annehmlichkeiten ausgestattet, darunter Sanitärbereiche, Strom sowie Platz zum Ausruhen und Verstauen von Gepäck.",
+    "whyUs.comfort.text3":
+      "Jedes Detail der Unterkunft ist auf die Bedürfnisse des modernen Gastes abgestimmt, ohne dabei zu urban zu wirken. Wir bewahren die Atmosphäre natürlicher Ruhe und bieten dabei gleichzeitig ein hohes Serviceniveau.",
+    "whyUs.comfort.text4":
+      "Diese Art der Unterbringung ermöglicht es, die Natur zu genießen, ohne auf gewohnten Komfort verzichten zu müssen. Es ist die perfekte Balance zwischen wilder Umgebung und den Bedingungen, an die Sie gewöhnt sind.",
+    "whyUs.team.title": "Team von Spezialisten",
+    "whyUs.team.text1":
+      "Unser Team bildet die Grundlage für das Vertrauen und die Qualität, mit denen wir an jeden Aspekt unserer Arbeit herangehen. Hier arbeiten Spezialisten mit fundiertem Wissen, praktischer Erfahrung und aufrichtiger Liebe zur Natur. Wir organisieren nicht einfach nur Freizeit - wir schaffen sinnvolle, sichere und wirklich unvergessliche Formen des Aufenthalts in der Natur.",
+    "whyUs.team.text2":
+      "Zum Team gehören professionelle Guides, Biologen und Ornithologen, Förster und Ranger, Instruktoren und weitere Fachleute. Jeder von ihnen ist Experte auf seinem Gebiet und begleitet die Gäste nicht nur, sondern teilt auch sein Wissen und zeigt die Besonderheiten von Landschaften, Ökosystemen und dem Verhalten wildlebender Tiere auf.",
+    "whyUs.team.text3":
+      "Dank ihrer Arbeit können Sie sich sicher und frei fühlen, während Sie in die Atmosphäre unberührter Natur eintauchen. Wir wissen, wie man den richtigen Zugang zu unterschiedlichen Zielgruppen findet - von Familien mit Kindern bis zu Firmengruppen, von Reiseanfängern bis zu erfahrenen Naturliebhabern.",
+    "whyUs.team.text4":
+      "Teamgeist und Professionalität sind es, was Ihren Urlaub bei uns besonders macht!",
+    
+    
+    
+    
+    
+    
+    
     "whyUs.gallery.altForestPath": "Waldweg",
     "whyUs.gallery.altMountain": "Berglandschaft",
     "whyUs.gallery.altCanyon": "Canyonpfad",

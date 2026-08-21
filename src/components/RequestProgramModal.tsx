@@ -34,7 +34,10 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateInputLocale =
+    { en: "en-GB", ru: "ru-RU", uz: "uz-Latn-UZ", de: "de-DE" }[language] ??
+    "en-GB";
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
@@ -121,14 +124,12 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || "Request failed");
+        throw new Error("Request failed");
       }
 
       setStatus("success");
-      setServerMessage(data.message || t("requestModal.successMessage"));
+      setServerMessage(t("requestModal.successMessage"));
 
       // Reset form after success
       setTimeout(() => {
@@ -144,11 +145,9 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
         setStatus("idle");
         onClose();
       }, 3000);
-    } catch (error) {
+    } catch {
       setStatus("error");
-      setServerMessage(
-        error instanceof Error ? error.message : t("requestModal.errorMessage"),
-      );
+      setServerMessage(t("requestModal.errorMessage"));
     }
   };
 
@@ -340,6 +339,7 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
                         type="date"
                         id="dateFrom"
                         name="dateFrom"
+                        lang={dateInputLocale}
                         value={formData.dateFrom}
                         onChange={handleChange}
                         disabled={status === "submitting"}
@@ -355,6 +355,7 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
                         type="date"
                         id="dateTo"
                         name="dateTo"
+                        lang={dateInputLocale}
                         value={formData.dateTo}
                         onChange={handleChange}
                         disabled={status === "submitting"}
