@@ -38,6 +38,26 @@ const Footer: React.FC = () => {
               land@djidali.uz
             </a>
           </div>
+          <div className="mt-3 lg:mt-4">
+            <p
+              className="font-medium text-[14px] md:text-[16px] leading-[normal] tracking-[-0.4px] text-[#767676] mb-1"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              {translate({
+                ru: "По вопросам туризма",
+                uz: "Turizm masalalari bo'yicha",
+                en: "Tourism enquiries",
+                de: "Fragen zum Tourismus",
+              })}
+            </p>
+            <a
+              href="mailto:travel@djidali.land"
+              className="font-medium text-[20px] md:text-[24px] lg:text-[28px] leading-[normal] tracking-[-0.6px] text-[#333333] hover:text-[#8F7B49] transition-colors"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              travel@djidali.land
+            </a>
+          </div>
         </div>
 
         {/* Section headers row */}
@@ -352,13 +372,41 @@ const Footer: React.FC = () => {
             </svg>
           </button>
 
-          {/* Copyright */}
-          <p
-            className="font-medium text-[14px] md:text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676]"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            © 2025 DjidaliTravel
-          </p>
+          {/* Legal documents + copyright */}
+          <div className="flex flex-col gap-2 lg:items-end">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+              <button
+                onClick={() => navigate("/privacy")}
+                className="font-medium text-[14px] md:text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                {translate({
+                  ru: "Политика конфиденциальности",
+                  uz: "Maxfiylik siyosati",
+                  en: "Privacy Policy",
+                  de: "Datenschutzrichtlinie",
+                })}
+              </button>
+              <button
+                onClick={() => navigate("/offer")}
+                className="font-medium text-[14px] md:text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676] hover:text-[#333333] transition-colors text-left"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                {translate({
+                  ru: "Публичная оферта",
+                  uz: "Ommaviy oferta",
+                  en: "Public Offer",
+                  de: "Öffentliches Angebot",
+                })}
+              </button>
+            </div>
+            <p
+              className="font-medium text-[14px] md:text-[16px] leading-[28px] tracking-[-0.48px] text-[#767676]"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              © 2026 DjidaliTravel
+            </p>
+          </div>
         </div>
       </div>
     </footer>

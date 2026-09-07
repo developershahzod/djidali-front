@@ -56,11 +56,22 @@ export function DateRangePicker({
 
   const locale = localeMap[language as keyof typeof localeMap] || ru;
 
+  /**
+   * react-day-picker reports `{ from: d, to: d }` on the very first click -
+   * that is the user picking a start date, not a finished range. Treat the
+   * range as complete only once the two ends differ, so the calendar stays
+   * open for the second click instead of snapping shut on a single day.
+   */
+  const isCompleteRange = (candidate: DateRange | undefined) =>
+    !!candidate?.from &&
+    !!candidate?.to &&
+    candidate.to.getTime() !== candidate.from.getTime();
+
   const handleSelect = (newRange: DateRange | undefined) => {
     setRange(newRange);
+    onChange?.(newRange);
 
-    if (newRange?.from && newRange?.to) {
-      onChange?.(newRange);
+    if (isCompleteRange(newRange)) {
       setTimeout(() => setIsOpen(false), 200);
     }
   };
@@ -79,10 +90,10 @@ export function DateRangePicker({
     }
 
     const fromStr = format(range.from, "dd MMM", { locale });
-    if (!range.to) {
+    if (!isCompleteRange(range)) {
       return fromStr;
     }
-    const toStr = format(range.to, "dd MMM", { locale });
+    const toStr = format(range.to!, "dd MMM", { locale });
     return `${fromStr} — ${toStr}`;
   };
 
@@ -153,7 +164,7 @@ export function DateRangePicker({
                   en: "Select check-in date",
                   de: "Anreisedatum wählen",
                 })
-              : !range?.to
+              : !isCompleteRange(range)
                 ? translate({
                     ru: "Теперь выберите дату выезда",
                     uz: "Endi ketish sanasini tanlang",
@@ -169,8 +180,8 @@ export function DateRangePicker({
           </p>
           {range?.from && (
             <p className="text-xs text-gray-500 mt-1">
-              {range.to
-                ? `${format(range.from, "dd MMMM yyyy", { locale })} — ${format(range.to, "dd MMMM yyyy", { locale })}`
+              {isCompleteRange(range)
+                ? `${format(range.from, "dd MMMM yyyy", { locale })} — ${format(range.to!, "dd MMMM yyyy", { locale })}`
                 : format(range.from, "dd MMMM yyyy", { locale })}
             </p>
           )}

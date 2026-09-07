@@ -562,7 +562,7 @@ const translations = {
       "Tashkent city, Yunusabad district,\nAmir Temur street, 108",
     "footer.workingHours": "Mon-Fri: 9:00-18:00\nSat: 9:00-15:00",
     "footer.copyright":
-      "© 2025 DJIDALI ECOLOGICAL TOURISM. All rights reserved.",
+      "© 2026 DJIDALI ECOLOGICAL TOURISM. All rights reserved.",
     "footer.privacyPolicy": "Privacy Policy",
     "footer.termsOfService": "Terms of Service",
     "footer.help": "Help",
@@ -1756,7 +1756,7 @@ const translations = {
       "г. Ташкент, Юнусабадский район,\nул. Амира Темура, 108",
     "footer.workingHours": "Пн-Пт: 9:00-18:00\nСб: 9:00-15:00",
     "footer.copyright":
-      "© 2025 DJIDALI ECOLOGICAL TOURISM. Все права защищены.",
+      "© 2026 DJIDALI ECOLOGICAL TOURISM. Все права защищены.",
     "footer.privacyPolicy": "Политика конфиденциальности",
     "footer.termsOfService": "Условия использования",
     "footer.help": "Помощь",
@@ -2950,7 +2950,7 @@ const translations = {
       "Toshkent shahri, Yunusobod tumani,\nAmir Temur ko'chasi, 108-uy",
     "footer.workingHours": "Dush-Juma: 9:00-18:00\nShanba: 9:00-15:00",
     "footer.copyright":
-      "© 2025 DJIDALI ECOLOGICAL TOURISM. Barcha huquqlar himoyalangan.",
+      "© 2026 DJIDALI ECOLOGICAL TOURISM. Barcha huquqlar himoyalangan.",
     "footer.privacyPolicy": "Maxfiylik siyosati",
     "footer.termsOfService": "Foydalanish shartlari",
     "footer.help": "Yordam",
@@ -4153,7 +4153,7 @@ const translations = {
       "Taschkent, Bezirk Yunusabad,\nAmir-Temur-Straße 108",
     "footer.workingHours": "Mo-Fr: 9:00-18:00\nSa: 9:00-15:00",
     "footer.copyright":
-      "© 2025 DJIDALI ECOLOGICAL TOURISM. Alle Rechte vorbehalten.",
+      "© 2026 DJIDALI ECOLOGICAL TOURISM. Alle Rechte vorbehalten.",
     "footer.privacyPolicy": "Datenschutzerklärung",
     "footer.termsOfService": "Nutzungsbedingungen",
     "footer.help": "Hilfe",

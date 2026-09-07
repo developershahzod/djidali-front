@@ -12,6 +12,9 @@ interface PopoverProps {
   triggerClassName?: string;
 }
 
+/** Distance between the trigger and the popover, in px. */
+const GAP = 8;
+
 /**
  * Popover component using portal to escape overflow:hidden containers
  */
@@ -42,68 +45,64 @@ export function Popover({
     [isControlled, onOpenChange],
   );
 
-  // Calculate position when opening
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY;
-      const scrollX = window.scrollX;
+  // Places the popover under the trigger, flipping it above when the space
+  // below is too small for its content (e.g. a calendar opened near the
+  // bottom of the screen or inside a modal).
+  const computePosition = useCallback(() => {
+    if (!triggerRef.current) return;
 
-      let left = rect.left + scrollX;
-      if (align === "center") {
-        left = rect.left + scrollX + rect.width / 2;
-      } else if (align === "end") {
-        left = rect.right + scrollX;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+
+    let left = rect.left + scrollX;
+    if (align === "center") {
+      left = rect.left + scrollX + rect.width / 2;
+    } else if (align === "end") {
+      left = rect.right + scrollX;
+    }
+
+    // Clamp to viewport so popover never overflows left edge
+    left = Math.max(scrollX + 8, left);
+    if (popoverRef.current) {
+      const popoverWidth = popoverRef.current.offsetWidth;
+      const maxLeft = window.innerWidth + scrollX - 8 - popoverWidth;
+      left = Math.min(left, Math.max(scrollX + 8, maxLeft));
+    }
+
+    let top = rect.bottom + scrollY + GAP;
+    const height = popoverRef.current?.offsetHeight ?? 0;
+    if (height) {
+      const spaceBelow = window.innerHeight - rect.bottom - GAP;
+      const spaceAbove = rect.top - GAP;
+
+      if (height > spaceBelow && spaceAbove > spaceBelow) {
+        // Flip above the trigger
+        top = Math.max(scrollY + GAP, rect.top + scrollY - height - GAP);
+      } else {
+        // Keep below, but never let it hang past the bottom of the viewport
+        const maxTop = scrollY + window.innerHeight - GAP - height;
+        top = Math.max(scrollY + GAP, Math.min(top, maxTop));
       }
-
-      // Clamp to viewport so popover never overflows left edge
-      left = Math.max(scrollX + 8, left);
-
-      setPosition({
-        top: rect.bottom + scrollY + 8,
-        left,
-      });
     }
-  }, [isOpen, align]);
 
-  // Clamp both edges after popover renders
-  // Uses requestAnimationFrame to ensure content is fully painted before measuring
+    setPosition({ top, left });
+  }, [align]);
+
+  // Initial (pre-measurement) placement when opening
   useEffect(() => {
-    if (isOpen && popoverRef.current) {
-      const frame = requestAnimationFrame(() => {
-        if (!popoverRef.current) return;
-        const el = popoverRef.current;
-        // scrollWidth is immune to CSS transform animations (zoom-in-95)
-        const naturalWidth = el.scrollWidth;
-        const scrollX = window.scrollX;
-
-        // Convert CSS left (document coords) to viewport coords
-        const viewportLeft = position.left - scrollX;
-
-        // Calculate visual edges accounting for align transform
-        let visualLeft = viewportLeft;
-        if (align === "center") visualLeft -= naturalWidth / 2;
-        if (align === "end") visualLeft -= naturalWidth;
-        const visualRight = visualLeft + naturalWidth;
-
-        let adjustment = 0;
-
-        // Right overflow
-        if (visualRight > window.innerWidth - 8) {
-          adjustment = -(visualRight - window.innerWidth + 8);
-        }
-        // Left overflow (takes priority to keep content readable)
-        if (visualLeft + adjustment < 8) {
-          adjustment = 8 - visualLeft;
-        }
-
-        if (adjustment !== 0) {
-          setPosition((prev) => ({ ...prev, left: prev.left + adjustment }));
-        }
-      });
-      return () => cancelAnimationFrame(frame);
+    if (isOpen) {
+      computePosition();
     }
-  }, [isOpen, position.top, align]);
+  }, [isOpen, computePosition]);
+
+  // Re-measure once the content is painted: only then do we know the popover's
+  // real size, which decides whether it has to flip above the trigger.
+  useEffect(() => {
+    if (!isOpen) return;
+    const frame = requestAnimationFrame(() => computePosition());
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen, computePosition]);
 
   // Close on outside click
   useEffect(() => {
@@ -143,33 +142,7 @@ export function Popover({
   useEffect(() => {
     if (!isOpen) return;
 
-    const updatePosition = () => {
-      if (triggerRef.current) {
-        const rect = triggerRef.current.getBoundingClientRect();
-        const scrollY = window.scrollY;
-        const scrollX = window.scrollX;
-
-        let left = rect.left + scrollX;
-        if (align === "center") {
-          left = rect.left + scrollX + rect.width / 2;
-        } else if (align === "end") {
-          left = rect.right + scrollX;
-        }
-
-        // Clamp to viewport edges
-        left = Math.max(scrollX + 8, left);
-        if (popoverRef.current) {
-          const popoverWidth = popoverRef.current.offsetWidth;
-          const maxLeft = window.innerWidth + scrollX - 8 - popoverWidth;
-          left = Math.min(left, Math.max(scrollX + 8, maxLeft));
-        }
-
-        setPosition({
-          top: rect.bottom + scrollY + 8,
-          left,
-        });
-      }
-    };
+    const updatePosition = () => computePosition();
 
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
@@ -178,7 +151,7 @@ export function Popover({
       window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
     };
-  }, [isOpen, align]);
+  }, [isOpen, computePosition]);
 
   const transformOrigin =
     align === "center"
@@ -203,6 +176,10 @@ export function Popover({
         transformOrigin,
         zIndex: 99999,
         maxWidth: "calc(100vw - 16px)",
+        // Taller-than-screen content (e.g. a calendar on a small phone) stays
+        // reachable instead of being cut off.
+        maxHeight: "calc(100vh - 16px)",
+        overflowY: "auto",
       }}
       className={cn(
         "bg-white rounded-xl shadow-2xl border border-gray-100",

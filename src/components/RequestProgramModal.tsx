@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { X, Send, Loader2, CheckCircle, Calendar } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import { useLanguage } from "../contexts/LanguageContext";
+import { DateRangePicker } from "./ui/DateRangePicker";
 
 export interface RequestProgramModalProps {
   isOpen: boolean;
@@ -34,10 +37,7 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t, language } = useLanguage();
-  const dateInputLocale =
-    { en: "en-GB", ru: "ru-RU", uz: "uz-Latn-UZ", de: "de-DE" }[language] ??
-    "en-GB";
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
@@ -95,6 +95,21 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // The form keeps dates as ISO strings; the picker works with Date objects.
+  const dateRange = useMemo<DateRange | undefined>(() => {
+    const from = formData.dateFrom ? parseISO(formData.dateFrom) : undefined;
+    const to = formData.dateTo ? parseISO(formData.dateTo) : undefined;
+    return from || to ? { from, to } : undefined;
+  }, [formData.dateFrom, formData.dateTo]);
+
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setFormData((prev) => ({
+      ...prev,
+      dateFrom: range?.from ? format(range.from, "yyyy-MM-dd") : "",
+      dateTo: range?.to ? format(range.to, "yyyy-MM-dd") : "",
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -337,42 +352,19 @@ const RequestProgramModal: React.FC<RequestProgramModalProps> = ({
                     <Calendar className="w-4 h-4 inline-block mr-1 -mt-0.5" />
                     {t("requestModal.fields.dates")}
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <input
-                        type="date"
-                        id="dateFrom"
-                        name="dateFrom"
-                        lang={dateInputLocale}
-                        value={formData.dateFrom}
-                        onChange={handleChange}
-                        disabled={status === "submitting"}
-                        min={new Date().toISOString().split("T")[0]}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8f7b49]/30 focus:border-[#8f7b49] transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
-                      />
-                      <p className="mt-1 text-xs text-gray-500">
-                        {t("requestModal.placeholders.dateFrom")}
-                      </p>
-                    </div>
-                    <div>
-                      <input
-                        type="date"
-                        id="dateTo"
-                        name="dateTo"
-                        lang={dateInputLocale}
-                        value={formData.dateTo}
-                        onChange={handleChange}
-                        disabled={status === "submitting"}
-                        min={
-                          formData.dateFrom ||
-                          new Date().toISOString().split("T")[0]
-                        }
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8f7b49]/30 focus:border-[#8f7b49] transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
-                      />
-                      <p className="mt-1 text-xs text-gray-500">
-                        {t("requestModal.placeholders.dateTo")}
-                      </p>
-                    </div>
+                  <div
+                    className={
+                      status === "submitting"
+                        ? "pointer-events-none opacity-60"
+                        : undefined
+                    }
+                  >
+                    <DateRangePicker
+                      value={dateRange}
+                      onChange={handleDateRangeChange}
+                      numberOfMonths={1}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl transition-colors hover:border-[#8f7b49]"
+                    />
                   </div>
                 </div>
 

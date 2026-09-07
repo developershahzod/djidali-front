@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ToastProvider } from "./contexts/ToastContext";
@@ -7,6 +7,7 @@ import { useAuth } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/Header";
 import TestModeBanner from "./components/TestModeBanner";
+import PageSkeleton from "./components/PageSkeleton";
 import HomePage from "./pages/HomePage";
 import TourListPage from "./pages/TourListPage";
 import TourDetailPage from "./pages/TourDetailPage";
@@ -28,7 +29,13 @@ import { NewsDetailPage } from "./pages/NewsDetailPage";
 import CompletePage from "./pages/CompletePage";
 import TourismTypesPage from "./pages/TourismTypesPage";
 import BookingStepPage from "./pages/BookingStepPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+
+// Legal documents carry the full text in four languages, so they are kept
+// out of the main bundle.
+const PrivacyPolicyPage = React.lazy(
+  () => import("./pages/PrivacyPolicyPage"),
+);
+const PublicOfferPage = React.lazy(() => import("./pages/PublicOfferPage"));
 
 // Admin Pages
 import AdminDashboard from "./pages/AdminDashboard";
@@ -52,7 +59,8 @@ function App() {
   const isBookingStepPage = location.pathname.startsWith("/booking");
   const isCompletePage = location.pathname.startsWith("/complete");
   const isDashboardPage = location.pathname.startsWith("/dashboard");
-  const isPrivacyPage = location.pathname === "/privacy";
+  const isLegalPage =
+    location.pathname === "/privacy" || location.pathname === "/offer";
   const _isTourWizardPage =
     location.pathname === "/admin/tours/new" ||
     location.pathname.startsWith("/admin/tours/edit");
@@ -74,7 +82,7 @@ function App() {
                 !isBookingStepPage &&
                 !isCompletePage &&
                 !isDashboardPage &&
-                !isPrivacyPage && <Header />}
+                !isLegalPage && <Header />}
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/tours" element={<TourListPage />} />
@@ -94,7 +102,22 @@ function App() {
                 <Route path="/news/:id" element={<NewsDetailPage />} />
                 <Route path="/booking/:tourId" element={<BookingStepPage />} />
                 <Route path="/complete" element={<CompletePage />} />
-                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route
+                  path="/privacy"
+                  element={
+                    <Suspense fallback={<PageSkeleton />}>
+                      <PrivacyPolicyPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/offer"
+                  element={
+                    <Suspense fallback={<PageSkeleton />}>
+                      <PublicOfferPage />
+                    </Suspense>
+                  }
+                />
                 {/* Admin Routes */}
                 <Route
                   path="/admin"
@@ -233,7 +256,7 @@ function App() {
                 !isBookingStepPage &&
                 !isCompletePage &&
                 !isDashboardPage &&
-                !isPrivacyPage && <Footer />}
+                !isLegalPage && <Footer />}
             </div>
           </LanguageProvider>
         </ConfirmProvider>

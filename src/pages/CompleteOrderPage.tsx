@@ -155,7 +155,7 @@ function Footer() {
       <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[50px] text-[#333333] text-[20px] text-nowrap top-[217px] tracking-[-0.4px] whitespace-pre">Разделы сайта</p>
       <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[1048px] text-[#333333] text-[20px] text-nowrap top-[217px] tracking-[-0.4px] whitespace-pre">Социальные сети</p>
       <SectionsContainer />
-      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[28px] left-[645px] text-[#767676] text-[16px] text-nowrap top-[595px] tracking-[-0.48px] whitespace-pre"> 2025 DjidaliTravel</p>
+      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[28px] left-[645px] text-[#767676] text-[16px] text-nowrap top-[595px] tracking-[-0.48px] whitespace-pre"> 2026 DjidaliTravel</p>
       <ScrollToTopButton />
       <ContactInfo />
       <SocialMediaLinks />

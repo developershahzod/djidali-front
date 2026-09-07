@@ -352,7 +352,7 @@ function _Footer() {
         {/* Bottom Section */}
         <div className="flex justify-between items-center pt-8 border-t border-[#e0e0e0]">
           <p className="font-['Montserrat:Medium',sans-serif] font-medium text-[#767676] text-[16px] tracking-[-0.48px]">
-            © 2025 DjidaliTravel
+            © 2026 DjidaliTravel
           </p>
           <div className="flex gap-4 items-center cursor-pointer hover:text-[#8f7b49] transition-colors">
             <p className="font-['Montserrat:Medium',sans-serif] font-medium text-[#333333] text-[35px] tracking-[-0.7px]">

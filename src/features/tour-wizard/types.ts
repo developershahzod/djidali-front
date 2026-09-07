@@ -95,6 +95,12 @@ export const TOUR_REGIONS = [
   },
   { value: "Khiva", labelRu: "Хива", labelUz: "Xiva", labelEn: "Khiva" },
   {
+    value: "Karakalpakstan",
+    labelRu: "Республика Каракалпакстан",
+    labelUz: "Qoraqalpog'iston Respublikasi",
+    labelEn: "Republic of Karakalpakstan",
+  },
+  {
     value: "Fergana",
     labelRu: "Фергана",
     labelUz: "Farg'ona",

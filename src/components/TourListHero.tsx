@@ -176,6 +176,14 @@ const TourListHero: React.FC<TourListHeroProps> = ({
                     de: "Chiwa",
                   })}
                 </option>
+                <option value="karakalpakstan">
+                  {translate({
+                    ru: "Республика Каракалпакстан",
+                    uz: "Qoraqalpog'iston Respublikasi",
+                    en: "Republic of Karakalpakstan",
+                    de: "Republik Karakalpakstan",
+                  })}
+                </option>
                 <option value="dalverzin">
                   {translate({
                     ru: "Дальверзин",
