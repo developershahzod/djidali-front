@@ -1,5 +1,5 @@
-// Auto-generated from the client-provided .docx documents. Do not edit by hand:
-// re-run the extraction if the client sends an updated version of the document.
+// Auto-generated from the client-provided .docx documents. Do not edit by hand -
+// run scripts/generate-legal-docs.py when the client sends an updated document.
 import type { LegalDocument } from "./types";
 
 export const publicOffer: LegalDocument = {
