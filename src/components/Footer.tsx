@@ -31,28 +31,8 @@ const Footer: React.FC = () => {
               +998 00 000 00 00
             </a>
             <a
-              href="mailto:land@djidali.uz"
-              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333] hover:text-[#8F7B49] transition-colors"
-              style={{ fontFamily: "Montserrat, sans-serif" }}
-            >
-              land@djidali.uz
-            </a>
-          </div>
-          <div className="mt-3 lg:mt-4">
-            <p
-              className="font-medium text-[14px] md:text-[16px] leading-[normal] tracking-[-0.4px] text-[#767676] mb-1"
-              style={{ fontFamily: "Montserrat, sans-serif" }}
-            >
-              {translate({
-                ru: "По вопросам туризма",
-                uz: "Turizm masalalari bo'yicha",
-                en: "Tourism enquiries",
-                de: "Fragen zum Tourismus",
-              })}
-            </p>
-            <a
               href="mailto:travel@djidali.land"
-              className="font-medium text-[20px] md:text-[24px] lg:text-[28px] leading-[normal] tracking-[-0.6px] text-[#333333] hover:text-[#8F7B49] transition-colors"
+              className="font-medium text-[24px] md:text-[28px] lg:text-[35px] leading-[normal] tracking-[-0.7px] text-[#333333] hover:text-[#8F7B49] transition-colors"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               travel@djidali.land

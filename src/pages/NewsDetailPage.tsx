@@ -309,7 +309,7 @@ function _Footer() {
               +998 00 000 00 00
             </p>
             <p className="font-['Montserrat:Medium',sans-serif] font-medium text-[#333333] text-[35px] tracking-[-0.7px]">
-              land@djidali.uz
+              travel@djidali.land
             </p>
           </div>
         </div>

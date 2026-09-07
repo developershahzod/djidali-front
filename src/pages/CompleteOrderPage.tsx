@@ -149,7 +149,7 @@ function NavItem4() {
 function Footer() {
   return (
     <div className="absolute bg-white bottom-0 h-[663px] left-1/2 translate-x-[-50%] w-[1440px]" data-name="Footer">
-      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[711px] text-[#333333] text-[35px] text-nowrap top-[94px] tracking-[-0.7px] whitespace-pre">land@djidali.uz</p>
+      <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[711px] text-[#333333] text-[35px] text-nowrap top-[94px] tracking-[-0.7px] whitespace-pre">travel@djidali.land</p>
       <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[50px] text-[#333333] text-[35px] text-nowrap top-[94px] tracking-[-0.7px] whitespace-pre">+998 00 000 00 00</p>
       <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[50px] text-[#333333] text-[20px] text-nowrap top-[60px] tracking-[-0.4px] whitespace-pre">Связаться с нами</p>
       <p className="absolute font-['Montserrat:Medium',sans-serif] font-medium leading-[normal] left-[50px] text-[#333333] text-[20px] text-nowrap top-[217px] tracking-[-0.4px] whitespace-pre">Разделы сайта</p>
